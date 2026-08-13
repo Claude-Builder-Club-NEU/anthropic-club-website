@@ -23,6 +23,7 @@ import claudeCodeTypeWebp from "../assets/brand/claude-code-type.webp";
  * the window chrome, the mix-blend-mode hack, and 650KB.
  */
 const InterestBanner = () => (
+  <div className="ib-wrap">
   <section className="ib" aria-labelledby="ib-heading">
     <span className="ib__dots" aria-hidden="true" />
     <span className="ib__glow" aria-hidden="true" />
@@ -81,6 +82,7 @@ const InterestBanner = () => (
       </picture>
     </div>
   </section>
+  </div>
 );
 
 export default InterestBanner;

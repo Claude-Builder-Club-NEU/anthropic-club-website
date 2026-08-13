@@ -440,6 +440,19 @@ a {
    remaining colours, matches the handoff exactly.
    ========================================================================== */
 
+/* The design is specified at 1320px wide and 421px tall, a 3.14:1 band. This
+   site's content column is 1024px, so reproducing the spec's pixel values
+   there gave a 1.8:1 block: the heading ran to three lines, the body to four,
+   and the actions wrapped onto two rows.
+
+   Everything inside the band is therefore sized in cqw against the band's own
+   width, which is just the spec's pixel values divided by 1320. The band holds
+   the reference proportions at any width, and the aspect-ratio makes that
+   explicit. Below the stacking breakpoint it reverts to fixed, readable sizes. */
+.ib-wrap {
+  container-type: inline-size;
+}
+
 .ib {
   --ib-panel: #141413;
   --ib-headline: #f7f5ef;
@@ -453,12 +466,13 @@ a {
   overflow: hidden;
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: 1fr 470px;
+  grid-template-columns: 1fr 35.61cqw; /* 470 / 1320 */
   align-items: center;
-  gap: var(--space-8) 40px;
-  padding: 46px 46px 46px 52px;
+  gap: 3.03cqw; /* 40 / 1320 */
+  padding: 3.48cqw 3.48cqw 3.48cqw 3.94cqw; /* 46 / 52 */
   background: var(--ib-panel);
   border-radius: var(--radius-lg);
+  aspect-ratio: 1320 / 421;
 }
 
 /* The three stacked layers. Static: no motion is introduced here. */
@@ -498,14 +512,14 @@ a {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 26px;
+  gap: 1.970cqw;
 }
 
 .ib__heading {
   margin: 0;
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: clamp(2.5rem, 1.1rem + 3.6vw, 4.375rem);
+  font-size: 5.303cqw;
   line-height: 0.96;
   letter-spacing: -0.04em;
   color: var(--ib-headline);
@@ -516,7 +530,7 @@ a {
 .ib__body {
   margin: 0;
   font-family: var(--font-body);
-  font-size: 1.125rem;
+  font-size: 1.364cqw;
   line-height: 1.6;
   color: var(--ib-body);
   max-width: 54ch;
@@ -526,9 +540,9 @@ a {
 .ib__actions {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 1.818cqw;
   flex-wrap: wrap;
-  margin-top: 4px;
+  margin-top: 0.303cqw;
 }
 
 .ib__cta {
@@ -536,12 +550,12 @@ a {
   align-items: center;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: var(--step-body);
+  font-size: 1.288cqw;
   line-height: 1;
   color: var(--ib-panel);
   background: var(--ib-cta);
-  padding: 17px 26px;
-  border-radius: 6px;
+  padding: 1.288cqw 1.970cqw;
+  border-radius: 0.455cqw;
   white-space: nowrap;
   text-decoration: none;
   transition: background-color 0.2s ease-out;
@@ -562,10 +576,10 @@ a {
 
 .ib__ghost {
   font-family: var(--font-mono);
-  font-size: var(--step-small);
+  font-size: 1.136cqw;
   color: var(--ib-body);
   border-bottom: 1px solid var(--ib-rule);
-  padding-bottom: 4px;
+  padding-bottom: 0.303cqw;
   text-decoration: none;
   transition:
     color 0.2s ease-out,
@@ -590,7 +604,7 @@ a {
 .ib__graphic picture {
   display: block;
   width: 100%;
-  max-width: 470px;
+  max-width: 100%;
 }
 
 .ib__graphic img {
@@ -607,11 +621,43 @@ a {
 }
 
 /* Below the handoff's ~1000px guidance the band stacks and the graphic sits
-   under the copy, with the headline stepping down via the clamp above. */
+   under the copy. The aspect lock and the cqw sizing both come off here:
+   holding a 3.14:1 ratio on a phone would shrink the copy to nothing, and the
+   handoff's own responsive note says to step the headline down instead. */
 @media (max-width: 1023px) {
   .ib {
     grid-template-columns: 1fr;
+    aspect-ratio: auto;
     padding: 40px 32px;
+    gap: var(--space-8);
+  }
+
+  .ib__copy {
+    gap: 22px;
+  }
+
+  .ib__heading {
+    font-size: clamp(2.5rem, 1.1rem + 3.6vw, 3.25rem);
+  }
+
+  .ib__body {
+    font-size: var(--step-body);
+  }
+
+  .ib__cta {
+    font-size: var(--step-small);
+    padding: 15px 22px;
+    border-radius: 6px;
+  }
+
+  .ib__ghost {
+    font-size: var(--step-meta);
+    padding-bottom: 4px;
+  }
+
+  .ib__actions {
+    gap: 20px;
+    margin-top: 4px;
   }
 
   .ib__graphic {

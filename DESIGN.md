@@ -58,7 +58,8 @@ typography:
 rounded:
   sm: "4px"
   md: "8px"
-  banner-cta: "6px"
+  banner-cta: "0.455cqw"
+  banner-cta-stacked: "6px"
   slot: "10px"
   card: "14px"
 spacing:
@@ -262,8 +263,18 @@ A dark console panel carrying the Claude Code blocky display type, built from a
 supplied high-fidelity design ("3b, Blocky arcade"). It is the site's only
 inverted full-width band and its only textured surface.
 
-- **Panel:** Near-Black Ink, 8px corners, `46px / 52px` padding, a `1fr 470px`
-  grid that stacks below 1024px.
+- **Panel:** Near-Black Ink, 8px corners, locked to the reference's **3.14:1**
+  band (1320 x 421).
+- **Everything inside is sized in `cqw` against the band's own width**, each
+  value being the reference pixel measurement divided by 1320: `3.48cqw`
+  padding (46px), `35.61cqw` graphic column (470px), `5.30cqw` headline (70px),
+  and so on. Reproducing the raw pixel values at this site's narrower 1024px
+  content column gave a 1.8:1 block instead: the headline ran to three lines,
+  the body to four, and the actions wrapped onto two rows. Scaling by container
+  width holds the designed proportions at any size.
+- Below 1024px the aspect lock and the `cqw` sizing both come off and the band
+  stacks. Holding 3.14:1 on a phone would shrink the copy to nothing, and the
+  handoff's own responsive note says to step the headline down instead.
 - **Three static background layers**, in order: a 26px dot grid at 10% paper, a
   680x420 coral glow at 84%/46%, and 1px scanlines at 4.5% paper. None of them
   move.
