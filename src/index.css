@@ -700,8 +700,12 @@ a {
 /* Pulled up so the text begins inside the fade's solid-ink tail, which is
    what closes the gap between photo and body. Centred as a block: role, name,
    detail and the social marks all share one axis. */
+/* --space-5 and --space-7 do not exist in the scale. Using them made the whole
+   padding declaration invalid at computed-value time, so the body had NO
+   padding at all and the social marks sat flush against the card's bottom
+   edge. These are real tokens. */
 .board-body {
-  padding: 0 var(--space-5) var(--space-7);
+  padding: 0 var(--space-6) var(--space-8);
   margin-top: calc(-1 * var(--space-6));
   position: relative;
   text-align: center;
@@ -732,11 +736,19 @@ a {
   font-weight: 500;
   line-height: 1.5;
   color: #d8d4cc;
-  /* Held short and centred so it breaks into balanced lines rather than one
-     long ragged run. */
-  max-width: 28ch;
+  max-width: 30ch;
   margin-inline: auto;
+}
+
+/* Affiliation and major each own a line. Balanced so a long affiliation wraps
+   evenly instead of leaving one word stranded. */
+.board-detail__line {
+  display: block;
   text-wrap: balance;
+}
+
+.board-detail__line + .board-detail__line {
+  margin-top: 2px;
 }
 
 .board-link {

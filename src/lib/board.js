@@ -3,11 +3,15 @@
  *
  * Two Vice Presidents is intentional, not a typo.
  *
- * SPEC CONFLICT (flagged, not silently resolved): revision 2 §3.3 says roster
- * copy "stays exactly as it is", while §0.1 says the punctuation cleanup runs
- * across "every board bio". §0.1 names board bios explicitly and §0 is ordered
- * first, so the em dashes in `detail` became commas. Everything else about the
- * roster, including order and wording, is untouched.
+ * Each card reads on two lines: `affiliation` (where they work, founded, or
+ * compete) then `major`. Degrees are abbreviated, Business Admin to BA and
+ * International Business to IB, so the second line stays to one line at the
+ * card's width. Oliver has no affiliation line and the card simply omits it
+ * rather than rendering an empty row.
+ *
+ * SPEC NOTE: revision 2 §0.1 removed dashes used as prose punctuation, which
+ * is why the majors read "BA, Finance" rather than "BA - Finance". Hyphenated
+ * compounds like Pre-Law are untouched, as that rule requires.
  *
  * Headshots: masters live in `board-src/<slug>.jpg` and are never deployed.
  * scripts/build-headshots.mjs turns them into AVIF/WebP/JPEG derivatives in
@@ -24,7 +28,8 @@ export const BOARD = [
     slug: "jackson-lamoureux",
     name: "Jackson Lamoureux",
     role: "President",
-    detail: "Founder @ Logicull | Business Admin, Entrepreneurial Startups",
+    affiliation: "Founder @ Logicull",
+    major: "BA, Entrepreneurial Startups",
     photo: true,
     linkedin: "https://www.linkedin.com/in/jacksonlamoureux/",
     email: "lamoureux.ja@northeastern.edu",
@@ -34,7 +39,8 @@ export const BOARD = [
     slug: "lucas-salzgeber",
     name: "Lucas Salzgeber",
     role: "Vice President",
-    detail: "Founder @ LSstacks | Business Admin, Finance + AI",
+    affiliation: "Founder @ LSstacks",
+    major: "BA, Finance + AI",
     photo: true,
     linkedin: "https://www.linkedin.com/in/lucas-salzgeber/",
     email: "salzgeber.l@northeastern.edu",
@@ -43,7 +49,8 @@ export const BOARD = [
     slug: "oliver-ward",
     name: "Oliver Ward",
     role: "Vice President",
-    detail: "Business Admin, Entrepreneurial Startups",
+    affiliation: null,
+    major: "BA, Entrepreneurial Startups",
     photo: true,
     linkedin: "https://www.linkedin.com/in/oliver-ward-4929222bb/",
     email: "ward.ol@northeastern.edu",
@@ -52,7 +59,8 @@ export const BOARD = [
     slug: "smyan-sengupta",
     name: "Smyan Sengupta",
     role: "Head of Partnerships",
-    detail: "Prev. MSAT Modeling @ Pfizer | CS + AI",
+    affiliation: "Prev. MSAT Modeling @ Pfizer",
+    major: "CS + AI",
     photo: true,
     linkedin: "https://www.linkedin.com/in/smyan-sengupta/",
     email: "sengupta.sm@northeastern.edu",
@@ -61,7 +69,8 @@ export const BOARD = [
     slug: "anthony-jones",
     name: "Anthony Jones",
     role: "Head of Finance",
-    detail: "D1 Track & Field | Business Admin, Finance + Pre-Law",
+    affiliation: "D1 Track & Field",
+    major: "BA, Finance + Pre-Law",
     photo: true,
     linkedin: "https://www.linkedin.com/in/anthonydavidjones/",
     email: "jones.anth@northeastern.edu",
@@ -70,7 +79,8 @@ export const BOARD = [
     slug: "kristine-min",
     name: "Kristine Min",
     role: "Head of Social Media",
-    detail: "UGC Creator, 20k on TikTok | International Business + Finance",
+    affiliation: "UGC Creator, 20k on TikTok",
+    major: "IB + Finance",
     photo: true,
     linkedin: "https://www.linkedin.com/in/kristine-min/",
     email: "min.kr@northeastern.edu",
@@ -80,7 +90,8 @@ export const BOARD = [
     slug: "alex-green",
     name: "Alex Green",
     role: "Head of Events",
-    detail: "Prev. Analyst @ Gordon Brothers | Business Admin, Finance",
+    affiliation: "Prev. Analyst @ Gordon Brothers",
+    major: "BA, Finance",
     photo: true,
     linkedin: "https://www.linkedin.com/in/greena1/",
     email: "green.a1@northeastern.edu",

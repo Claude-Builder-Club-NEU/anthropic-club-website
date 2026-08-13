@@ -45,8 +45,18 @@ const splitName = (name) => {
  * fetched on a normal first visit.
  */
 const BoardCard = ({ member }) => {
-  const { slug, name, role, detail, photo, linkedin, email, github, tiktok } =
-    member;
+  const {
+    slug,
+    name,
+    role,
+    affiliation,
+    major,
+    photo,
+    linkedin,
+    email,
+    github,
+    tiktok,
+  } = member;
 
   const [firstName, surname] = splitName(name);
 
@@ -96,7 +106,14 @@ const BoardCard = ({ member }) => {
             {firstName}
             {surname && <span className="board-name__surname">{surname}</span>}
           </h3>
-          <p className="board-detail mt-3">{detail}</p>
+          {/* Affiliation then major, one per line. Members without an
+              affiliation simply omit the line rather than leaving a gap. */}
+          <p className="board-detail mt-3">
+            {affiliation && (
+              <span className="board-detail__line">{affiliation}</span>
+            )}
+            <span className="board-detail__line">{major}</span>
+          </p>
 
           {socials.length > 0 && (
             <ul className="board-socials mt-5 list-none p-0">
