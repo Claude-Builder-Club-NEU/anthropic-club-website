@@ -65,12 +65,25 @@ const Hero = () => {
           with Claude.
         </h1>
 
+        {/* "Anthropic" is set as their wordmark rather than as text. The alt
+            carries the word, so the sentence still reads correctly to a screen
+            reader and in the page's accessible name. The mark keeps its own
+            ink colour: the usage rules say do not recolour it, and it reads as
+            deliberate emphasis against the lead's lighter grey. */}
         <p
           className="lead mt-7 sm:mt-8"
           style={{ maxWidth: "var(--measure-tight)" }}
         >
-          The official Anthropic Claude Builder Club at Northeastern
-          University, where students build real things with Claude.
+          The official{" "}
+          <img
+            src={anthropicWordmark}
+            alt="Anthropic"
+            className="inline-wordmark"
+            width="590"
+            height="68"
+          />{" "}
+          Claude Builder Club at Northeastern University, where students build
+          real things with Claude.
         </p>
 
         <div className="mt-9 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:gap-4">
@@ -93,7 +106,6 @@ const Hero = () => {
             licensed and are deliberately not self-hosted. */}
         <div className="sponsor-lockup">
           <span className="meta sponsor-lockup__label">Sponsored by</span>
-          <span className="sponsor-lockup__rule" aria-hidden="true" />
           <img
             src={anthropicWordmark}
             alt="Anthropic"
