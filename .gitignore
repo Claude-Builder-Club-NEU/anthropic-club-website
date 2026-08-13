@@ -12,6 +12,24 @@ dist
 dist-ssr
 *.local
 
+# Environment — never commit secrets to this public repo
+.env
+.env.*
+!.env.example
+src/.env
+
+# AI coding-harness config (personal, not project code)
+.claude/
+.codex/
+.cursor/
+.agents/
+.gemini/
+.kiro/
+.opencode/
+.pi/
+.qoder/
+.impeccable/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

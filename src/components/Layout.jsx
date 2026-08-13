@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import claudeLogo from "../assets/claude-logo-png_seeklogo-554534.png";
+import { INTEREST_FORM } from "../lib/links";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -30,7 +31,6 @@ const Layout = ({ children }) => {
     { path: "/", label: "Home" },
     { path: "/about", label: "About" },
     { path: "/workshops", label: "Workshops" },
-    { path: "/join", label: "Join Us" },
   ];
 
   return (
@@ -58,7 +58,7 @@ const Layout = ({ children }) => {
 
             {/* Navigation */}
             <nav className="hidden md:flex space-x-8">
-              {navItems.slice(0, 3).map((item) => (
+              {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
@@ -71,12 +71,14 @@ const Layout = ({ children }) => {
                   {item.label}
                 </Link>
               ))}
-              <Link
-                to="/join"
+              <a
+                href={INTEREST_FORM}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="px-3 py-2 rounded-md text-sm font-medium bg-coral text-white hover:bg-coral/80"
               >
                 Join Us
-              </Link>
+              </a>
             </nav>
 
             {/* Mobile menu button */}
@@ -165,6 +167,23 @@ const Layout = ({ children }) => {
                     </Link>
                   </motion.div>
                 ))}
+
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3, delay: navItems.length * 0.1 }}
+                >
+                  <a
+                    href={INTEREST_FORM}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block px-4 py-3 rounded-lg text-base font-medium bg-coral text-white text-center"
+                  >
+                    Join Us
+                  </a>
+                </motion.div>
 
                 {/* Social Links in Mobile Menu */}
                 <motion.div

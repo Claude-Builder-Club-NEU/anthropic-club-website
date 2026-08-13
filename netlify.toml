@@ -3,7 +3,8 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "18"
+  # Vite 7 requires ^20.19.0 || >=22.12.0 — the previous "18" could not have built this.
+  NODE_VERSION = "22"
 
 [[redirects]]
   from = "/*"
