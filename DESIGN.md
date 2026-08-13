@@ -345,7 +345,9 @@ mark still appears, it simply does not travel.
   finding is a known false positive. This is recorded in PRODUCT.md and is binding.
 - **Don't** add a second animation. No scroll reveals, no fades, no parallax, no
   counters, no hover-lifts, no page transitions, no smooth scrolling.
-- **Don't** use `box-shadow` anywhere.
+- **Don't** use `box-shadow` for depth. The single permitted use is a focus
+  ring: the interest banner's CTA carries `0 0 0 3px rgba(217,119,87,0.45)` on
+  `:focus-visible`, which is an accessibility affordance, not decoration.
 - **Don't** put an eyebrow, kicker, chip, or section number above a heading.
 - **Don't** set Pale Clay (#b0aea5) as text at any size.
 - **Don't** nest cards, or use same-size icon-plus-heading-plus-text cards as the
