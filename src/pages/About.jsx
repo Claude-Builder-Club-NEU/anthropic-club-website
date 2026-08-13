@@ -21,19 +21,36 @@ const About = () => {
     <>
       <Breadcrumbs current="About" />
 
+      {/* Page header. Set at display scale with the standfirst carried in the
+          second column, so it reads as a masthead rather than a heading
+          crammed under the breadcrumb with dead space beside it. */}
       <section
         aria-labelledby="about-heading"
-        className="mx-auto w-full max-w-6xl px-6 pb-16 pt-8 sm:px-10 sm:pb-24 lg:px-16"
+        className="mx-auto w-full max-w-6xl px-6 pb-16 pt-10 sm:px-10 sm:pb-24 sm:pt-16 lg:px-16 lg:pt-20"
       >
-        <h1 id="about-heading" style={{ maxWidth: "18ch" }}>
-          A club for building, not watching.
-        </h1>
-        <p className="lead mt-7" style={{ maxWidth: "var(--measure-tight)" }}>
-          We are Northeastern&apos;s chapter of Anthropic&apos;s Claude Builder
-          Club program.
-        </p>
+        <div className="grid items-end gap-8 lg:grid-cols-12 lg:gap-16">
+          <h1
+            id="about-heading"
+            className="lg:col-span-7"
+            style={{
+              fontSize: "var(--step-display)",
+              lineHeight: 1.04,
+              letterSpacing: "-0.03em",
+              maxWidth: "14ch",
+            }}
+          >
+            A club for building, not watching.
+          </h1>
+          <p
+            className="lead lg:col-span-5 lg:pb-2"
+            style={{ maxWidth: "var(--measure-tight)" }}
+          >
+            We are Northeastern&apos;s chapter of Anthropic&apos;s Claude
+            Builder Club program.
+          </p>
+        </div>
 
-        <div className="mt-16 grid gap-14 border-t border-rule pt-14 lg:grid-cols-2 lg:gap-20">
+        <div className="mt-20 grid gap-14 border-t border-rule pt-14 lg:grid-cols-2 lg:gap-20">
           <div>
             <h2>What a semester looks like</h2>
             <p className="mt-6 text-gray-text">
@@ -71,10 +88,10 @@ const About = () => {
         <div className="mx-auto w-full max-w-6xl px-6 py-16 sm:px-10 sm:py-24 lg:px-16">
           <h2 id="board-heading">Executive board</h2>
 
-          <ul className="mt-12 grid grid-cols-2 gap-x-6 gap-y-12 p-0 sm:grid-cols-4 sm:gap-x-8">
-            <BoardCard member={president} eager lead />
+          <ul className="mt-12 grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 lg:grid-cols-4">
+            <BoardCard member={president} eager />
             {rest.map((member, i) => (
-              <BoardCard key={member.slug} member={member} eager={i < 2} />
+              <BoardCard key={member.slug} member={member} eager={i < 3} />
             ))}
           </ul>
 

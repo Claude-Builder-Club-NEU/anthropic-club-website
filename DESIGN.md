@@ -46,6 +46,8 @@ typography:
 rounded:
   sm: "4px"
   md: "8px"
+  slot: "10px"
+  card: "14px"
 spacing:
   xs: "4px"
   sm: "8px"
@@ -207,8 +209,14 @@ a hairline. Reaching for `box-shadow` means the tonal step was not doing its job
 
 ## Shapes
 
-Corners are nearly sharp — 4px as the default, 8px only on large panels. The
-system reads as printed matter, and printed matter does not have soft corners.
+Corners are nearly sharp: 4px as the default, 8px on large panels. The system
+reads as printed matter, and printed matter does not have soft corners.
+
+Board cards are the one deliberate exception, at 14px with a 10px photo slot
+inside. They are portrait objects rather than sheets of paper, and the softer
+corner is what makes them read as cards rather than cropped panels. Nothing
+else on the site uses those two steps.
+
 Borders are 1px Hairline; no colored left-borders, no thick rules. Images sit in
 fixed aspect-ratio containers so the page never reflows as they load.
 
@@ -229,6 +237,22 @@ fixed aspect-ratio containers so the page never reflows as they load.
 - **Shadow Strategy:** None — see Elevation & Depth
 - **Border:** 1px Hairline where tone alone is insufficient
 - **Internal Padding:** 32px, 24px below 640px
+
+### Board cards
+The one inverted surface in the system. A Near-Black Ink card, 14px corners,
+with a light photo slot at the top that resolves into the ink base before any
+text begins. The blend is confined to the photo region on purpose: running it
+across the whole card puts the role label on a mid-tone band where Claude Coral
+fails contrast.
+
+- **Role:** the anchor of the card. Uppercase, tracked +0.12em, in Claude Coral,
+  set above the name. Coral measures 5.90:1 on ink, so on this surface, and only
+  on this surface, the accent may carry text.
+- **Name:** Lora 600 at title size in Warm Paper.
+- **Photo slot:** 4:5, 10px corners, dashed hairline while empty, holding the
+  member's initials. The box is identical whether or not a photo exists, so
+  adding one shifts nothing.
+- **Hover:** the card border takes Claude Coral. Nothing lifts.
 
 ### Navigation
 Poppins 500 at 15px, Ink, no underline at rest. Hover and focus draw the

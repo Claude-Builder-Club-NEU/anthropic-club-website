@@ -49,14 +49,15 @@ const Workshops = () => {
         </div>
       </section>
 
-      {(hasEvents || hasCalendar) && (
-        <section
-          aria-labelledby="calendar-heading"
-          className="mx-auto w-full max-w-6xl px-6 pb-16 sm:px-10 sm:pb-24 lg:px-16"
-        >
-          <h2 id="calendar-heading">Calendar</h2>
-          {hasEvents && <MonthGrid />}
-          {hasCalendar && (
+      {/* The calendar always renders, whether or not there are events, so the
+          page has a visible calendar rather than nothing below the top block. */}
+      <section
+        aria-labelledby="calendar-heading"
+        className="mx-auto w-full max-w-6xl px-6 pb-16 sm:px-10 sm:pb-24 lg:px-16"
+      >
+        <h2 id="calendar-heading">Calendar</h2>
+        <MonthGrid />
+        {hasCalendar && (
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:gap-8">
               <a
                 className="inline-flex items-center gap-1.5 font-display text-small no-underline sweep"
@@ -73,9 +74,8 @@ const Workshops = () => {
                 <CalendarIcon width={16} height={16} /> Add to your own calendar
               </a>
             </div>
-          )}
-        </section>
-      )}
+        )}
+      </section>
 
       <section
         aria-labelledby="involved-heading"

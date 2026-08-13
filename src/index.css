@@ -372,12 +372,12 @@ a {
 
 .hero-mark {
   position: absolute;
-  right: -6vw;
-  bottom: -14vw;
-  width: 52vw;
-  max-width: 460px;
+  right: -5vw;
+  bottom: -13vw;
+  width: 62vw;
+  max-width: 720px;
   height: auto;
-  opacity: 0.9;
+  opacity: 1;
   pointer-events: none;
   user-select: none;
 }
@@ -386,11 +386,11 @@ a {
    retreats further off-canvas and only a corner of it stays visible. */
 @media (max-width: 1023px) {
   .hero-mark {
-    right: -22vw;
-    bottom: -22vw;
-    width: 66vw;
-    max-width: 380px;
-    opacity: 0.75;
+    right: -18vw;
+    bottom: -20vw;
+    width: 74vw;
+    max-width: 520px;
+    opacity: 0.95;
   }
 }
 
@@ -398,15 +398,17 @@ a {
    hero gains bottom room and the mark occupies that corner instead of sitting
    behind the buttons. */
 @media (max-width: 639px) {
+  /* The CTAs run full width on phones, so the mark cannot share their band.
+     The hero gains bottom room and the mark takes that corner instead. */
   .hero {
-    padding-bottom: 190px;
+    padding-bottom: 240px;
   }
 
   .hero-mark {
-    right: -26vw;
+    right: -20vw;
     bottom: -34vw;
-    width: 74vw;
-    opacity: 0.6;
+    width: 90vw;
+    opacity: 0.95;
   }
 }
 
@@ -548,29 +550,114 @@ a {
 
 /* ==========================================================================
    Board cards
-   Hover lifts nothing: it deepens the tile and marks the name, consistent
-   with the flat rule and the single motion primitive.
+   Dark cards: a light photo slot at the top resolving into an ink base that
+   carries the text. Coral measures 5.90:1 on ink, so the role can finally be
+   set in the brand accent and still clear AA.
+
+   NOTE: the vertical blend is a gradient, which §3.3 of the revision brief
+   otherwise prohibits. It is here because the supplied reference image calls
+   for it explicitly. Swap `--board-blend` for a solid to remove it.
    ========================================================================== */
 
-.board-card .board-photo {
-  transition: border-color var(--sweep-duration) var(--sweep-ease),
-    background-color var(--sweep-duration) var(--sweep-ease);
+/* The card body is solid ink and the blend is confined to the photo region,
+   which resolves to ink before any text starts. Running the gradient across
+   the whole card put the coral role label on a mid-tone band where it failed
+   contrast. */
+.board-card-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--ink);
+  border: 1px solid var(--rule);
+  transition: border-color var(--sweep-duration) var(--sweep-ease);
 }
 
-.board-card:hover .board-photo,
-.board-card:focus-within .board-photo {
+.board-slot-wrap {
+  padding: var(--space-4) var(--space-4) var(--space-8);
+  background: linear-gradient(
+    180deg,
+    #efe9e6 0%,
+    #e7dfda 48%,
+    #9c9089 74%,
+    var(--ink) 100%
+  );
+}
+
+.board-card:hover .board-card-inner,
+.board-card:focus-within .board-card-inner {
   border-color: var(--coral);
-  background-color: var(--paper);
 }
 
-.board-card:hover .board-name,
-.board-card:focus-within .board-name {
-  background-size: 100% 0.34em;
+/* Photo slot. Dashed while empty so it reads as a reserved space rather than
+   a broken image. Fixed ratio, so dropping a headshot in shifts nothing. */
+.board-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--space-2);
+  border-radius: 10px;
+  aspect-ratio: 4 / 5;
+  color: var(--gray-text);
 }
 
-/* The President's card leads the grid at a larger scale. */
-.board-card--lead .board-role {
-  font-size: var(--step-small);
+.board-slot--empty {
+  border: 1.5px dashed rgba(20, 20, 19, 0.26);
+}
+
+.board-slot--filled {
+  overflow: hidden;
+}
+
+/* No `margin-top: auto` here on purpose. Bottom-aligning the body made the
+   role labels sit at different heights across a row whenever a name wrapped
+   to two lines. Flowing straight from the photo slot keeps them level. */
+.board-body {
+  padding: 0 var(--space-4) var(--space-8);
+}
+
+.board-role {
+  font-family: var(--font-display);
+  font-size: var(--step-meta);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--coral);
+  max-width: none;
+}
+
+.board-name {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--step-2);
+  line-height: 1.12;
+  color: var(--paper);
+  letter-spacing: -0.015em;
+}
+
+.board-detail {
+  font-family: var(--font-display);
+  font-size: var(--step-meta);
+  font-weight: 500;
+  line-height: 1.45;
+  color: #d8d4cc;
+  max-width: none;
+}
+
+.board-link {
+  color: #d8d4cc;
+}
+
+.board-link:hover,
+.board-link:focus-visible {
+  color: var(--paper);
+}
+
+/* The President leads the grid: same card, more room. */
+.board-card--lead .board-name {
+  font-size: var(--step-2);
 }
 
 /* Mobile sticky CTA. The matching body padding is what stops it covering the

@@ -72,6 +72,16 @@ export const ExternalIcon = (props) => (
   </svg>
 );
 
+/** Reserved-photo mark for an empty board slot. */
+export const ImagePlaceholderIcon = (props) => (
+  <svg {...base} {...props}>
+    <rect x="3" y="4" width="18" height="16" rx="2.5" />
+    <circle cx="8.6" cy="9.4" r="1.6" />
+    <path d="m4 17 4.8-4.6a1.6 1.6 0 0 1 2.2 0L15 16" />
+    <path d="m13.6 14.4 2-1.9a1.6 1.6 0 0 1 2.2 0L20 14.7" />
+  </svg>
+);
+
 export const CalendarIcon = (props) => (
   <svg {...base} {...props}>
     <rect x="3" y="5" width="18" height="16" rx="2" />
