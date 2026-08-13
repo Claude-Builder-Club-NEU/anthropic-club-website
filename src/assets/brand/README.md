@@ -25,3 +25,22 @@ The press kit also contains the "Claude" wordmark, the Claude Code logo, and the
 Claude app icon. They are deliberately not vendored here: the wordmark is
 Anthropic's product lockup, and using it as this club's identity would overstate
 the relationship. Pull them from the press kit if a specific need arises.
+
+## anthropic-wordmark.svg
+
+The official Anthropic wordmark, same press kit, file
+`Anthropic logos/1 Anthropic logo/SVG/Anthropic logo - Slate.svg`, unmodified.
+Used once, in the hero's "Sponsored by" lockup.
+
+Its fill is `#141413`, identical to the `--ink` token, which is a second
+confirmation that this palette holds Anthropic's real brand values.
+
+Because it is a logo, its lettering is Anthropic's own typeface drawn as vector
+paths. That is the only lawful way to show their type here: the live faces
+(Styrene, Tiempos, Copernicus) are commercially licensed and must not be
+sourced or self-hosted, per the original brief.
+
+The press kit also carries the Anthropic symbol (the "A\" glyph), the Claude
+wordmark, Claude Code logo, and the Claude app icon. None are vendored, because
+nothing on the site currently needs them and unused trademarked assets should
+not sit in the repository.

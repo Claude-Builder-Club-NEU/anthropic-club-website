@@ -413,6 +413,76 @@ a {
 }
 
 /* ==========================================================================
+   Signage borrowed from Anthropic's own pages
+   Their layouts pair a small tracked label with a hairline rule and a value on
+   the far side (DATE ————— July 24, 2026). It is a quiet, factual device that
+   suits this system, and it is a pattern rather than a copied asset.
+   ========================================================================== */
+
+.sponsor-lockup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-12);
+  max-width: 30rem;
+}
+
+.sponsor-lockup__label {
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.sponsor-lockup__rule {
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+.sponsor-lockup__mark {
+  flex-shrink: 0;
+  width: 112px;
+  height: auto;
+}
+
+/* Label-rule-value row, reusable wherever a fact needs stating plainly. */
+.spec-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--rule);
+}
+
+.spec-row__label {
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.spec-row__fill {
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+  transform: translateY(-3px);
+}
+
+.spec-row__value {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-small);
+  font-weight: 500;
+  color: var(--ink);
+  max-width: none;
+}
+
+/* Section mark: the Claude Spark used as a small opener before a heading. */
+.section-mark {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin-bottom: var(--space-4);
+}
+
+/* ==========================================================================
    Header
    Transparent over the hero, then a paper ground and a hairline once scrolled.
    Restrained on purpose: no backdrop blur, which is on the anti-reference list.

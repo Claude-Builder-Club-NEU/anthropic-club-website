@@ -4,6 +4,7 @@ import LinkHub from "../components/LinkHub";
 import EventsPanel from "../components/EventsPanel";
 import Faq from "../components/Faq";
 import { ArrowRightIcon } from "../components/Icons";
+import { SectionMark, SpecRow, SpecList } from "../components/Signage";
 
 /**
  * Homepage. Mode: Persuade. This surface exists to convert an interested
@@ -23,6 +24,7 @@ const Home = () => (
     >
       <div className="grid gap-14 lg:grid-cols-2 lg:gap-20">
         <div>
+          <SectionMark />
           <h2 id="program-heading">What a Claude Builder Club is</h2>
           <p className="mt-6 text-gray-text">
             Claude Builder Clubs are Anthropic&apos;s student-led campus
@@ -37,6 +39,7 @@ const Home = () => (
         </div>
 
         <div>
+          <SectionMark />
           <h2 id="chapter-heading">What we do at Northeastern</h2>
           <p className="mt-6 text-gray-text">
             Founded in 2025, we run hands-on workshops and community showcase
@@ -46,6 +49,15 @@ const Home = () => (
             We also run the biggest hackathons at Northeastern, together with
             our partner clubs ACM, AINU and REV.
           </p>
+
+          {/* Only confirmed facts belong here: the pattern reads as a spec
+              sheet, so anything unverified would look authoritative. */}
+          <SpecList className="mt-8">
+            <SpecRow label="Founded" value="2025" />
+            <SpecRow label="Open to" value="Any Northeastern student" />
+            <SpecRow label="Cost" value="Free" />
+          </SpecList>
+
           <p className="mt-7">
             <Link
               to="/about"

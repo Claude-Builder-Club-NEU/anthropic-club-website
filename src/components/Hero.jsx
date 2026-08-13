@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { INTEREST_FORM } from "../lib/links";
 import claudeSpark from "../assets/brand/claude-spark.svg";
+import anthropicWordmark from "../assets/brand/anthropic-wordmark.svg";
 
 /**
  * Homepage hero.
@@ -84,6 +85,22 @@ const Hero = () => {
           <Link className="btn btn--secondary" to="/workshops">
             See upcoming events
           </Link>
+        </div>
+
+        {/* Sponsor lockup, set in Anthropic's own label-rule-mark pattern.
+            The wordmark is their official logo file, so the lettering is their
+            real typeface as artwork. Their live faces (Styrene, Tiempos) are
+            licensed and are deliberately not self-hosted. */}
+        <div className="sponsor-lockup">
+          <span className="meta sponsor-lockup__label">Sponsored by</span>
+          <span className="sponsor-lockup__rule" aria-hidden="true" />
+          <img
+            src={anthropicWordmark}
+            alt="Anthropic"
+            className="sponsor-lockup__mark"
+            width="590"
+            height="68"
+          />
         </div>
       </div>
     </section>
