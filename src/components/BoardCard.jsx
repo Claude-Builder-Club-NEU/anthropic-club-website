@@ -16,11 +16,11 @@ const WIDTHS = [320, 480, 640];
  * 640 derivative where the 320 would do.
  *
  * Measured, not estimated. Above 1024px the container caps at max-w-6xl, so
- * the card is a fixed width: grid 1024px, 4 columns, 20px gaps -> 241px. The
- * photo is now full bleed, so that column width is the image width.
+ * the card is a fixed width: grid 1024px, 3 columns, 24px gaps -> 325px. The
+ * photo is full bleed, so that column width is the image width.
  */
 const SIZES =
-  "(min-width: 1024px) 245px, (min-width: 640px) 46vw, calc(100vw - 48px)";
+  "(min-width: 1024px) 330px, (min-width: 640px) 46vw, calc(100vw - 48px)";
 
 const srcset = (slug, ext) =>
   WIDTHS.map((w) => `/board/${slug}-${w}.${ext} ${w}w`).join(", ");
@@ -99,7 +99,7 @@ const BoardCard = ({ member }) => {
           <p className="board-detail mt-3">{detail}</p>
 
           {socials.length > 0 && (
-            <ul className="mt-5 flex list-none items-center gap-4 p-0">
+            <ul className="board-socials mt-5 list-none p-0">
               {socials.map(({ href, label, Icon }) => (
                 <li key={label}>
                   <a

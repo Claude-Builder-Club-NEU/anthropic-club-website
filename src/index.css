@@ -578,6 +578,27 @@ a {
    which resolves to ink before any text starts. Running the gradient across
    the whole card put the coral role label on a mid-tone band where it failed
    contrast. */
+/* Seven people in a three-column grid leaves one card alone on the final row,
+   pinned to the left with two empty cells beside it, which reads as a gap
+   rather than a decision. Drop it into the middle column instead.
+   The selector only fires when the last card is genuinely alone in its row
+   (roster length 3n+1), so it does nothing at other counts, and only at the
+   breakpoint where there are three columns. */
+@media (min-width: 1024px) {
+  .board-grid > li:last-child:nth-child(3n + 1) {
+    grid-column: 2;
+  }
+}
+
+/* Two columns: an odd roster leaves one alone, centred the same way. */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .board-grid > li:last-child:nth-child(2n + 1) {
+    grid-column: 1 / -1;
+    max-width: calc(50% - var(--space-3));
+    margin-inline: auto;
+  }
+}
+
 .board-card-inner {
   display: flex;
   flex-direction: column;
@@ -632,13 +653,21 @@ a {
 /* Icon-only social links. No visible label, so each carries an aria-label and
    the hit area is padded out to a comfortable target rather than the 15px
    glyph. */
+/* Icon-only, grouped tightly on the card's centre axis. The box stays 34px so
+   the tap target is real even though the glyph is 17px; the tight gap is what
+   makes them read as one cluster rather than three separate controls. */
+.board-socials {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+}
+
 .board-social {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 34px;
   height: 34px;
-  margin: -6px;
   border-radius: var(--radius);
   color: #d8d4cc;
   transition: color var(--sweep-duration) var(--sweep-ease);
@@ -669,11 +698,13 @@ a {
 }
 
 /* Pulled up so the text begins inside the fade's solid-ink tail, which is
-   what closes the gap between photo and body. */
+   what closes the gap between photo and body. Centred as a block: role, name,
+   detail and the social marks all share one axis. */
 .board-body {
-  padding: 0 var(--space-4) var(--space-7);
+  padding: 0 var(--space-5) var(--space-7);
   margin-top: calc(-1 * var(--space-6));
   position: relative;
+  text-align: center;
 }
 
 .board-role {
@@ -699,9 +730,13 @@ a {
   font-family: var(--font-display);
   font-size: var(--step-meta);
   font-weight: 500;
-  line-height: 1.45;
+  line-height: 1.5;
   color: #d8d4cc;
-  max-width: none;
+  /* Held short and centred so it breaks into balanced lines rather than one
+     long ragged run. */
+  max-width: 28ch;
+  margin-inline: auto;
+  text-wrap: balance;
 }
 
 .board-link {
