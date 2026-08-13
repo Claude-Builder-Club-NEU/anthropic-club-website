@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-13T00:00:00.000Z",
+  "title": "Design System: Claude Builders Club @ Northeastern",
+  "extensions": {
+    "colorMeta": {
+      "claude-coral": {
+        "role": "primary",
+        "displayName": "Claude Coral",
+        "canonical": "#d97757",
+        "tonalRamp": ["#3a1d12", "#5c2e1d", "#7d3f28", "#9e5033", "#c0613e", "#d97757", "#e5a189", "#f2d0bc"]
+      },
+      "burnt-terracotta": {
+        "role": "primary",
+        "displayName": "Burnt Terracotta",
+        "canonical": "#a34a2a",
+        "tonalRamp": ["#2c1408", "#43200d", "#5b2b13", "#743719", "#8c4121", "#a34a2a", "#c97a5a", "#e6b4a0"]
+      },
+      "warm-paper": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "canonical": "#faf9f5",
+        "tonalRamp": ["#2a2a26", "#45443f", "#605e57", "#7b7970", "#a5a399", "#c9c7bd", "#e8e6dc", "#faf9f5"]
+      },
+      "near-black-ink": {
+        "role": "neutral",
+        "displayName": "Near-Black Ink",
+        "canonical": "#141413",
+        "tonalRamp": ["#141413", "#2b2b29", "#42423f", "#5a5955", "#71706b", "#898781", "#b0aea5", "#e8e6dc"]
+      },
+      "stone-gray": {
+        "role": "neutral",
+        "displayName": "Stone Gray",
+        "canonical": "#686560",
+        "tonalRamp": ["#1c1b19", "#302f2c", "#44423e", "#585650", "#686560", "#8d8a83", "#b6b3ab", "#dedbd3"]
+      },
+      "oat": {
+        "role": "neutral",
+        "displayName": "Oat",
+        "canonical": "#e8e6dc",
+        "tonalRamp": ["#2a2924", "#434138", "#5c594d", "#767261", "#9c9887", "#c2bfb1", "#e8e6dc", "#f5f4ee"]
+      },
+      "pale-clay": {
+        "role": "neutral",
+        "displayName": "Pale Clay",
+        "canonical": "#b0aea5",
+        "tonalRamp": ["#232219", "#3a382d", "#514f41", "#686556", "#8b8879", "#b0aea5", "#cecbc4", "#eceae5"]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#ded9cc",
+        "tonalRamp": ["#2b2823", "#454037", "#5f594b", "#79725f", "#a49b85", "#c4bcaa", "#ded9cc", "#f0ede5"]
+      },
+      "slate-blue": {
+        "role": "tertiary",
+        "displayName": "Slate Blue",
+        "canonical": "#6a9bcc",
+        "tonalRamp": ["#111e2b", "#1b3145", "#26445f", "#305779", "#4a789f", "#6a9bcc", "#9cbfdf", "#cfe0f0"]
+      },
+      "olive": {
+        "role": "tertiary",
+        "displayName": "Olive",
+        "canonical": "#788c5d",
+        "tonalRamp": ["#181c12", "#262d1e", "#353e29", "#445035", "#5c6d45", "#788c5d", "#a3b28f", "#cfd8c2"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero headline only. One per page, capped near 16ch." },
+      "headline": { "displayName": "Headline", "purpose": "Page titles." },
+      "title": { "displayName": "Title", "purpose": "Section headings." },
+      "body": { "displayName": "Body", "purpose": "All prose, held to a 68ch measure." },
+      "label": { "displayName": "Label", "purpose": "Uppercase meta — dates, categories, field labels." }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "sweep",
+        "value": "150ms cubic-bezier(0.22, 0.61, 0.36, 1)",
+        "purpose": "The highlighter. The only motion in the system. Removed entirely under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The conversion action. An outline at rest; the coral highlighter fills it on interaction.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Join the club</a>",
+      "css": ".ds-btn-primary { display:inline-flex; align-items:center; justify-content:center; font-family:Poppins,Arial,sans-serif; font-weight:500; font-size:0.9375rem; line-height:1; padding:16px 24px; border-radius:4px; text-decoration:none; cursor:pointer; color:#141413; border:1px solid #141413; background-image:linear-gradient(#d97757,#d97757); background-repeat:no-repeat; background-position:0 0; background-size:0% 100%; transition:background-size 150ms cubic-bezier(0.22,0.61,0.36,1); } .ds-btn-primary:hover, .ds-btn-primary:focus-visible { background-size:100% 100%; } .ds-btn-primary:focus-visible { outline:2px solid #a34a2a; outline-offset:3px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "The lesser action. Same geometry, quieter fill, so the two never read as equals.",
+      "html": "<a class=\"ds-btn-secondary\" href=\"#\">See upcoming events</a>",
+      "css": ".ds-btn-secondary { display:inline-flex; align-items:center; justify-content:center; font-family:Poppins,Arial,sans-serif; font-weight:500; font-size:0.9375rem; line-height:1; padding:16px 24px; border-radius:4px; text-decoration:none; cursor:pointer; color:#141413; border:1px solid #ded9cc; background-image:linear-gradient(#e8e6dc,#e8e6dc); background-repeat:no-repeat; background-position:0 0; background-size:0% 100%; transition:background-size 150ms cubic-bezier(0.22,0.61,0.36,1); } .ds-btn-secondary:hover, .ds-btn-secondary:focus-visible { background-size:100% 100%; }"
+    },
+    {
+      "name": "Highlighter Mark",
+      "kind": "custom",
+      "refersTo": "button-primary-hover",
+      "description": "The signature. A coral band sweeps beneath a phrase over 150ms, marking each line separately when it wraps.",
+      "html": "<p class=\"ds-mark-wrap\">Build <span class=\"ds-mark\">what's next</span> with Claude.</p>",
+      "css": ".ds-mark-wrap { font-family:Poppins,Arial,sans-serif; font-weight:600; font-size:2.5rem; line-height:1.04; letter-spacing:-0.03em; color:#141413; margin:0; } .ds-mark { background-image:linear-gradient(#d97757,#d97757); background-repeat:no-repeat; background-position:0 88%; background-size:100% 0.42em; -webkit-box-decoration-break:clone; box-decoration-break:clone; transition:background-size 150ms cubic-bezier(0.22,0.61,0.36,1); }"
+    },
+    {
+      "name": "Navigation Link",
+      "kind": "nav",
+      "refersTo": "button-secondary",
+      "description": "Poppins 500. No underline at rest; the highlighter marks it on hover and focus.",
+      "html": "<a class=\"ds-nav-link\" href=\"#\">Workshops</a>",
+      "css": ".ds-nav-link { font-family:Poppins,Arial,sans-serif; font-weight:500; font-size:0.9375rem; color:#141413; text-decoration:none; padding-bottom:2px; background-image:linear-gradient(#d97757,#d97757); background-repeat:no-repeat; background-position:0 88%; background-size:0% 0.34em; transition:background-size 150ms cubic-bezier(0.22,0.61,0.36,1); } .ds-nav-link:hover, .ds-nav-link:focus-visible { background-size:100% 0.34em; }"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "button-secondary",
+      "description": "Oat on Warm Paper. Depth is tonal — this system has no shadows.",
+      "html": "<div class=\"ds-panel\"><h3>What a semester looks like</h3><p>Workshops, build nights, and a hackathon.</p></div>",
+      "css": ".ds-panel { background:#e8e6dc; border:1px solid #ded9cc; border-radius:8px; padding:32px; } .ds-panel h3 { font-family:Poppins,Arial,sans-serif; font-weight:600; font-size:1.5rem; letter-spacing:-0.02em; color:#141413; margin:0 0 8px; } .ds-panel p { font-family:Lora,Georgia,serif; font-size:1.0625rem; line-height:1.65; color:#686560; margin:0; max-width:68ch; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Marked Page",
+    "overview": "This is a printed page someone cared enough to mark up. The ground is warm paper, not screen-white. The reading voice is a serif. Headings are a geometric sans set tight and large, the way a well-set title page behaves. Nothing glows, nothing floats, nothing drifts into view on scroll. The one thing that moves is a coral highlighter, sweeping left to right beneath a phrase exactly once, the way a person marks a line they want to come back to. Restraint here is not minimalism for its own sake: the audience is a student who is not sure they are technical enough to belong, and a page that reads like a well-set document reads as an invitation.",
+    "keyCharacteristics": [
+      "Warm paper ground (#faf9f5), never pure white",
+      "Serif body, geometric-sans display — reading voice and title voice are distinct",
+      "Exactly one motion primitive sitewide",
+      "Borders and tonal shifts instead of shadows; the system is flat",
+      "Sentence case everywhere; no eyebrows, no chips, no section numbers",
+      "Generous vertical space, body measure held to 65–75ch"
+    ],
+    "rules": [
+      {
+        "name": "The Fill-Not-Text Rule",
+        "body": "Claude Coral is a fill color and never sets type on paper. Measured, it is 2.96:1 against the paper ground, failing the 4.5:1 body threshold and the 3:1 large-text and non-text thresholds alike. Any coral word uses Burnt Terracotta (5.58:1 on paper, 4.70:1 on Oat).",
+        "section": "colors"
+      },
+      {
+        "name": "The No-Gray-Text-Above-Stone Rule",
+        "body": "Pale Clay is 2.11:1 on paper and is decorative. Secondary text stops at Stone Gray, which clears 4.5:1 on both paper and Oat.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two-Voice Rule",
+        "body": "Poppins titles, Lora prose. A block of Poppins running longer than two lines is a mistake; so is a heading set in Lora.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tracking Floor",
+        "body": "Display and headline sizes carry negative tracking (-0.02em to -0.03em). Body text never does.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Rule",
+        "body": "If a surface needs to feel separate, change its tone or give it a hairline. Reaching for box-shadow means the tonal step was not doing its job.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use Burnt Terracotta (#a34a2a) for every coral word, and Claude Coral (#d97757) only as a fill.",
+      "Do hold body copy to the 68ch measure and leads to 46ch.",
+      "Do convey depth with tone — Oat on Warm Paper — and hairline rules.",
+      "Do keep the highlighter to its three sanctioned uses.",
+      "Do give every interactive element a visible focus ring (2px Burnt Terracotta, 3px offset).",
+      "Do write in sentence case, including headings and buttons."
+    ],
+    "donts": [
+      "Don't substitute the warm-paper-plus-terracotta palette. A slop detector will flag it as an AI tell; on this project it is the client's actual brand and the finding is a known false positive.",
+      "Don't add a second animation. No scroll reveals, no fades, no parallax, no counters, no hover-lifts, no page transitions, no smooth scrolling.",
+      "Don't use box-shadow anywhere.",
+      "Don't put an eyebrow, kicker, chip, or section number above a heading.",
+      "Don't set Pale Clay (#b0aea5) as text at any size.",
+      "Don't nest cards, or use same-size icon-plus-heading-plus-text cards as the page's structure.",
+      "Don't use emoji as an icon system. Icons are drawn SVG at one consistent stroke weight; the club's custom emoji set is the single sanctioned exception and only in the link hub.",
+      "Don't self-host Styrene, Tiempos, or Copernicus. They are licensed."
+    ]
+  }
+}

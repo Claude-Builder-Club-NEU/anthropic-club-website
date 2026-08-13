@@ -4,37 +4,58 @@ export default {
   theme: {
     extend: {
       colors: {
-        coral: "#E17B5A",
-        charcoal: "#2D2D2D",
-        "neutral-light": "#F5F5F5",
-        "neutral-dark": "#4A4A4A",
+        // Pinned Anthropic brand values. See PRODUCT.md — this palette is the
+        // client's real brand and must not be substituted.
+        paper: "var(--paper)",
+        ink: "var(--ink)",
+        coral: "var(--coral)",
+        "coral-text": "var(--coral-text)",
+        "gray-text": "var(--gray-text)",
+        "gray-mid": "var(--gray-mid)",
+        "gray-light": "var(--gray-light)",
+        rule: "var(--rule)",
+        blue: "var(--blue)",
+        green: "var(--green)",
+
+        // Legacy aliases, remapped onto the new palette so pages awaiting
+        // their Phase 2 rebuild render in-brand instead of breaking.
+        // Remove these once every page is rebuilt.
+        charcoal: "var(--ink)",
+        "neutral-light": "var(--gray-light)",
+        "neutral-dark": "var(--gray-text)",
       },
       fontFamily: {
-        primary: ["Space Grotesk", "system-ui", "sans-serif"],
-        mono: ["JetBrains Mono", "Monaco", "Cascadia Code", "monospace"],
+        display: ["Poppins", "Arial", "system-ui", "sans-serif"],
+        body: ["Lora", "Georgia", "Times New Roman", "serif"],
+        // Legacy alias — old markup asks for `font-primary`.
+        primary: ["Poppins", "Arial", "system-ui", "sans-serif"],
       },
       fontSize: {
-        "fluid-sm": "clamp(0.875rem, 2vw, 1rem)",
-        "fluid-base": "clamp(1rem, 2.5vw, 1.125rem)",
-        "fluid-lg": "clamp(1.125rem, 3vw, 1.25rem)",
-        "fluid-xl": "clamp(1.25rem, 3vw, 1.75rem)",
-        "fluid-2xl": "clamp(1.5rem, 4vw, 2.5rem)",
-        "fluid-3xl": "clamp(2rem, 5vw, 3.5rem)",
+        display: "var(--step-display)",
+        "step-1": "var(--step-1)",
+        "step-2": "var(--step-2)",
+        "step-3": "var(--step-3)",
+        lead: "var(--step-lead)",
+        body: "var(--step-body)",
+        small: "var(--step-small)",
+        meta: "var(--step-meta)",
       },
-      animation: {
-        float: "float 6s ease-in-out infinite",
-        glow: "glow 2s ease-in-out infinite alternate",
+      maxWidth: {
+        measure: "var(--measure)",
+        "measure-tight": "var(--measure-tight)",
       },
-      keyframes: {
-        float: {
-          "0%, 100%": { transform: "translateY(0px)" },
-          "50%": { transform: "translateY(-10px)" },
-        },
-        glow: {
-          "0%": { boxShadow: "0 0 5px #E17B5A" },
-          "100%": { boxShadow: "0 0 20px #E17B5A, 0 0 30px #E17B5A" },
-        },
+      borderRadius: {
+        DEFAULT: "var(--radius)",
+        lg: "var(--radius-lg)",
       },
+      transitionTimingFunction: {
+        sweep: "var(--sweep-ease)",
+      },
+      transitionDuration: {
+        sweep: "150ms",
+      },
+      // No keyframes and no animation extensions. The site has exactly one
+      // motion primitive (the highlighter sweep) and it lives in index.css.
     },
   },
   plugins: [],

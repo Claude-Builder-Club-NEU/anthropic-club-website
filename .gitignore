@@ -28,7 +28,10 @@ src/.env
 .opencode/
 .pi/
 .qoder/
-.impeccable/
+
+# .impeccable/ holds the DESIGN.md sidecar, which IS project design data —
+# tracked deliberately. Only the live-preview config is ignored.
+.impeccable/live/
 
 # Editor directories and files
 .vscode/*

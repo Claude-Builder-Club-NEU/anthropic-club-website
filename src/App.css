@@ -1,36 +1,13 @@
-/* Custom App Styles */
+/* App shell.
+   Note: `scroll-behavior: smooth` was removed deliberately — the motion policy
+   allows exactly one primitive sitewide (the highlighter sweep), and smooth
+   scrolling is a second one. */
+
 .app-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Focus styles for accessibility */
-*:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-neutral-light);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary);
-  opacity: 0.8;
-}
+/* Scrollbar left to the platform default. A custom coral scrollbar was a
+   decorative use of the accent and is not part of the system. */
