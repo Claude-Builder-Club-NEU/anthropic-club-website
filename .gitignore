@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Headshot derivatives are generated from board-src/ by the prebuild step.
+# The masters are committed; these are build output.
+public/board/
+
 # Environment — never commit secrets to this public repo
 .env
 .env.*

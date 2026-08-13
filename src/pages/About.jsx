@@ -15,8 +15,6 @@ import { ArrowRightIcon } from "../components/Icons";
  * grid.
  */
 const About = () => {
-  const [president, ...rest] = BOARD;
-
   return (
     <>
       <Breadcrumbs current="About" />
@@ -88,10 +86,11 @@ const About = () => {
         <div className="mx-auto w-full max-w-6xl px-6 py-16 sm:px-10 sm:py-24 lg:px-16">
           <h2 id="board-heading">Executive board</h2>
 
+          {/* Every card lazy-loads its headshot: the grid sits far below the
+              fold, so nothing here is fetched on a normal first visit. */}
           <ul className="mt-12 grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 lg:grid-cols-4">
-            <BoardCard member={president} eager />
-            {rest.map((member, i) => (
-              <BoardCard key={member.slug} member={member} eager={i < 3} />
+            {BOARD.map((member) => (
+              <BoardCard key={member.slug} member={member} />
             ))}
           </ul>
 

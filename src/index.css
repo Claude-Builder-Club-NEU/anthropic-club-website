@@ -416,22 +416,6 @@ a {
    Anthropic wordmark
    ========================================================================== */
 
-.sponsor-lockup {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  margin-top: var(--space-12);
-}
-
-.sponsor-lockup__label {
-  margin: 0;
-}
-
-.sponsor-lockup__mark {
-  width: 104px;
-  height: auto;
-}
-
 /* The wordmark set inline inside a sentence. Sized from the em so it tracks
    the fluid lead, and nudged onto the text baseline: the logo artwork has no
    descender, so aligning the box bottom would sit it too low. */
@@ -630,7 +614,9 @@ a {
   flex-direction: column;
   gap: var(--space-2);
   border-radius: 10px;
-  aspect-ratio: 4 / 5;
+  /* Square, matching the square masters, so nothing is cropped away and no
+     pixels are downloaded only to be hidden by object-fit. */
+  aspect-ratio: 1 / 1;
   color: var(--gray-text);
 }
 

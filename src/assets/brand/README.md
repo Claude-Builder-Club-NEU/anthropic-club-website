@@ -30,7 +30,9 @@ the relationship. Pull them from the press kit if a specific need arises.
 
 The official Anthropic wordmark, same press kit, file
 `Anthropic logos/1 Anthropic logo/SVG/Anthropic logo - Slate.svg`, unmodified.
-Used once, in the hero's "Sponsored by" lockup.
+Used once, set inline in the hero's opening sentence in place of the word
+"Anthropic". The image carries `alt="Anthropic"`, so the sentence still reads
+correctly to a screen reader.
 
 Its fill is `#141413`, identical to the `--ink` token, which is a second
 confirmation that this palette holds Anthropic's real brand values.

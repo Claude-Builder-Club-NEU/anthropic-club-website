@@ -99,21 +99,6 @@ const Hero = () => {
             See upcoming events
           </Link>
         </div>
-
-        {/* Sponsor lockup, set in Anthropic's own label-rule-mark pattern.
-            The wordmark is their official logo file, so the lettering is their
-            real typeface as artwork. Their live faces (Styrene, Tiempos) are
-            licensed and are deliberately not self-hosted. */}
-        <div className="sponsor-lockup">
-          <span className="meta sponsor-lockup__label">Sponsored by</span>
-          <img
-            src={anthropicWordmark}
-            alt="Anthropic"
-            className="sponsor-lockup__mark"
-            width="590"
-            height="68"
-          />
-        </div>
       </div>
     </section>
   );

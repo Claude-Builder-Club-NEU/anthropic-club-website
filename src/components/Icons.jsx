@@ -72,6 +72,19 @@ export const ExternalIcon = (props) => (
   </svg>
 );
 
+export const GitHubIcon = (props) => (
+  <svg {...base} {...props}>
+    <path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21" />
+  </svg>
+);
+
+export const TikTokIcon = (props) => (
+  <svg {...base} {...props}>
+    <path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5" />
+    <path d="M14 3c.4 2.6 2.2 4.3 5 4.5" />
+  </svg>
+);
+
 /** Reserved-photo mark for an empty board slot. */
 export const ImagePlaceholderIcon = (props) => (
   <svg {...base} {...props}>
