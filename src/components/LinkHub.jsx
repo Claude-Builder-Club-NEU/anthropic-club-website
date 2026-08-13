@@ -39,8 +39,8 @@ const LINKS = [
   },
   {
     href: SLACK_WORKSPACE,
-    label: "Join our community",
-    hint: "Slack",
+    label: "Slack",
+    hint: "Join our community",
     Icon: SlackIcon,
   },
   {

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import claudeLogo from "../assets/claude-logo-png_seeklogo-554534.png";
+import claudeSpark from "../assets/brand/claude-spark.svg";
 import {
   INTEREST_FORM,
   INSTAGRAM,
@@ -80,7 +80,7 @@ const Layout = ({ children }) => {
             className="group flex items-center gap-2.5 no-underline"
             aria-label="Claude Builders Club, home"
           >
-            <img src={claudeLogo} alt="" width="28" height="28" />
+            <img src={claudeSpark} alt="" width="26" height="26" />
             <span className="font-display text-small font-semibold tracking-tight text-ink">
               Claude Builders Club
             </span>
@@ -209,11 +209,20 @@ const Layout = ({ children }) => {
         <div className={`${CONTAINER} py-16`}>
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             <div>
-              <p className="font-display text-small font-semibold text-ink">
-                Claude Builders Club
+              {/* Chapter lockup: the official Claude Spark beside the club
+                  name. The affiliation line below the footer keeps the
+                  relationship explicit rather than implied. */}
+              <p className="flex items-center gap-2.5">
+                <img src={claudeSpark} alt="" width="22" height="22" />
+                <span className="font-display text-small font-semibold text-ink">
+                  Claude Builders Club
+                </span>
               </p>
               <p className="mt-2 text-small text-gray-text">
                 Northeastern University
+              </p>
+              <p className="meta mt-4" style={{ maxWidth: "none" }}>
+                Official chapter
               </p>
             </div>
 

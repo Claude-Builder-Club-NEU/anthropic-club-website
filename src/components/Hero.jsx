@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { INTEREST_FORM } from "../lib/links";
-import claudeLogo from "../assets/claude-logo-png_seeklogo-554534.png";
+import claudeSpark from "../assets/brand/claude-spark.svg";
 
 /**
  * Homepage hero.
@@ -16,9 +16,9 @@ import claudeLogo from "../assets/claude-logo-png_seeklogo-554534.png";
  * differ by one padding step because the hero padded the section and then
  * centred an inner max-width inside it.
  *
- * ASSET NOTE: the cropped logo uses the only Claude mark in the repo, which is
- * 320x320. At the size it renders here it is soft. Swap in an SVG or a
- * high-resolution PNG and nothing else needs to change.
+ * The mark is the official Claude Spark from Anthropic's press kit, in vector,
+ * so it stays sharp at the size it renders here. See src/assets/brand/README.md
+ * for provenance and usage rules.
  */
 const Hero = () => {
   const [marked, setMarked] = useState(false);
@@ -38,12 +38,12 @@ const Hero = () => {
           it is hidden from assistive tech. Sized and offset per breakpoint so
           it never reaches the text column. */}
       <img
-        src={claudeLogo}
+        src={claudeSpark}
         alt=""
         aria-hidden="true"
         className="hero-mark"
-        width="320"
-        height="320"
+        width="94"
+        height="94"
       />
 
       <div className="relative mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-16">
