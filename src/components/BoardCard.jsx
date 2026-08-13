@@ -15,22 +15,25 @@ const WIDTHS = [320, 480, 640];
  * real bytes: an earlier value declared 300px and made the browser fetch the
  * 640 derivative where the 320 would do.
  *
- * These are measured, not estimated. Above 1024px the container caps at
- * max-w-6xl, so the slot is a fixed width:
- *   grid 1024px, 4 columns, 20px gaps  ->  column 241px
- *   column minus the wrap's 2 x 16px padding  ->  209px slot
- * Between 640 and 1023 it is a 2-column grid at roughly 42vw, and below 640 a
- * single column filling the viewport less the 24px page padding and 16px wrap
- * padding on each side.
+ * Measured, not estimated. Above 1024px the container caps at max-w-6xl, so
+ * the card is a fixed width: grid 1024px, 4 columns, 20px gaps -> 241px. The
+ * photo is now full bleed, so that column width is the image width.
  */
 const SIZES =
-  "(min-width: 1024px) 210px, (min-width: 640px) 42vw, calc(100vw - 80px)";
+  "(min-width: 1024px) 245px, (min-width: 640px) 46vw, calc(100vw - 48px)";
 
 const srcset = (slug, ext) =>
   WIDTHS.map((w) => `/board/${slug}-${w}.${ext} ${w}w`).join(", ");
 
+/** "Jackson Lamoureux" -> ["Jackson", "Lamoureux"]. Anything beyond the first
+ *  word counts as the surname, so double-barrelled names stay together. */
+const splitName = (name) => {
+  const parts = name.trim().split(/\s+/);
+  return [parts[0], parts.slice(1).join(" ")];
+};
+
 /**
- * One board member: a light photo slot at the top of a dark card, with the
+ * One board member: a full-bleed headshot fading into a dark card, with the
  * role set above the name in the brand accent.
  *
  * The role is the anchor rather than a caption. Coral measures 5.90:1 against
@@ -45,6 +48,8 @@ const BoardCard = ({ member }) => {
   const { slug, name, role, detail, photo, linkedin, email, github, tiktok } =
     member;
 
+  const [firstName, surname] = splitName(name);
+
   const socials = [
     linkedin && { href: linkedin, label: "LinkedIn", Icon: LinkedInIcon },
     email && { href: `mailto:${email}`, label: "Email", Icon: MailIcon },
@@ -55,27 +60,24 @@ const BoardCard = ({ member }) => {
   return (
     <li className="board-card list-none">
       <div className="board-card-inner">
-        <div className="board-slot-wrap">
+        <div className="board-media">
           {photo ? (
-            <div className="board-slot board-slot--filled">
-              <picture>
-                <source type="image/avif" sizes={SIZES} srcSet={srcset(slug, "avif")} />
-                <source type="image/webp" sizes={SIZES} srcSet={srcset(slug, "webp")} />
-                <img
-                  src={`/board/${slug}-480.jpg`}
-                  srcSet={srcset(slug, "jpg")}
-                  sizes={SIZES}
-                  alt={headshotAlt(member)}
-                  width="640"
-                  height="640"
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-full object-cover"
-                />
-              </picture>
-            </div>
+            <picture>
+              <source type="image/avif" sizes={SIZES} srcSet={srcset(slug, "avif")} />
+              <source type="image/webp" sizes={SIZES} srcSet={srcset(slug, "webp")} />
+              <img
+                src={`/board/${slug}-480.jpg`}
+                srcSet={srcset(slug, "jpg")}
+                sizes={SIZES}
+                alt={headshotAlt(member)}
+                width="640"
+                height="640"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           ) : (
-            <div className="board-slot board-slot--empty" aria-hidden="true">
+            <div className="board-media__empty" aria-hidden="true">
               <ImagePlaceholderIcon width={26} height={26} />
               <span
                 className="font-display font-semibold tracking-widest text-coral-text"
@@ -85,29 +87,30 @@ const BoardCard = ({ member }) => {
               </span>
             </div>
           )}
+          <span className="board-media__fade" aria-hidden="true" />
         </div>
 
         <div className="board-body">
           <p className="board-role">{role}</p>
-          <h3 className="board-name mt-1.5">{name}</h3>
+          <h3 className="board-name mt-1.5">
+            {firstName}
+            {surname && <span className="board-name__surname">{surname}</span>}
+          </h3>
           <p className="board-detail mt-3">{detail}</p>
 
           {socials.length > 0 && (
-            <ul className="mt-4 flex list-none flex-wrap items-center gap-x-4 gap-y-2 p-0">
+            <ul className="mt-5 flex list-none items-center gap-4 p-0">
               {socials.map(({ href, label, Icon }) => (
                 <li key={label}>
                   <a
-                    className="board-link inline-flex items-center gap-1.5 text-meta no-underline sweep"
+                    className="board-social"
                     href={href}
+                    aria-label={`${name} on ${label}`}
                     {...(href.startsWith("mailto:")
-                      ? {}
+                      ? { "aria-label": `Email ${name}` }
                       : { target: "_blank", rel: "noopener noreferrer" })}
                   >
-                    <Icon width={15} height={15} />
-                    <span>{label}</span>
-                    <span className="sr-only">
-                      {label === "Email" ? ` ${name}` : ` profile for ${name}`}
-                    </span>
+                    <Icon width={17} height={17} />
                   </a>
                 </li>
               ))}

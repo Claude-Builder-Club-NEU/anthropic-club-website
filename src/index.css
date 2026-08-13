@@ -589,14 +589,38 @@ a {
   transition: border-color var(--sweep-duration) var(--sweep-ease);
 }
 
-.board-slot-wrap {
-  padding: var(--space-4) var(--space-4) var(--space-8);
+/* The photo runs full bleed to the card edges and the gradient sits ON TOP of
+   it, fading the image into the ink body. Previously the image was inset with
+   padding and the gradient lived behind it, which made the photo small and
+   left a visible seam. */
+.board-media {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--gray-light);
+}
+
+.board-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Reaches solid ink at 88%, before the body's -24px overlap begins. If the
+   gradient were still translucent there, the coral role label would sit over
+   raw photo and lose contrast: on a bright headshot background it became
+   unreadable. */
+.board-media__fade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
   background: linear-gradient(
     180deg,
-    #efe9e6 0%,
-    #e7dfda 48%,
-    #9c9089 74%,
-    var(--ink) 100%
+    rgba(20, 20, 19, 0) 38%,
+    rgba(20, 20, 19, 0.5) 62%,
+    rgba(20, 20, 19, 0.92) 79%,
+    var(--ink) 88%
   );
 }
 
@@ -605,34 +629,51 @@ a {
   border-color: var(--coral);
 }
 
+/* Icon-only social links. No visible label, so each carries an aria-label and
+   the hit area is padded out to a comfortable target rather than the 15px
+   glyph. */
+.board-social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin: -6px;
+  border-radius: var(--radius);
+  color: #d8d4cc;
+  transition: color var(--sweep-duration) var(--sweep-ease);
+}
+
+.board-social:hover,
+.board-social:focus-visible {
+  color: var(--coral);
+}
+
+/* First name on line one, surname on line two, always. */
+.board-name__surname {
+  display: block;
+}
+
 /* Photo slot. Dashed while empty so it reads as a reserved space rather than
    a broken image. Fixed ratio, so dropping a headshot in shifts nothing. */
-.board-slot {
+/* Fallback for a member with no photo yet. Same box, so adding one shifts
+   nothing. */
+.board-media__empty {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   gap: var(--space-2);
-  border-radius: 10px;
-  /* Square, matching the square masters, so nothing is cropped away and no
-     pixels are downloaded only to be hidden by object-fit. */
-  aspect-ratio: 1 / 1;
+  height: 100%;
   color: var(--gray-text);
 }
 
-.board-slot--empty {
-  border: 1.5px dashed rgba(20, 20, 19, 0.26);
-}
-
-.board-slot--filled {
-  overflow: hidden;
-}
-
-/* No `margin-top: auto` here on purpose. Bottom-aligning the body made the
-   role labels sit at different heights across a row whenever a name wrapped
-   to two lines. Flowing straight from the photo slot keeps them level. */
+/* Pulled up so the text begins inside the fade's solid-ink tail, which is
+   what closes the gap between photo and body. */
 .board-body {
-  padding: 0 var(--space-4) var(--space-8);
+  padding: 0 var(--space-4) var(--space-7);
+  margin-top: calc(-1 * var(--space-6));
+  position: relative;
 }
 
 .board-role {
