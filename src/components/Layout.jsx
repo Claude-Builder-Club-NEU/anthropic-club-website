@@ -1,358 +1,252 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { Link, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import claudeLogo from "../assets/claude-logo-png_seeklogo-554534.png";
-import { INTEREST_FORM } from "../lib/links";
+import {
+  INTEREST_FORM,
+  INSTAGRAM,
+  LINKEDIN,
+  SLACK_WORKSPACE,
+} from "../lib/links";
+import { InstagramIcon, LinkedInIcon, SlackIcon } from "./Icons";
+
+const NAV = [
+  { to: "/", label: "Home" },
+  { to: "/about", label: "About" },
+  { to: "/workshops", label: "Workshops" },
+];
 
 const Layout = ({ children }) => {
   const location = useLocation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  // Handle body scroll lock when mobile menu is open
+  // Close the menu on navigation, and lock the page behind it while open.
+  useEffect(() => setMenuOpen(false), [location.pathname]);
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-
-    // Cleanup function to reset overflow when component unmounts
+    document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = "";
     };
-  }, [isMobileMenuOpen]);
+  }, [menuOpen]);
 
-  // Close mobile menu when route changes
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
-
-  const navItems = [
-    { path: "/", label: "Home" },
-    { path: "/about", label: "About" },
-    { path: "/workshops", label: "Workshops" },
-  ];
+    const onKey = (e) => e.key === "Escape" && setMenuOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Navigation Header */}
-      <motion.header
-        className="bg-white shadow-sm border-b border-neutral-light"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2">
-              <img
-                src={claudeLogo}
-                alt="Claude logo"
-                className="w-8 h-8 rounded-lg object-contain"
-              />
-              <span className="text-xl font-bold text-charcoal">
-                Claude Builder Club
-              </span>
-            </Link>
+    <div className="flex min-h-screen flex-col bg-paper">
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
 
-            {/* Navigation */}
-            <nav className="hidden md:flex space-x-8">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                    location.pathname === item.path
-                      ? "text-coral bg-coral/10"
-                      : "text-charcoal hover:text-coral"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
-              <a
-                href={INTEREST_FORM}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-3 py-2 rounded-md text-sm font-medium bg-coral text-white hover:bg-coral/80"
+      <header className="border-b border-rule bg-paper">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 sm:px-10 lg:px-16">
+          <Link
+            to="/"
+            className="flex items-center gap-2.5 no-underline"
+            aria-label="Claude Builders Club, home"
+          >
+            <img src={claudeLogo} alt="" width="26" height="26" />
+            <span className="font-display text-small font-semibold tracking-tight text-ink">
+              Claude Builders Club
+            </span>
+          </Link>
+
+          <nav aria-label="Primary" className="hidden items-center gap-7 md:flex">
+            {NAV.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === "/"}
+                className={({ isActive }) =>
+                  `nav-link sweep no-underline${isActive ? " is-current" : ""}`
+                }
               >
-                Join Us
-              </a>
-            </nav>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="text-charcoal hover:text-coral p-2 rounded-md transition-colors duration-200"
-                aria-label="Toggle mobile menu"
-              >
-                {isMobileMenuOpen ? (
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  </svg>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </motion.header>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <>
-            {/* Overlay */}
-            <motion.div
-              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
-
-            {/* Menu */}
-            <motion.div
-              className="bg-white border-b border-neutral-light shadow-lg relative z-50"
-              initial={{ y: -20 }}
-              animate={{ y: 0 }}
-              exit={{ y: -20 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
+                {item.label}
+              </NavLink>
+            ))}
+            <a
+              className="btn btn--primary"
+              href={INTEREST_FORM}
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <div className="px-4 py-6 space-y-4">
-                {navItems.map((item, index) => (
-                  <motion.div
-                    key={item.path}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
+              Join the club
+            </a>
+          </nav>
+
+          <button
+            type="button"
+            className="md:hidden"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
+              {menuOpen ? (
+                <>
+                  <line x1="5" y1="5" x2="19" y2="19" />
+                  <line x1="19" y1="5" x2="5" y2="19" />
+                </>
+              ) : (
+                <>
+                  <line x1="3" y1="7" x2="21" y2="7" />
+                  <line x1="3" y1="12" x2="21" y2="12" />
+                  <line x1="3" y1="17" x2="21" y2="17" />
+                </>
+              )}
+            </svg>
+          </button>
+        </div>
+
+        {menuOpen && (
+          <nav
+            id="mobile-menu"
+            aria-label="Primary"
+            className="border-t border-rule px-6 py-4 md:hidden"
+          >
+            <ul className="m-0 list-none space-y-1 p-0">
+              {NAV.map((item) => (
+                <li key={item.to}>
+                  <NavLink
+                    to={item.to}
+                    end={item.to === "/"}
+                    className={({ isActive }) =>
+                      `block py-3 font-display text-base no-underline ${
+                        isActive ? "text-coral-text" : "text-ink"
+                      }`
+                    }
                   >
+                    {item.label}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+            <a
+              className="btn btn--primary mt-3 w-full"
+              href={INTEREST_FORM}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Join the club
+            </a>
+          </nav>
+        )}
+      </header>
+
+      <main id="main" className="flex-1">
+        {children}
+      </main>
+
+      <footer className="border-t border-rule bg-paper">
+        <div className="mx-auto max-w-6xl px-6 py-14 sm:px-10 lg:px-16">
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <p className="font-display text-small font-semibold text-ink">
+                Claude Builders Club
+              </p>
+              <p className="mt-2 text-small text-gray-text">
+                Northeastern University
+              </p>
+            </div>
+
+            <nav aria-label="Footer">
+              <h2 className="meta m-0">Pages</h2>
+              <ul className="mt-3 list-none space-y-2 p-0">
+                {NAV.map((item) => (
+                  <li key={item.to}>
                     <Link
-                      to={item.path}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={`block px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
-                        location.pathname === item.path
-                          ? "text-coral bg-coral/10 border-l-4 border-coral"
-                          : "text-charcoal hover:text-coral hover:bg-coral/5"
-                      }`}
+                      to={item.to}
+                      className="text-small text-ink no-underline sweep"
                     >
                       {item.label}
                     </Link>
-                  </motion.div>
+                  </li>
                 ))}
+              </ul>
+            </nav>
 
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3, delay: navItems.length * 0.1 }}
-                >
+            <div>
+              <h2 className="meta m-0">Follow</h2>
+              <ul className="mt-3 list-none space-y-2 p-0">
+                <li>
                   <a
-                    href={INTEREST_FORM}
+                    className="inline-flex items-center gap-2 text-small text-ink no-underline sweep"
+                    href={INSTAGRAM}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block px-4 py-3 rounded-lg text-base font-medium bg-coral text-white text-center"
                   >
-                    Join Us
+                    <InstagramIcon /> Instagram
                   </a>
-                </motion.div>
-
-                {/* Social Links in Mobile Menu */}
-                <motion.div
-                  className="pt-4 border-t border-neutral-light"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3, delay: 0.3 }}
-                >
-                  <div className="flex justify-center space-x-6">
-                    <a
-                      href="https://www.linkedin.com/company/northeastern-anthropic-builders-club"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-charcoal hover:text-coral transition-colors"
-                      aria-label="LinkedIn"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        className="w-6 h-6"
-                        fill="currentColor"
-                      >
-                        <path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4V24h-4V8zm7.5 0h3.8v2.2h.1c.5-1 1.8-2.2 3.8-2.2 4.1 0 4.8 2.7 4.8 6.2V24h-4v-7.1c0-1.7 0-3.9-2.4-3.9-2.4 0-2.8 1.9-2.8 3.8V24h-4V8z" />
-                      </svg>
-                    </a>
-                    <a
-                      href="https://linktr.ee/claudeNortheastern"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-charcoal hover:text-coral transition-colors"
-                      aria-label="Linktree"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M12 22V7" />
-                        <path d="M5 14l7-7 7 7" />
-                      </svg>
-                    </a>
-                    <a
-                      href="https://www.instagram.com/claudeclub.nu/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-charcoal hover:text-coral transition-colors"
-                      aria-label="Instagram"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <rect
-                          x="3"
-                          y="3"
-                          width="18"
-                          height="18"
-                          rx="5"
-                          ry="5"
-                        />
-                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                        <line x1="17.5" y1="6.5" x2="17.5" y2="17.5" />
-                      </svg>
-                    </a>
-                  </div>
-                </motion.div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* Main Content */}
-      <main className="flex-1">{children}</main>
-
-      {/* Footer */}
-      <motion.footer
-        className="bg-charcoal text-white py-8"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.3 }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <p className="text-neutral-light">
-                © 2024 Anthropic Club at Northeastern University. All rights
-                reserved.
-              </p>
-              <div className="flex items-center gap-3">
-                <a
-                  href="https://www.linkedin.com/company/northeastern-anthropic-builders-club"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="LinkedIn"
-                  className="inline-flex items-center justify-center w-10 h-10 rounded-md border border-white/60 text-white hover:bg-white hover:text-charcoal transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    className="w-5 h-5"
-                    fill="currentColor"
+                </li>
+                <li>
+                  <a
+                    className="inline-flex items-center gap-2 text-small text-ink no-underline sweep"
+                    href={LINKEDIN}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    <path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4V24h-4V8zm7.5 0h3.8v2.2h.1c.5-1 1.8-2.2 3.8-2.2 4.1 0 4.8 2.7 4.8 6.2V24h-4v-7.1c0-1.7 0-3.9-2.4-3.9-2.4 0-2.8 1.9-2.8 3.8V24h-4V8z" />
-                  </svg>
-                </a>
-                <a
-                  href="https://linktr.ee/claudeNortheastern"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Linktree"
-                  className="inline-flex items-center justify-center w-10 h-10 rounded-md border border-white/60 text-white hover:bg-white hover:text-charcoal transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    <LinkedInIcon /> LinkedIn
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="inline-flex items-center gap-2 text-small text-ink no-underline sweep"
+                    href={SLACK_WORKSPACE}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    <path d="M12 22V7" />
-                    <path d="M5 14l7-7 7 7" />
-                  </svg>
-                </a>
-                <a
-                  href="https://www.instagram.com/claudeclub.nu/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Instagram"
-                  className="inline-flex items-center justify-center w-10 h-10 rounded-md border border-white/60 text-white hover:bg-white hover:text-charcoal transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect x="3" y="3" width="18" height="18" rx="5" ry="5" />
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                    <line x1="17.5" y1="6.5" x2="17.5" y2="6.5" />
-                  </svg>
-                </a>
-              </div>
+                    <SlackIcon /> Slack
+                  </a>
+                </li>
+              </ul>
             </div>
-            <p className="text-sm text-neutral-dark">
-              Building the future of AI, one student at a time.
+
+            <div>
+              <h2 className="meta m-0">Get involved</h2>
+              <p className="mt-3 text-small text-gray-text">
+                Tell us you&apos;re interested and we&apos;ll be in touch about
+                what&apos;s coming up.
+              </p>
+              <a
+                className="btn btn--primary mt-4"
+                href={INTEREST_FORM}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Join the club
+              </a>
+            </div>
+          </div>
+
+          <div className="mt-12 border-t border-rule pt-6">
+            <p className="text-meta text-gray-text" style={{ maxWidth: "none" }}>
+              The Claude Builders Club is a recognized student organization at
+              Northeastern University and an official chapter of Anthropic&apos;s
+              Claude Builder Club program. Not an official communication of
+              Anthropic or Northeastern University.
+            </p>
+            <p
+              className="mt-2 text-meta text-gray-text"
+              style={{ maxWidth: "none" }}
+            >
+              We use Google Analytics to see which pages people visit. No
+              personal information is collected.
             </p>
           </div>
         </div>
-      </motion.footer>
+      </footer>
     </div>
   );
 };

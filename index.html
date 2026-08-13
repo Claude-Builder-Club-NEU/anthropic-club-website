@@ -2,78 +2,18 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Primary Meta Tags -->
-    <title>Claude Builder Club | Northeastern University</title>
-    <meta
-      name="title"
-      content="Claude Builder Club | Northeastern University"
-    />
-    <meta
-      name="description"
-      content="Join the Claude Builder Club at Northeastern University. Learn AI, build with Claude Pro, and connect with passionate students. Free API credits, workshops, and exclusive hackathons."
-    />
-    <meta
-      name="keywords"
-      content="Claude, AI, Anthropic, Northeastern, University, Builder Club, Machine Learning, API, Hackathon, Workshop"
-    />
-    <meta name="author" content="Claude Builder Club" />
-    <meta name="robots" content="index, follow" />
+    <!-- Per-route title, description, canonical, OG/Twitter tags and JSON-LD
+         are injected here at build time by scripts/prerender.mjs from
+         src/lib/seo.js. The values below are only what a dev-server visit sees;
+         nothing shipped to production comes from this block. -->
+    <!--app-head-->
+    <title>Claude Builders Club @ Northeastern</title>
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://claudebuilders.com/" />
-    <meta
-      property="og:title"
-      content="Claude Builder Club | Northeastern University"
-    />
-    <meta
-      property="og:description"
-      content="Join the Claude Builder Club at Northeastern University. Learn AI, build with Claude Pro, and connect with passionate students. Free API credits, workshops, and exclusive hackathons."
-    />
-    <meta
-      property="og:image"
-      content="https://claudebuilders.com/favicon.png"
-    />
-    <meta property="og:image:width" content="512" />
-    <meta property="og:image:height" content="512" />
-    <meta property="og:image:alt" content="Claude Builder Club Logo" />
-    <meta property="og:site_name" content="Claude Builder Club" />
-    <meta property="og:locale" content="en_US" />
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://claudebuilders.com/" />
-    <meta
-      property="twitter:title"
-      content="Claude Builder Club | Northeastern University"
-    />
-    <meta
-      property="twitter:description"
-      content="Join the Claude Builder Club at Northeastern University. Learn AI, build with Claude Pro, and connect with passionate students."
-    />
-    <meta
-      property="twitter:image"
-      content="https://claudebuilders.com/favicon.png"
-    />
-    <meta property="twitter:image:alt" content="Claude Builder Club Logo" />
-
-    <!-- LinkedIn Specific -->
-    <meta
-      property="og:image:secure_url"
-      content="https://claudebuilders.com/favicon.png"
-    />
-
-    <!-- Theme Color -->
     <meta name="theme-color" content="#d97757" />
-    <meta name="msapplication-TileColor" content="#d97757" />
-
-    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
 
     <!-- Fonts: self-hosted woff2, latin subset. No third-party font requests.
          Only the single display weight used above the fold is preloaded. -->
@@ -86,7 +26,7 @@
     />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><!--app-html--></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

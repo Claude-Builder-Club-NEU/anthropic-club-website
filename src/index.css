@@ -187,7 +187,7 @@ a {
 :focus-visible {
   outline: 2px solid var(--coral-text);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: var(--radius);
 }
 
 ::selection {
@@ -216,8 +216,14 @@ a {
 
 .sweep:hover,
 .sweep:focus-visible,
-.sweep[data-marked="true"] {
+.sweep[data-marked="true"],
+.sweep.is-current {
   background-size: 100% var(--sweep-height);
+}
+
+/* The current page stays marked rather than changing colour. */
+.nav-link.is-current {
+  font-weight: 600;
 }
 
 /* The hero phrase marks itself once, on load. */
@@ -319,6 +325,45 @@ a {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--gray-text);
+}
+
+/* Mobile sticky CTA. The matching body padding is what stops it covering the
+   last line of content or the footer links. */
+.sticky-cta {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  background: var(--paper);
+  border-top: 1px solid var(--rule);
+}
+
+body.has-sticky-cta {
+  padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+  body.has-sticky-cta {
+    padding-bottom: 0;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .skip-link {

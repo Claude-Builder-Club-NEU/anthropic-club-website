@@ -1,177 +1,122 @@
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
-import Card from "../components/Card";
-import { EXECUTIVES } from "../lib/executives";
+import { Link } from "react-router-dom";
+import { BOARD } from "../lib/board";
+import BoardCard from "../components/BoardCard";
+import Breadcrumbs from "../components/Breadcrumbs";
+import DraftNote from "../components/DraftNote";
+import { INTEREST_FORM } from "../lib/links";
 
-const Badge = ({ text, type = "builder" }) => {
-  const badgeStyles = {
-    builder: "bg-gradient-to-r from-coral to-orange-400 text-white",
-    campus: "bg-gradient-to-r from-blue-500 to-purple-600 text-white",
-    ai: "bg-gradient-to-r from-coral to-orange-400 text-white",
-  };
+/**
+ * About. Mode: Read — a prospective member who wants depth before committing.
+ *
+ * Copy here is deliberately different from the homepage blurbs; the homepage
+ * says what the club is in two paragraphs, this page says how it actually
+ * works. Every DraftNote marks copy awaiting Jackson's real detail.
+ */
+const About = () => (
+  <>
+    <Breadcrumbs current="About" />
 
-  return (
-    <motion.div
-      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${badgeStyles[type]} shadow-md`}
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 400, damping: 10 }}
-      whileHover={{ scale: 1.05 }}
+    <section
+      aria-labelledby="about-heading"
+      className="mx-auto max-w-6xl px-6 pb-16 pt-8 sm:px-10 sm:pb-20 lg:px-16"
     >
-      {text}
-    </motion.div>
-  );
-};
+      <h1 id="about-heading" style={{ maxWidth: "18ch" }}>
+        A club for building, not watching.
+      </h1>
+      <p className="lead mt-6" style={{ maxWidth: "var(--measure-tight)" }}>
+        We are Northeastern&apos;s chapter of Anthropic&apos;s Claude Builder
+        Club program.
+      </p>
 
-const SocialIcon = ({ type, url }) => {
-  const icons = {
-    linkedin: (
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.047-1.852-3.047-1.853 0-2.136 1.445-2.136 2.939v5.677H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-      </svg>
-    ),
-    github: (
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.725-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-      </svg>
-    ),
-    portfolio: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 9c-5 0-9-4-9-9s4-9 9-9" />
-      </svg>
-    ),
-  };
-
-  return (
-    <motion.a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-neutral-dark hover:text-coral transition-colors duration-200"
-      whileHover={{ scale: 1.2, rotate: 5 }}
-      transition={{ type: "spring", stiffness: 400, damping: 10 }}
-    >
-      {icons[type]}
-    </motion.a>
-  );
-};
-
-const About = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, threshold: 0.1 });
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
-  };
-
-  return (
-    <div className="min-h-screen bg-neutral-light py-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Header */}
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <h1 className="text-4xl md:text-5xl font-bold text-charcoal mb-6">
-            Meet Our Executive Board
-          </h1>
-          <p className="text-xl text-neutral-dark max-w-3xl mx-auto">
-            The passionate leaders driving innovation and building the future of
-            AI at Northeastern University
+      <div className="mt-12 grid gap-12 lg:grid-cols-2 lg:gap-16">
+        <div>
+          <h2>How we got here</h2>
+          <DraftNote>
+            Founding term, who started it, and how membership has grown. I have
+            no record of any of this and will not invent it.
+          </DraftNote>
+          <p className="mt-5 text-gray-text">
+            The club started because a group of students wanted a reason to
+            build with these tools every week rather than reading about them. It
+            has grown from that into workshops, build nights, and hackathons
+            open to every college at Northeastern.
           </p>
-        </motion.div>
 
-        <motion.div
-          ref={ref}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
-          {EXECUTIVES.map((executive, index) => (
-            <motion.div
-              key={`exec-${index}-${executive.name}`}
-              variants={itemVariants}
-              whileHover={{
-                y: -8,
-                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-              }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-            >
-              <Card className="text-center h-full">
-                <div className="w-24 h-24 mx-auto mb-6">
-                  <img
-                    src={executive.image}
-                    alt={executive.name}
-                    className="w-full h-full rounded-full object-cover border-4 border-coral"
-                  />
-                </div>
+          <h2 className="mt-12">What we actually build</h2>
+          <p className="mt-5 text-gray-text">
+            Real, small, finished things. Members have built tools that automate
+            the boring part of a co-op job, agents that do research, and
+            weekend projects that started as a complaint about something on
+            campus. The bar is that it works and you can show it to someone.
+          </p>
+          <DraftNote>
+            Swap these examples for real member projects once you have a few you
+            are happy to name.
+          </DraftNote>
+        </div>
 
-                <h3 className="text-xl font-semibold text-charcoal mb-2">
-                  {executive.name}
-                </h3>
-                <p className="text-coral font-medium mb-3">{executive.title}</p>
+        <div>
+          <h2>What a semester looks like</h2>
+          <DraftNote>Confirm the real cadence before this goes live.</DraftNote>
+          <p className="mt-5 text-gray-text">
+            We open with a session for people who have never built anything, so
+            there is a clear entry point rather than a wall. From there the
+            semester alternates between workshops that teach a specific skill and
+            build nights where people work on their own projects with company.
+            It closes with a hackathon.
+          </p>
 
-                {executive.badge && (
-                  <div className="mb-4">
-                    <Badge text={executive.badge.text} type={executive.badge.type} />
-                  </div>
-                )}
-
-                <p className="text-neutral-dark mb-6 leading-relaxed">
-                  {executive.bio}
-                </p>
-
-                <div className="flex justify-center space-x-4">
-                  {Object.entries(executive.socials).map(([type, url]) => (
-                    <SocialIcon key={`${executive.name}-${type}`} type={type} url={url} />
-                  ))}
-                </div>
-              </Card>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        <motion.div
-          className="mt-20 text-center"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, threshold: 0.1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <Card className="max-w-4xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold text-charcoal mb-6">
-              Our Mission
-            </h2>
-            <p className="text-lg text-neutral-dark leading-relaxed">
-              We believe that everyone can build with AI. Our mission is to
-              democratize access to AI technology, foster a community of
-              passionate builders, and create opportunities for students to
-              learn, innovate, and grow together. Through workshops, hackathons, 
-              and industry partnerships, we're building the future of AI education 
-              at Northeastern University.
-            </p>
-          </Card>
-        </motion.div>
+          <h2 className="mt-12">How we work with Anthropic</h2>
+          <p className="mt-5 text-gray-text">
+            As an official chapter we get program materials, workshop content,
+            and a direct line to the campus team. What we run and what we build
+            is decided here, by members. We are affiliated with Anthropic; we do
+            not speak for them.
+          </p>
+          <DraftNote>
+            Confirm this describes the program accurately, and check it against
+            any brand or usage rules the program supplied.
+          </DraftNote>
+        </div>
       </div>
-    </div>
-  );
-};
+    </section>
+
+    <section
+      aria-labelledby="board-heading"
+      className="border-t border-rule bg-gray-light"
+    >
+      <div className="mx-auto max-w-6xl px-6 py-16 sm:px-10 sm:py-20 lg:px-16">
+        <h2 id="board-heading">Executive board</h2>
+        <p className="mt-4 text-gray-text">
+          Seven people run the club. Any of us is a reasonable person to ask
+          about getting involved.
+        </p>
+
+        <ul className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 p-0 sm:gap-x-8 lg:grid-cols-4">
+          {BOARD.map((member, i) => (
+            <BoardCard key={member.slug} member={member} eager={i < 4} />
+          ))}
+        </ul>
+
+        <p className="mt-12 text-gray-text">
+          Want to be on this page next year? Come to a{" "}
+          <Link to="/workshops" className="sweep">
+            workshop
+          </Link>{" "}
+          first —{" "}
+          <a
+            href={INTEREST_FORM}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="sweep"
+          >
+            tell us you&apos;re interested
+          </a>{" "}
+          and we&apos;ll let you know when the next one is.
+        </p>
+      </div>
+    </section>
+  </>
+);
 
 export default About;
