@@ -17,34 +17,40 @@ import { SITE_ORIGIN, INSTAGRAM, LINKEDIN, INTEREST_FORM } from "./links";
 const SITE_NAME = "Claude Builders Club @ Northeastern";
 const OG_IMAGE = `${SITE_ORIGIN}/og.png`;
 
+/**
+ * Titles use a pipe separator rather than the em dash the first brief pinned.
+ * Revision 2 §0.1 bans dashes as punctuation and §7 extends that to "anywhere
+ * in rendered copy", which includes the browser tab and search results. Say
+ * the word and these go back to em dashes.
+ */
 export const ROUTES = [
   {
     path: "/",
     file: "index.html",
-    title: `${SITE_NAME} — Build what's next with Claude`,
+    title: `${SITE_NAME} | Build what's next with Claude`,
     description:
-      "Northeastern's official Anthropic Claude Builder Club. Hands-on workshops, build nights and hackathons for students who want to build with AI.",
+      "Northeastern's official Anthropic Claude Builder Club. Hands-on workshops, community showcase nights and the biggest hackathons on campus, open to every student.",
   },
   {
     path: "/about",
     file: "about/index.html",
-    title: `About & Exec Board — ${SITE_NAME}`,
+    title: `About & Exec Board | ${SITE_NAME}`,
     description:
-      "Meet the seven students running Northeastern's Claude Builders Club, and read how a semester of workshops, build nights and hackathons actually works.",
+      "Meet the executive board of Northeastern's Claude Builders Club, and read how a semester of hackathons, workshops and showcase nights actually works.",
     breadcrumb: "About",
   },
   {
     path: "/workshops",
     file: "workshops/index.html",
-    title: `Workshops & Events — ${SITE_NAME}`,
+    title: `Workshops & Events | ${SITE_NAME}`,
     description:
-      "Upcoming workshops, build nights and hackathons at Northeastern's Claude Builders Club, plus how to run a session or pitch a project of your own.",
+      "Upcoming workshops, showcase nights and hackathons at Northeastern's Claude Builders Club, plus how to run a session of your own with the exec board.",
     breadcrumb: "Workshops",
   },
   {
     path: "/404",
     file: "404.html",
-    title: `Page not found — ${SITE_NAME}`,
+    title: `Page not found | ${SITE_NAME}`,
     description:
       "That page isn't here. Find the Claude Builders Club at Northeastern's home page, exec board, workshop calendar and interest form instead.",
     noindex: true,

@@ -16,10 +16,18 @@ import "./App.css";
  * motion primitive, and the system allows exactly one.
  */
 function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   useEffect(() => {
+    // A hash target wins: /about#board should land on the board, not the top.
+    if (hash) {
+      const el = document.querySelector(hash);
+      if (el) {
+        el.scrollIntoView({ behavior: "instant", block: "start" });
+        return;
+      }
+    }
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-  }, [pathname]);
+  }, [pathname, hash]);
   return null;
 }
 

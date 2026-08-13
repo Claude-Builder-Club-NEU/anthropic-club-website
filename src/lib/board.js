@@ -1,20 +1,22 @@
 /**
  * Executive board. Order is intentional and matches the build brief.
- * Copy is verbatim from the brief — do not "tidy" the punctuation.
  *
  * Two Vice Presidents is intentional, not a typo.
  *
- * BRIEF CONFLICT (flagged, not silently resolved): §Notes states "Alex Green's
- * role is missing — render a visible TODO in dev and omit the role line in
- * production until I supply it." The roster array in the same section gives
- * Alex Green the role "Head of Events". The array is marked "Copy verbatim",
- * so the role is used as given. The missing-role mechanism the note describes
- * is implemented anyway (set `role: null` on any member and it behaves as
- * specified), so flipping this back is a one-word change.
+ * SPEC CONFLICT (flagged, not silently resolved): revision 2 §3.3 says roster
+ * copy "stays exactly as it is", while §0.1 says the punctuation cleanup runs
+ * across "every board bio". §0.1 names board bios explicitly and §0 is ordered
+ * first, so the em dashes in `detail` became commas. Everything else about the
+ * roster, including order and wording, is untouched.
  *
  * `photo: null` drives the initials placeholder. Adding a headshot means
  * dropping the file at public/board/<slug>.jpg and setting `photo: true`.
  * Source spec: 1600x1600, square, subject centred, neutral background.
+ *
+ * BLOCKED (revision 2, §6.4 and §6.5): `linkedin` and `email` are null for
+ * every member. BoardCard omits the link rather than rendering a dead one, so
+ * filling these in here is the only change needed. Do not guess LinkedIn slugs
+ * from names.
  */
 
 export const BOARD = [
@@ -22,22 +24,28 @@ export const BOARD = [
     slug: "jackson-lamoureux",
     name: "Jackson Lamoureux",
     role: "President",
-    detail: "Founder @ Logicull | Business Admin — Entrepreneurial Startups",
+    detail: "Founder @ Logicull | Business Admin, Entrepreneurial Startups",
     photo: null,
+    linkedin: null,
+    email: null,
   },
   {
     slug: "lucas-salzgeber",
     name: "Lucas Salzgeber",
     role: "Vice President",
-    detail: "Founder @ LSstacks | Business Admin — Finance + AI",
+    detail: "Founder @ LSstacks | Business Admin, Finance + AI",
     photo: null,
+    linkedin: null,
+    email: null,
   },
   {
     slug: "oliver-ward",
     name: "Oliver Ward",
     role: "Vice President",
-    detail: "Business Admin — Entrepreneurial Startups",
+    detail: "Business Admin, Entrepreneurial Startups",
     photo: null,
+    linkedin: null,
+    email: null,
   },
   {
     slug: "smyan-sengupta",
@@ -45,13 +53,17 @@ export const BOARD = [
     role: "Head of Partnerships",
     detail: "Prev. MSAT Modeling @ Pfizer | CS + AI",
     photo: null,
+    linkedin: null,
+    email: null,
   },
   {
     slug: "anthony-jones",
     name: "Anthony Jones",
     role: "Head of Finance",
-    detail: "D1 Track & Field | Business Admin — Finance + Pre-Law",
+    detail: "D1 Track & Field | Business Admin, Finance + Pre-Law",
     photo: null,
+    linkedin: null,
+    email: null,
   },
   {
     slug: "kristine-min",
@@ -59,13 +71,17 @@ export const BOARD = [
     role: "Head of Social Media",
     detail: "UGC Creator, 20k on TikTok | International Business + Finance",
     photo: null,
+    linkedin: null,
+    email: null,
   },
   {
     slug: "alex-green",
     name: "Alex Green",
     role: "Head of Events",
-    detail: "Prev. Analyst @ Gordon Brothers | Business Admin - Finance",
+    detail: "Prev. Analyst @ Gordon Brothers | Business Admin, Finance",
     photo: null,
+    linkedin: null,
+    email: null,
   },
 ];
 
@@ -79,8 +95,8 @@ export const initials = (name) =>
     .join("");
 
 /**
- * Alt text pattern is fixed by the brief. Placeholders are decorative — the
- * name is already in the adjacent text — so they carry alt="".
+ * Alt text pattern is fixed by the brief. Placeholders are decorative, since
+ * the name sits in the adjacent text, so they carry alt="".
  */
 export const headshotAlt = (member) =>
   `Headshot of ${member.name}, ${member.role} of the Claude Builders Club at Northeastern University.`;

@@ -13,7 +13,8 @@ import {
 } from "./Icons";
 
 /**
- * First-screen link row, not a footer afterthought.
+ * First-screen link row, not a footer afterthought. Shares the page container
+ * with the hero so its left edge lines up with the headline.
  *
  * Two asset gaps are handled honestly rather than faked:
  *
@@ -21,13 +22,12 @@ import {
  *    authored SVG marks from Icons.jsx. Swapping them is a change to this file
  *    alone.
  * 2. There is no email-list endpoint, so the "Get updates" slot points at the
- *    interest form — which does collect contact details — instead of shipping a
+ *    interest form, which does collect contact details, instead of shipping a
  *    dead subscribe box.
  *
- * The Slack entry links the workspace, which only resolves for existing
- * members. It is labelled accordingly so a prospective member is not sent into
- * a sign-in wall expecting to join. Replace with a shared-invite link when one
- * exists (see src/lib/links.js).
+ * Slack is framed as the community rather than as a sign-in, per revision 2
+ * §5. Note the underlying URL is still a workspace link, so it only resolves
+ * for existing members; a shared-invite link would make the invitation real.
  */
 
 const LINKS = [
@@ -36,6 +36,12 @@ const LINKS = [
     label: "Get updates",
     hint: "Interest form",
     Icon: MailIcon,
+  },
+  {
+    href: SLACK_WORKSPACE,
+    label: "Slack",
+    hint: "Where our community lives",
+    Icon: SlackIcon,
   },
   {
     href: INSTAGRAM,
@@ -49,12 +55,6 @@ const LINKS = [
     hint: "Follow the club",
     Icon: LinkedInIcon,
   },
-  {
-    href: SLACK_WORKSPACE,
-    label: "Slack",
-    hint: "Members sign in",
-    Icon: SlackIcon,
-  },
 ];
 
 const LinkHub = () => (
@@ -62,7 +62,7 @@ const LinkHub = () => (
     aria-labelledby="linkhub-heading"
     className="border-y border-rule bg-gray-light"
   >
-    <div className="mx-auto max-w-6xl px-6 py-10 sm:px-10 lg:px-16">
+    <div className="mx-auto w-full max-w-6xl px-6 py-10 sm:px-10 lg:px-16">
       <h2 id="linkhub-heading" className="meta m-0">
         Find us
       </h2>
@@ -73,7 +73,7 @@ const LinkHub = () => (
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 rounded border border-rule bg-paper px-4 py-3.5 no-underline"
+              className="link-card flex items-center gap-3 rounded border border-rule bg-paper px-4 py-3.5 no-underline"
             >
               <span className="text-coral-text">
                 <Icon />

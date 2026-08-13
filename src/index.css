@@ -276,6 +276,42 @@ a {
   background-size: 100% 100%;
 }
 
+/* Filled coral. Ink on coral measures 5.90:1, so the label is readable even
+   though coral can never be text ON paper. The sweep runs in reverse here:
+   the button is already filled, and hover deepens it to --coral-text. */
+.btn--coral {
+  color: var(--ink);
+  border: 1px solid var(--coral);
+  background-color: var(--coral);
+  background-image: linear-gradient(var(--coral-text), var(--coral-text));
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: 0% 100%;
+  transition: background-size var(--sweep-duration) var(--sweep-ease),
+    color var(--sweep-duration) var(--sweep-ease);
+}
+
+.btn--coral:hover,
+.btn--coral:focus-visible {
+  background-size: 100% 100%;
+  color: var(--paper);
+}
+
+/* Header action: same language as the hero CTA, deliberately one step down in
+   size so the hero keeps primacy. */
+.btn--sm {
+  font-size: var(--step-meta);
+  padding: var(--space-3) var(--space-4);
+}
+
+/* Announced-as-unavailable action. Not a real button: no form behind it yet. */
+.btn--soon {
+  color: var(--gray-text);
+  border: 1px dashed var(--gray-mid);
+  background: transparent;
+  cursor: not-allowed;
+}
+
 /* Nav links take the sweep as their hover/focus affordance. */
 .nav-link {
   font-family: var(--font-display);
@@ -325,6 +361,216 @@ a {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--gray-text);
+}
+
+/* ==========================================================================
+   Hero mark
+   A cropped Claude logo bleeding off the bottom and right of the hero. It is
+   sized from the viewport and clipped by the section's overflow, so the
+   visible portion shrinks on narrow screens instead of crowding the headline.
+   ========================================================================== */
+
+.hero-mark {
+  position: absolute;
+  right: -6vw;
+  bottom: -14vw;
+  width: 52vw;
+  max-width: 460px;
+  height: auto;
+  opacity: 0.9;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Below the lg breakpoint the headline occupies most of the width, so the mark
+   retreats further off-canvas and only a corner of it stays visible. */
+@media (max-width: 1023px) {
+  .hero-mark {
+    right: -22vw;
+    bottom: -22vw;
+    width: 66vw;
+    max-width: 380px;
+    opacity: 0.75;
+  }
+}
+
+/* On phones the CTAs run full width, so the mark cannot share their band. The
+   hero gains bottom room and the mark occupies that corner instead of sitting
+   behind the buttons. */
+@media (max-width: 639px) {
+  .hero {
+    padding-bottom: 190px;
+  }
+
+  .hero-mark {
+    right: -26vw;
+    bottom: -34vw;
+    width: 74vw;
+    opacity: 0.6;
+  }
+}
+
+/* ==========================================================================
+   Header
+   Transparent over the hero, then a paper ground and a hairline once scrolled.
+   Restrained on purpose: no backdrop blur, which is on the anti-reference list.
+   ========================================================================== */
+
+/* The header sits on its own ground so it reads as a distinct band rather than
+   dissolving into the paper hero. Scrolling adds the hairline, which is the
+   whole of the "subtle treatment": no blur, no shadow, no colour shift. */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--gray-light);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--sweep-duration) var(--sweep-ease);
+}
+
+.site-header[data-scrolled="true"],
+.site-header[data-open="true"] {
+  border-bottom-color: var(--rule);
+}
+
+/* Full-height mobile menu, not a cramped dropdown. */
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  top: var(--header-h, 65px);
+  z-index: 45;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  padding: var(--space-8) var(--space-6)
+    calc(var(--space-8) + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+}
+
+/* ==========================================================================
+   Link cards
+   Flat at rest; hover deepens the border and marks the label. No lift.
+   ========================================================================== */
+
+.link-card {
+  transition: border-color var(--sweep-duration) var(--sweep-ease),
+    background-color var(--sweep-duration) var(--sweep-ease);
+}
+
+.link-card:hover,
+.link-card:focus-visible {
+  border-color: var(--coral);
+  background-color: var(--gray-light);
+}
+
+/* ==========================================================================
+   FAQ
+   ========================================================================== */
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-marker {
+  color: var(--coral-text);
+}
+
+.faq-item[open] .faq-plus {
+  display: none;
+}
+
+.faq-item summary:hover {
+  color: var(--coral-text);
+}
+
+/* ==========================================================================
+   Form fields
+   Flat, hairline-bordered, coral on focus. No inner shadows.
+   ========================================================================== */
+
+.field-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--step-meta);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--gray-text);
+  margin-bottom: var(--space-2);
+}
+
+.field-input {
+  display: block;
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: var(--step-body);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  transition: border-color var(--sweep-duration) var(--sweep-ease);
+}
+
+.field-input:hover {
+  border-color: var(--gray-mid);
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--coral);
+}
+
+.field-input[aria-invalid="true"] {
+  border-color: var(--coral-text);
+}
+
+.field-hint,
+.field-error {
+  font-size: var(--step-meta);
+  margin-top: var(--space-2);
+  max-width: none;
+}
+
+.field-hint {
+  color: var(--gray-text);
+}
+
+.field-error {
+  color: var(--coral-text);
+  font-weight: 500;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Board cards
+   Hover lifts nothing: it deepens the tile and marks the name, consistent
+   with the flat rule and the single motion primitive.
+   ========================================================================== */
+
+.board-card .board-photo {
+  transition: border-color var(--sweep-duration) var(--sweep-ease),
+    background-color var(--sweep-duration) var(--sweep-ease);
+}
+
+.board-card:hover .board-photo,
+.board-card:focus-within .board-photo {
+  border-color: var(--coral);
+  background-color: var(--paper);
+}
+
+.board-card:hover .board-name,
+.board-card:focus-within .board-name {
+  background-size: 100% 0.34em;
+}
+
+/* The President's card leads the grid at a larger scale. */
+.board-card--lead .board-role {
+  font-size: var(--step-small);
 }
 
 /* Mobile sticky CTA. The matching body padding is what stops it covering the

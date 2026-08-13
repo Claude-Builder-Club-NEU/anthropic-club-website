@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import claudeLogo from "../assets/claude-logo-png_seeklogo-554534.png";
 import {
@@ -15,12 +15,18 @@ const NAV = [
   { to: "/workshops", label: "Workshops" },
 ];
 
+/** Shared container inset. The header uses the same one as every page so the
+ *  wordmark lines up with page headings rather than floating on its own grid. */
+const CONTAINER = "mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-16";
+
 const Layout = ({ children }) => {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const headerRef = useRef(null);
 
-  // Close the menu on navigation, and lock the page behind it while open.
   useEffect(() => setMenuOpen(false), [location.pathname]);
+
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => {
@@ -34,26 +40,56 @@ const Layout = ({ children }) => {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // Publish the real header height so the full-height mobile menu starts
+  // exactly below it instead of guessing an offset.
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return undefined;
+    const setH = () =>
+      document.documentElement.style.setProperty(
+        "--header-h",
+        `${el.offsetHeight}px`
+      );
+    setH();
+    window.addEventListener("resize", setH);
+    return () => window.removeEventListener("resize", setH);
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <div className="flex min-h-screen flex-col bg-paper">
       <a className="skip-link" href="#main">
         Skip to content
       </a>
 
-      <header className="border-b border-rule bg-paper">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 sm:px-10 lg:px-16">
+      <header
+        ref={headerRef}
+        className="site-header bg-gray-light"
+        data-scrolled={String(scrolled)}
+        data-open={String(menuOpen)}
+      >
+        <div className={`${CONTAINER} flex items-center justify-between py-4`}>
           <Link
             to="/"
-            className="flex items-center gap-2.5 no-underline"
+            className="group flex items-center gap-2.5 no-underline"
             aria-label="Claude Builders Club, home"
           >
-            <img src={claudeLogo} alt="" width="26" height="26" />
+            <img src={claudeLogo} alt="" width="28" height="28" />
             <span className="font-display text-small font-semibold tracking-tight text-ink">
               Claude Builders Club
             </span>
           </Link>
 
-          <nav aria-label="Primary" className="hidden items-center gap-7 md:flex">
+          <nav
+            aria-label="Primary"
+            className="hidden items-center gap-8 md:flex"
+          >
             {NAV.map((item) => (
               <NavLink
                 key={item.to}
@@ -67,7 +103,7 @@ const Layout = ({ children }) => {
               </NavLink>
             ))}
             <a
-              className="btn btn--primary"
+              className="btn btn--coral btn--sm"
               href={INTEREST_FORM}
               target="_blank"
               rel="noopener noreferrer"
@@ -78,7 +114,7 @@ const Layout = ({ children }) => {
 
           <button
             type="button"
-            className="md:hidden"
+            className="-mr-2 p-2 md:hidden"
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
@@ -109,48 +145,68 @@ const Layout = ({ children }) => {
             </svg>
           </button>
         </div>
-
-        {menuOpen && (
-          <nav
-            id="mobile-menu"
-            aria-label="Primary"
-            className="border-t border-rule px-6 py-4 md:hidden"
-          >
-            <ul className="m-0 list-none space-y-1 p-0">
-              {NAV.map((item) => (
-                <li key={item.to}>
-                  <NavLink
-                    to={item.to}
-                    end={item.to === "/"}
-                    className={({ isActive }) =>
-                      `block py-3 font-display text-base no-underline ${
-                        isActive ? "text-coral-text" : "text-ink"
-                      }`
-                    }
-                  >
-                    {item.label}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-            <a
-              className="btn btn--primary mt-3 w-full"
-              href={INTEREST_FORM}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Join the club
-            </a>
-          </nav>
-        )}
       </header>
+
+      {menuOpen && (
+        <nav id="mobile-menu" aria-label="Primary" className="mobile-menu md:hidden">
+          <ul className="m-0 list-none space-y-1 p-0">
+            {NAV.map((item) => (
+              <li key={item.to} className="border-b border-rule">
+                <NavLink
+                  to={item.to}
+                  end={item.to === "/"}
+                  className={({ isActive }) =>
+                    `block py-5 font-display text-step-3 font-semibold no-underline ${
+                      isActive ? "text-coral-text" : "text-ink"
+                    }`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+
+          <a
+            className="btn btn--coral mt-8 w-full"
+            href={INTEREST_FORM}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Join the club
+          </a>
+
+          <ul className="mt-auto flex list-none gap-6 p-0 pt-10">
+            <li>
+              <a
+                className="inline-flex items-center gap-2 text-small text-ink no-underline sweep"
+                href={INSTAGRAM}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <InstagramIcon /> Instagram
+              </a>
+            </li>
+            <li>
+              <a
+                className="inline-flex items-center gap-2 text-small text-ink no-underline sweep"
+                href={LINKEDIN}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <LinkedInIcon /> LinkedIn
+              </a>
+            </li>
+          </ul>
+        </nav>
+      )}
 
       <main id="main" className="flex-1">
         {children}
       </main>
 
       <footer className="border-t border-rule bg-paper">
-        <div className="mx-auto max-w-6xl px-6 py-14 sm:px-10 lg:px-16">
+        <div className={`${CONTAINER} py-16`}>
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <p className="font-display text-small font-semibold text-ink">
@@ -163,7 +219,7 @@ const Layout = ({ children }) => {
 
             <nav aria-label="Footer">
               <h2 className="meta m-0">Pages</h2>
-              <ul className="mt-3 list-none space-y-2 p-0">
+              <ul className="mt-4 list-none space-y-2.5 p-0">
                 {NAV.map((item) => (
                   <li key={item.to}>
                     <Link
@@ -179,7 +235,7 @@ const Layout = ({ children }) => {
 
             <div>
               <h2 className="meta m-0">Follow</h2>
-              <ul className="mt-3 list-none space-y-2 p-0">
+              <ul className="mt-4 list-none space-y-2.5 p-0">
                 <li>
                   <a
                     className="inline-flex items-center gap-2 text-small text-ink no-underline sweep"
@@ -215,12 +271,12 @@ const Layout = ({ children }) => {
 
             <div>
               <h2 className="meta m-0">Get involved</h2>
-              <p className="mt-3 text-small text-gray-text">
+              <p className="mt-4 text-small text-gray-text">
                 Tell us you&apos;re interested and we&apos;ll be in touch about
                 what&apos;s coming up.
               </p>
               <a
-                className="btn btn--primary mt-4"
+                className="btn btn--coral mt-5"
                 href={INTEREST_FORM}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -230,11 +286,11 @@ const Layout = ({ children }) => {
             </div>
           </div>
 
-          <div className="mt-12 border-t border-rule pt-6">
+          <div className="mt-14 border-t border-rule pt-8">
             <p className="text-meta text-gray-text" style={{ maxWidth: "none" }}>
               The Claude Builders Club is a recognized student organization at
               Northeastern University and an official chapter of Anthropic&apos;s
-              Claude Builder Club program. Not an official communication of
+              Claude Builder Club program. It is not an official communication of
               Anthropic or Northeastern University.
             </p>
             <p

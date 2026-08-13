@@ -12,20 +12,47 @@ export const LINKTREE = "https://linktr.ee/claudeNortheastern";
 /**
  * Slack workspace, supplied 2026-08-13.
  *
- * CAVEAT — this is a workspace URL, not a join link. It resolves (HTTP 200) but
- * serves Slack's sign-in screen, so it only works for people who are ALREADY
- * members. The site's primary audience is prospective members, for whom this is
- * a dead end.
- *
- * The old shared-invite recovered from /join is confirmed dead: it 403s, and it
- * pointed at a different workspace entirely (claudebuilder-vzb9586), not this
- * one. It has been dropped rather than shipped broken.
- *
- * TODO: Jackson — generate a shared-invite link for this workspace
- * (Slack → People → Invite people → "Share invite link") and replace this.
- * Until then the link hub should send prospective members to INTEREST_FORM.
+ * Note this is a workspace URL, not a shared-invite link, so it only resolves
+ * for people who are already members. Replace it with a shared invite
+ * (Slack, People, Invite people, "Share invite link") so that a prospective
+ * member can actually get in.
  */
 export const SLACK_WORKSPACE = "https://claudebuildersclub.slack.com";
 
 /** Canonical origin. Note: claudebuilders.com is a parked domain, not this site. */
 export const SITE_ORIGIN = "https://claudebuildersneu.com";
+
+/* ------------------------------------------------------------------------ *
+ * BLOCKED VALUES
+ *
+ * Each constant below is empty on purpose. Every consumer checks for the empty
+ * string and degrades to a sensible state, so supplying the real value is a
+ * one-line change here and nothing else. Do not fill these with placeholders
+ * that look real.
+ * ------------------------------------------------------------------------ */
+
+/**
+ * BLOCKED (revision 2, §6.1): public Google Calendar ID.
+ *
+ * Used by the FAQ "when do you meet" answer and the workshops calendar. The
+ * build-time ICS fetch reads the same value from the GCAL_ID build env var
+ * (see scripts/fetch-events.mjs); this constant is only for linking a human to
+ * the calendar. Example shape: "abc123@group.calendar.google.com".
+ */
+export const CALENDAR_ID = "";
+
+/** Human-facing calendar URL, derived. Empty while CALENDAR_ID is empty. */
+export const CALENDAR_URL = CALENDAR_ID
+  ? `https://calendar.google.com/calendar/embed?src=${encodeURIComponent(
+      CALENDAR_ID
+    )}&ctz=America%2FNew_York`
+  : "";
+
+/** Subscribe-in-your-own-calendar link, derived. */
+export const CALENDAR_ICS = CALENDAR_ID
+  ? `https://calendar.google.com/calendar/ical/${encodeURIComponent(
+      CALENDAR_ID
+    )}/public/basic.ics`
+  : "";
+
+export const hasCalendar = Boolean(CALENDAR_ID);
