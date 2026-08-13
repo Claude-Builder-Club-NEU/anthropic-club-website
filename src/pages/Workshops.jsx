@@ -44,7 +44,7 @@ const Workshops = () => {
               <EventsList events={events} />
             </>
           ) : (
-            <EventsEmpty showCalendarLink={hasCalendar} />
+            <EventsEmpty />
           )}
         </div>
       </section>

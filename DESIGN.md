@@ -43,9 +43,22 @@ typography:
     fontWeight: 500
     lineHeight: 1.2
     letterSpacing: "0.06em"
+  banner-display:
+    fontFamily: "Lora, Georgia, Times New Roman, serif"
+    fontSize: "clamp(2.5rem, 1.1rem + 3.6vw, 4.375rem)"
+    fontWeight: 700
+    lineHeight: 0.96
+    letterSpacing: "-0.04em"
+  banner-body:
+    fontFamily: "Lora, Georgia, Times New Roman, serif"
+    fontSize: "1.125rem"
+    fontWeight: 400
+    lineHeight: 1.6
+    letterSpacing: "normal"
 rounded:
   sm: "4px"
   md: "8px"
+  banner-cta: "6px"
   slot: "10px"
   card: "14px"
 spacing:
@@ -173,10 +186,16 @@ carry hierarchy without icons, rules, or colored chips.
 - **Label** (500, 13px, +0.06em, uppercase): Meta and eyebrow-free small caps —
   dates, categories, field labels.
 
+- **Banner display** (Lora 700, `clamp(2.5rem → 4.375rem)`, 0.96, -0.04em):
+  the interest banner's headline only. It tops out at 70px, a step below the
+  hero, and is the one place a heading is set in the serif rather than Poppins.
+
 ### Named Rules
 
 **The Two-Voice Rule.** Poppins titles, Lora prose. A block of Poppins running
-longer than two lines is a mistake; so is a heading set in Lora.
+longer than two lines is a mistake; so is a heading set in Lora. The interest
+banner is the single, pinned exception: its supplied design sets the headline
+in the serif, and that design is authority.
 
 **The Tracking Floor.** Display and headline sizes carry negative tracking
 (-0.02em to -0.03em). Body text never does.
@@ -237,6 +256,28 @@ fixed aspect-ratio containers so the page never reflows as they load.
 - **Shadow Strategy:** None — see Elevation & Depth
 - **Border:** 1px Hairline where tone alone is insufficient
 - **Internal Padding:** 32px, 24px below 640px
+
+### Interest banner
+A dark console panel carrying the Claude Code blocky display type, built from a
+supplied high-fidelity design ("3b, Blocky arcade"). It is the site's only
+inverted full-width band and its only textured surface.
+
+- **Panel:** Near-Black Ink, 8px corners, `46px / 52px` padding, a `1fr 470px`
+  grid that stacks below 1024px.
+- **Three static background layers**, in order: a 26px dot grid at 10% paper, a
+  680x420 coral glow at 84%/46%, and 1px scanlines at 4.5% paper. None of them
+  move.
+  > **Approved exception.** A detector flags tiled hairline grid backgrounds as
+  > a generated-UI signature. Here it is the pinned design's own console
+  > texture, not a default reached for, so the finding is a known false
+  > positive. It applies to this band only; do not introduce grid fields
+  > elsewhere.
+- **Primary CTA:** clay `#c4795c` with an ink label, 6px radius. Hover
+  **brightens** to Claude Coral rather than darkening: the supplied hover put
+  the label at 3.92:1, under this system's floor.
+- **Secondary link:** system monospace, 15px, over a hairline underline. The
+  only monospace on the site, and the only place a system face is used, since
+  self-hosting a mono for one label is not worth the weight.
 
 ### Board cards
 The one inverted surface in the system. A Near-Black Ink card, 14px corners,

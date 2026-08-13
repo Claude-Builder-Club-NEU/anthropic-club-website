@@ -87,6 +87,10 @@
   /* --- Type ------------------------------------------------------------ */
   --font-display: "Poppins", Arial, system-ui, sans-serif;
   --font-body: "Lora", Georgia, "Times New Roman", serif;
+  /* System stack, not a webfont. Used only for the interest banner's secondary
+     link; self-hosting a mono face for one label is not worth the bytes. */
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
 
   /* Modular scale, 1.25 at the top end, tightened toward the body sizes so
      long-form copy stays comfortable. */
@@ -409,6 +413,223 @@ a {
     bottom: -34vw;
     width: 90vw;
     opacity: 0.95;
+  }
+}
+
+/* ==========================================================================
+   Interest-form banner — handoff "3b, Blocky arcade"
+   A dark console panel with the Claude Code display type as its graphic.
+
+   TWO DEPARTURES FROM THE HANDOFF, both deliberate:
+
+   1. Typefaces. The handoff specifies Hanken Grotesk, Source Serif 4 and
+      JetBrains Mono, and says to use the project's own faces if it already
+      licenses substitutes for Styrene and Tiempos. This one does: Poppins and
+      Lora, already self-hosted. Loading three more webfonts for one band would
+      cost more than the band is worth. The supplied reference image shows a
+      serif headline, so the headline is Lora rather than the grotesk the
+      written spec names. The mono link uses the system mono stack, which costs
+      nothing; say the word and JetBrains Mono can be self-hosted properly.
+
+   2. CTA hover. The handoff's #B45A3C hover puts the ink label at 3.92:1,
+      under the 4.5:1 floor this project holds to. Hover therefore brightens to
+      brand coral #d97757 (5.90:1) instead of darkening. Rest state is the
+      handoff's #C4795C, unchanged, at 5.47:1.
+
+   Everything else, the layout, spacing, the three background layers and the
+   remaining colours, matches the handoff exactly.
+   ========================================================================== */
+
+.ib {
+  --ib-panel: #141413;
+  --ib-headline: #f7f5ef;
+  --ib-body: #b5b3a8;
+  --ib-rule: #3d3d3a;
+  --ib-link-hover: #f0eee6;
+  --ib-cta: #c4795c;
+  --ib-cta-hover: var(--coral);
+
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1fr 470px;
+  align-items: center;
+  gap: var(--space-8) 40px;
+  padding: 46px 46px 46px 52px;
+  background: var(--ib-panel);
+  border-radius: var(--radius-lg);
+}
+
+/* The three stacked layers. Static: no motion is introduced here. */
+.ib__dots,
+.ib__glow,
+.ib__scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ib__dots {
+  background-image: radial-gradient(
+    rgba(240, 238, 230, 0.1) 1px,
+    transparent 1px
+  );
+  background-size: 26px 26px;
+}
+
+.ib__glow {
+  background: radial-gradient(
+    680px 420px at 84% 46%,
+    rgba(217, 119, 87, 0.22),
+    transparent 70%
+  );
+}
+
+.ib__scan {
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(240, 238, 230, 0.045) 0 1px,
+    transparent 1px 4px
+  );
+}
+
+.ib__copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.ib__heading {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: clamp(2.5rem, 1.1rem + 3.6vw, 4.375rem);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  color: var(--ib-headline);
+  max-width: 14ch;
+  text-wrap: pretty;
+}
+
+.ib__body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--ib-body);
+  max-width: 54ch;
+  text-wrap: pretty;
+}
+
+.ib__actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.ib__cta {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--step-body);
+  line-height: 1;
+  color: var(--ib-panel);
+  background: var(--ib-cta);
+  padding: 17px 26px;
+  border-radius: 6px;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 0.2s ease-out;
+}
+
+.ib__cta:hover {
+  background: var(--ib-cta-hover);
+}
+
+.ib__cta:active {
+  transform: scale(0.98);
+}
+
+.ib__cta:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.45);
+}
+
+.ib__ghost {
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+  color: var(--ib-body);
+  border-bottom: 1px solid var(--ib-rule);
+  padding-bottom: 4px;
+  text-decoration: none;
+  transition:
+    color 0.2s ease-out,
+    border-color 0.2s ease-out;
+}
+
+.ib__ghost:hover,
+.ib__ghost:focus-visible {
+  color: var(--ib-link-hover);
+  border-bottom-color: var(--ib-link-hover);
+}
+
+.ib__graphic {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* <picture> is inline and has no intrinsic width, so it has to be laid out
+   explicitly. Without this the img's width:100% resolves against a zero-width
+   parent and the graphic collapses entirely. */
+.ib__graphic picture {
+  display: block;
+  width: 100%;
+  max-width: 470px;
+}
+
+.ib__graphic img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ib__cta,
+  .ib__ghost {
+    transition: none;
+  }
+}
+
+/* Below the handoff's ~1000px guidance the band stacks and the graphic sits
+   under the copy, with the headline stepping down via the clamp above. */
+@media (max-width: 1023px) {
+  .ib {
+    grid-template-columns: 1fr;
+    padding: 40px 32px;
+  }
+
+  .ib__graphic {
+    justify-content: flex-start;
+  }
+
+  .ib__graphic picture {
+    max-width: 380px;
+  }
+}
+
+@media (max-width: 639px) {
+  .ib {
+    padding: 32px 24px;
+  }
+
+  .ib__graphic picture {
+    max-width: 100%;
   }
 }
 

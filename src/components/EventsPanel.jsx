@@ -1,60 +1,13 @@
 import { Link } from "react-router-dom";
 import { upcoming, formatEventDate } from "../lib/events";
-import { INTEREST_FORM, CALENDAR_URL } from "../lib/links";
 import { ArrowRightIcon } from "./Icons";
+import InterestBanner from "./InterestBanner";
 
 /**
- * The no-events state.
- *
- * Deliberately not an apology. With no calendar yet, this block is the
- * homepage's second pitch, so it carries a real headline, a route to the
- * calendar and the interest form, and a visible action. Its min-height matches
- * a populated three-event list so the page does not collapse when the calendar
- * empties out.
+ * The no-events state is now the interest banner from the 3b handoff.
+ * Re-exported under the old name so both call sites keep working.
  */
-export const EventsEmpty = ({ showCalendarLink = true }) => (
-  <div
-    className="flex flex-col justify-center rounded-lg border border-rule bg-gray-light p-8 sm:p-12"
-    style={{ minHeight: "clamp(280px, 34vw, 360px)" }}
-  >
-    <p className="font-display text-step-2 font-semibold leading-tight text-ink" style={{ maxWidth: "18ch" }}>
-      Build with us this semester.
-    </p>
-    <p className="mt-4 text-gray-text" style={{ maxWidth: "46ch" }}>
-      We&apos;re putting the calendar together now. Tell us you&apos;re
-      interested and you&apos;ll hear about workshops, showcase nights and
-      hackathons before they fill up.
-    </p>
-    <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
-      <a
-        className="btn btn--coral self-start"
-        href={INTEREST_FORM}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Join the club
-      </a>
-      {showCalendarLink &&
-        (CALENDAR_URL ? (
-          <a
-            className="inline-flex items-center gap-1.5 self-start font-display text-small no-underline sweep"
-            href={CALENDAR_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            See the full calendar <ArrowRightIcon width={16} height={16} />
-          </a>
-        ) : (
-          <Link
-            to="/workshops"
-            className="inline-flex items-center gap-1.5 self-start font-display text-small no-underline sweep"
-          >
-            See the full calendar <ArrowRightIcon width={16} height={16} />
-          </Link>
-        ))}
-    </div>
-  </div>
-);
+export const EventsEmpty = () => <InterestBanner />;
 
 /** The populated state: a dated list, no cards. */
 export const EventsList = ({ events }) => (
