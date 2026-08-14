@@ -1,7 +1,5 @@
 # Product
 
-<!-- impeccable:product-schema 1 -->
-
 ## Platform
 
 web
@@ -27,7 +25,7 @@ many are unsure whether they are "technical enough" to belong.
 happening next and how to get more involved.
 
 The two audiences want different things, and the site splits by surface rather than trying to
-serve both everywhere: the homepage persuades, the workshops page operates.
+serve both everywhere: the homepage persuades, the events page operates.
 
 ## Product Purpose
 
@@ -60,9 +58,15 @@ it.
 - Interest form is a Typeform: `https://form.typeform.com/to/RH9sxEqE` ("Claude Club Interest
   Form", verified live). This is the single primary conversion action, surfaced in the hero and
   again in the events/info panel.
-- **There are currently no scheduled events.** The upcoming-events surface ships in its empty
-  state, and that empty state routes to the interest form. Events are a future state, not a
-  present one.
+- **Google Calendar (supplied and working 2026-08-13):** `claudebuildersclubneu@gmail.com`, wired
+  as `CALENDAR_ID` and as the `GCAL_ID` build variable. Shared publicly as *See all event
+  details*, which is the setting that matters: shared as *free/busy* instead, every entry arrives
+  titled `Busy` with no location and no description, and there is nothing the site can do about
+  it. Titles, locations, descriptions and per-event RSVP links all now come through.
+- **Nothing on the events page is hardcoded.** It renders exactly what the feed gives it, so the
+  empty state is a real state rather than a placeholder. The calendar design handoff's seven
+  sample events are **not** carried across, since its own README marks five of them as filled-in
+  guesses with placeholder room numbers.
 - Live domain is `claudebuildersneu.com` (Netlify). `claudebuilders.com` appears throughout the
   current codebase but is a **parked domain that serves no site** — every reference to it is a
   bug.
@@ -79,7 +83,12 @@ it.
 - Custom emoji set for the link hub.
 - Email-list endpoint (Mailchimp / other). The Typeform is the conversion path until one exists.
 - GA4 measurement ID.
-- Google Calendar ID, and confirmation the exec board has edit access.
+- **Luma links.** RSVP is per event: each calendar entry's description leads with its own Luma
+  link, which the build parses out. Nothing is configured in code. `LUMA_URL` in
+  `src/lib/links.js` is an optional club-wide fallback and is empty; an entry with no link
+  renders no RSVP button rather than a dead one. The handoff's `https://lu.ma/claudeclubneu`
+  placeholder is deliberately not shipped. Luma is per-event RSVP, not joining: the interest
+  form remains the single conversion action.
 - Board headshots.
 - Anthropic Builder Club brand kit, if the program supplied one.
 - Showcase content from past hackathons and workshops.
@@ -105,8 +114,19 @@ them as the conversion path.
 - **Binding typography:** Poppins (display) and Lora (body), self-hosted. Anthropic's real faces
   (Styrene, Tiempos, Copernicus) are commercially licensed and **must not** be sourced or
   self-hosted without a license.
-- **Binding motion policy:** exactly one motion primitive exists sitewide — a coral highlighter
+- **Binding motion policy:** one motion primitive exists sitewide — a coral highlighter
   sweep. Everything else is static.
+  > **Approved exception (approved 2026-08-13):** the pitch flow at `/events/pitch` adds a
+  > second primitive, a 260ms rise-and-fade as each question replaces the last. The
+  > one-question-at-a-time pattern was a direct instruction, and without a transition the
+  > screen cuts, which reads as a page load rather than as moving through a form. It is
+  > confined to that route, never fires on first paint, and is removed entirely under
+  > `prefers-reduced-motion`. Full rationale in DESIGN.md. Do not generalise it.
+  > **Second approved exception (approved 2026-08-13):** the events page's hover reveal, a
+  > 190ms fade with a few pixels of travel on the feature tiles' two faces and on the
+  > calendar's detail card. A detail card that blinks in and out under the pointer reads as
+  > a glitch rather than a response. Confined to `/events` and removed entirely under
+  > `prefers-reduced-motion`.
 - **Voice:** plain, concrete, sentence case. Written for a student who is unsure they belong.
   Never marketing-grade hype.
 
@@ -147,7 +167,8 @@ them as the conversion path.
   for large display type, fills, borders, and non-text graphics, but **failing for body copy and
   small links**. A darkened `--coral-text` variant at ≥4.5:1 is required for any coral text under
   24px.
-- `prefers-reduced-motion: reduce` must turn the highlighter sweep into an instant color change.
+- `prefers-reduced-motion: reduce` must turn the highlighter sweep into an instant color change,
+  and must remove the pitch flow's step transition and the events page's hover reveal entirely.
 - Visible keyboard focus on every interactive element; semantic landmarks; correct heading order;
   responsive down to 320px.
 - Target: mobile Lighthouse ≥95 across Performance, Accessibility, Best Practices, and SEO.

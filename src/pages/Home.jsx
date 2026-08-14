@@ -37,7 +37,11 @@ const Home = () => (
         </div>
 
         <div>
-          <h2 id="chapter-heading">What we do at Northeastern</h2>
+          {/* "at Northeastern" breaks onto its own line at every width. The
+              accessible name is still the whole phrase. */}
+          <h2 id="chapter-heading">
+            What we do <span className="block">at Northeastern</span>
+          </h2>
           <p className="mt-6 text-gray-text">
             Founded in 2025, we run hands-on workshops and community showcase
             nights where members demo what they have built.
@@ -60,7 +64,7 @@ const Home = () => (
     </section>
 
     <div className="border-t border-rule">
-      <EventsPanel limit={3} showViewAll />
+      <EventsPanel limit={3} />
     </div>
 
     <Faq />

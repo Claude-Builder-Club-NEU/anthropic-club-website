@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { INTEREST_FORM, CALENDAR_URL } from "../lib/links";
+import { INTEREST_FORM } from "../lib/links";
 import claudeCodeTypePng from "../assets/brand/claude-code-type.png";
 import claudeCodeTypeAvif from "../assets/brand/claude-code-type.avif";
 import claudeCodeTypeWebp from "../assets/brand/claude-code-type.webp";
@@ -47,26 +47,38 @@ const InterestBanner = () => (
         >
           Fill out interest form
         </a>
-        {CALENDAR_URL ? (
-          <a
-            className="ib__ghost"
-            href={CALENDAR_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            See the full calendar →
-          </a>
-        ) : (
-          <Link className="ib__ghost" to="/workshops">
-            See the full calendar →
-          </Link>
-        )}
+        {/* Always the site's own calendar, never the Google embed. This used
+            to send people off-site once CALENDAR_URL was set, which is the
+            same reason "Open the full calendar" came off the events page. The
+            banner now sits directly above the homepage's event list, so the
+            natural destination is /events. */}
+        <Link className="ib__ghost" to="/events">
+          See the full calendar →
+        </Link>
       </div>
     </div>
 
-    {/* Flat-colour artwork, so AVIF takes it from 82KB to 27KB. Lazy because
-        the band sits below the fold on both pages it appears on, and the LCP
-        element there is the copy, not this graphic. */}
+    {/* Flat-colour artwork, so AVIF takes it from 82KB to 27KB.
+
+        LAZY IS MEASURED HERE, NOT ASSUMED. An earlier version of this comment
+        said the band sits below the fold on both pages it appears on and that
+        the LCP element there is the copy rather than this graphic. That is
+        still true on the homepage. It stopped being true on /events when
+        the breadcrumb and the page lead came off: the band moved up, and on a
+        mobile viewport this image is now that page's LCP element.
+
+        Loading it eagerly there was the obvious fix and is worse. Measured on
+        /events, mobile, twice per variant:
+
+          lazy                  LCP 2050ms  (image fetched at 69ms)
+          eager, fetchpriority  LCP 2104ms  (image fetched at 13ms)
+          eager, default        LCP 2113ms  (image fetched at 16ms)
+
+        Pulling 27KB into the first burst starves the two preloaded webfonts
+        that every visible word on the page is waiting on, and that costs more
+        than deferring a decorative graphic saves. Lighthouse's
+        lcp-lazy-loaded audit flags this and is wrong about it. Do not act on
+        that audit alone. */}
     <div className="ib__graphic">
       <picture>
         <source type="image/avif" srcSet={claudeCodeTypeAvif} />

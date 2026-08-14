@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { BOARD } from "../lib/board";
 import BoardCard from "../components/BoardCard";
-import Breadcrumbs from "../components/Breadcrumbs";
 import { INTEREST_FORM } from "../lib/links";
 import { ArrowRightIcon } from "../components/Icons";
 
@@ -17,38 +16,37 @@ import { ArrowRightIcon } from "../components/Icons";
 const About = () => {
   return (
     <>
-      <Breadcrumbs current="About" />
+      {/* Page header. Title then standfirst, stacked on one left edge.
 
-      {/* Page header. Set at display scale with the standfirst carried in the
-          second column, so it reads as a masthead rather than a heading
-          crammed under the breadcrumb with dead space beside it. */}
+          The standfirst used to ride in a second column beside the title, which
+          set the two on different left edges and left the title fighting for
+          width. Stacked, the title gets the room to break where its own comma
+          falls and the standfirst reads as a caption under it.
+
+          The top padding absorbs the removed breadcrumb: with the trail gone
+          the masthead would otherwise start 40px under the site header, which
+          reads as cramped at display scale. */}
       <section
         aria-labelledby="about-heading"
-        className="mx-auto w-full max-w-6xl px-6 pb-16 pt-10 sm:px-10 sm:pb-24 sm:pt-16 lg:px-16 lg:pt-20"
+        className="mx-auto w-full max-w-6xl px-6 pb-16 pt-14 sm:px-10 sm:pb-24 sm:pt-20 lg:px-16 lg:pt-24"
       >
-        <div className="grid items-end gap-8 lg:grid-cols-12 lg:gap-16">
-          <h1
-            id="about-heading"
-            className="lg:col-span-7"
-            style={{
-              fontSize: "var(--step-display)",
-              lineHeight: 1.04,
-              letterSpacing: "-0.03em",
-              maxWidth: "14ch",
-            }}
-          >
-            A club for building, not watching.
-          </h1>
-          <p
-            className="lead lg:col-span-5 lg:pb-2"
-            style={{ maxWidth: "var(--measure-tight)" }}
-          >
-            We are Northeastern&apos;s chapter of Anthropic&apos;s Claude
-            Builder Club program.
-          </p>
-        </div>
+        <h1
+          id="about-heading"
+          style={{
+            fontSize: "var(--step-display)",
+            lineHeight: 1.04,
+            letterSpacing: "-0.03em",
+            maxWidth: "22ch",
+          }}
+        >
+          A club for building, not watching.
+        </h1>
+        <p className="lead mt-8" style={{ maxWidth: "var(--measure-tight)" }}>
+          We are Northeastern&apos;s chapter of Anthropic&apos;s Claude Builder
+          Club program.
+        </p>
 
-        <div className="mt-20 grid gap-14 border-t border-rule pt-14 lg:grid-cols-2 lg:gap-20">
+        <div className="mt-16 grid gap-14 border-t border-rule pt-14 lg:grid-cols-2 lg:gap-20">
           <div>
             <h2>What a semester looks like</h2>
             <p className="mt-6 text-gray-text">
@@ -96,7 +94,7 @@ const About = () => {
 
           <p className="mt-16 border-t border-rule pt-8 text-gray-text">
             Want to be on this page next year? Come to a{" "}
-            <Link to="/workshops" className="sweep">
+            <Link to="/events" className="sweep">
               workshop
             </Link>{" "}
             first, then{" "}
@@ -113,7 +111,7 @@ const About = () => {
 
           <p className="mt-6">
             <Link
-              to="/workshops"
+              to="/events"
               className="inline-flex items-center gap-1.5 font-display text-small no-underline sweep"
             >
               See what we&apos;re running{" "}

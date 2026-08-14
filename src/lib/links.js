@@ -32,14 +32,21 @@ export const SITE_ORIGIN = "https://claudebuildersneu.com";
  * ------------------------------------------------------------------------ */
 
 /**
- * BLOCKED (revision 2, §6.1): public Google Calendar ID.
+ * Public Google Calendar ID, supplied 2026-08-13. Verified: the public ICS feed
+ * returns HTTP 200, so the calendar really is shared publicly.
  *
- * Used by the FAQ "when do you meet" answer and the workshops calendar. The
+ * Used by the FAQ "when do you meet" answer and the events calendar. The
  * build-time ICS fetch reads the same value from the GCAL_ID build env var
  * (see scripts/fetch-events.mjs); this constant is only for linking a human to
- * the calendar. Example shape: "abc123@group.calendar.google.com".
+ * the calendar.
+ *
+ * NOTE: this is the primary calendar of a Gmail account, not a secondary
+ * calendar. It works, but editing it means signing into that one account. A
+ * secondary calendar shared with the board ("Make changes to events") would let
+ * each member edit under their own login. Swapping to one is a change to this
+ * value and the Netlify GCAL_ID variable, nothing else.
  */
-export const CALENDAR_ID = "";
+export const CALENDAR_ID = "claudebuildersclubneu@gmail.com";
 
 /** Human-facing calendar URL, derived. Empty while CALENDAR_ID is empty. */
 export const CALENDAR_URL = CALENDAR_ID
@@ -56,3 +63,20 @@ export const CALENDAR_ICS = CALENDAR_ID
   : "";
 
 export const hasCalendar = Boolean(CALENDAR_ID);
+
+/**
+ * Club-wide Luma page. OPTIONAL, and empty on purpose.
+ *
+ * RSVP links are per event: each calendar entry's description begins with its
+ * own Luma link, which `scripts/fetch-events.mjs` parses into `rsvpUrl`. That
+ * is the normal path and it needs nothing here.
+ *
+ * This constant is only a fallback for an entry whose description carries no
+ * link. With neither, no RSVP button is rendered rather than one that goes
+ * nowhere; the design handoff's `https://lu.ma/claudeclubneu` placeholder is
+ * deliberately not shipped, its own README having said to replace it.
+ *
+ * The interest form remains the site's primary conversion action either way;
+ * Luma is per-event RSVP, not joining the club.
+ */
+export const LUMA_URL = "";

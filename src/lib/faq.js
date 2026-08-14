@@ -32,11 +32,11 @@ export const FAQ = [
     q: "When and where do you meet?",
     a: "Check our calendar for a list of events!",
     // Points at the Google Calendar once §6.1 arrives. Until then it goes to
-    // the workshops page, which is where the calendar lives on this site.
+    // the events page, which is where the calendar lives on this site.
     links: [
       CALENDAR_URL
         ? { text: "calendar", href: CALENDAR_URL, external: true }
-        : { text: "calendar", to: "/workshops" },
+        : { text: "calendar", to: "/events" },
     ],
   },
   {

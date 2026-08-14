@@ -37,22 +37,27 @@ export const ROUTES = [
     title: `About & Exec Board | ${SITE_NAME}`,
     description:
       "Meet the executive board of Northeastern's Claude Builders Club, and read how a semester of hackathons, workshops and showcase nights actually works.",
-    breadcrumb: "About",
   },
   {
-    path: "/workshops",
-    file: "workshops/index.html",
-    title: `Workshops & Events | ${SITE_NAME}`,
+    path: "/events",
+    file: "events/index.html",
+    title: `Events & Calendar | ${SITE_NAME}`,
     description:
-      "Upcoming workshops, showcase nights and hackathons at Northeastern's Claude Builders Club, plus how to run a session of your own with the exec board.",
-    breadcrumb: "Workshops",
+      "What's coming up at Northeastern's Claude Builders Club: workshops, info sessions and hackathons, on a calendar you can subscribe to, plus how to run a session of your own.",
+  },
+  {
+    path: "/events/pitch",
+    file: "events/pitch/index.html",
+    title: `Pitch a workshop | ${SITE_NAME}`,
+    description:
+      "Propose a workshop for Northeastern's Claude Builders Club. Tell us the topic, roughly when, and what you would cover, and a board member follows up about scheduling it.",
   },
   {
     path: "/404",
     file: "404.html",
     title: `Page not found | ${SITE_NAME}`,
     description:
-      "That page isn't here. Find the Claude Builders Club at Northeastern's home page, exec board, workshop calendar and interest form instead.",
+      "That page isn't here. Find the Claude Builders Club at Northeastern's home page, exec board, event calendar and interest form instead.",
     noindex: true,
   },
 ];
@@ -95,28 +100,20 @@ export const boardJsonLd = () =>
     memberOf: { "@type": "EducationalOrganization", name: SITE_NAME },
   }));
 
-export const breadcrumbJsonLd = (label, path) => ({
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: SITE_ORIGIN },
-    {
-      "@type": "ListItem",
-      position: 2,
-      name: label,
-      item: `${SITE_ORIGIN}${path}`,
-    },
-  ],
-});
+/**
+ * BreadcrumbList JSON-LD was removed alongside the visible trail.
+ *
+ * Google's structured-data policy requires markup to represent content the
+ * visitor can actually see, so emitting a breadcrumb graph for a page with no
+ * breadcrumb on it is a mismatch, not a free win. The trail and its markup were
+ * always meant to move together; they still do.
+ */
 
 /** Every JSON-LD block for a route, ready to serialise. */
 export function structuredDataFor(route) {
   const blocks = [organizationJsonLd()];
   if (route.path === "/") blocks.push(faqJsonLd());
   if (route.path === "/about") blocks.push(...boardJsonLd());
-  if (route.breadcrumb) {
-    blocks.push(breadcrumbJsonLd(route.breadcrumb, route.path));
-  }
   return blocks;
 }
 

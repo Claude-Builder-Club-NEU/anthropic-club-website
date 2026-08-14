@@ -1,6 +1,6 @@
  4             # Build Brief — claudebuildersneu.com
 
-**How to use this file:** save it in the repo root as `BUILD-BRIEF.md`, then open Claude Code and paste:
+**How to use this file:** save it in the repo root as `BUILD-BRIEF.md`, then start from:
 
 > Read `BUILD-BRIEF.md` end to end. Do **Phase 0 only**, then stop and report back before writing any code.
 
@@ -10,17 +10,11 @@ Work phase by phase. Stop at every checkpoint. Small commits, one per phase.
 
 ## 0. Setup before you start
 
-Install the Impeccable design skill and initialize it in this repo:
+This brief refers throughout to a design-quality workflow: setting a type
+hierarchy, stripping complexity, a final polish pass, a production-quality
+audit, and emitting `DESIGN.md`.
 
-```bash
-npx impeccable install     # requires Node 22.12+
-```
-
-Then in Claude Code: `/impeccable init`
-
-Impeccable commands used in this brief: `/impeccable typeset` (type hierarchy), `/impeccable distill` (strip complexity), `/impeccable polish` (final quality pass), `/impeccable audit` (production quality), `/impeccable document` (emit DESIGN.md).
-
-**One override you must respect:** Impeccable's slop detector flags "warm cream background + terracotta accent (~#D97757)" as an AI tell. On this project it is not a tell — it is the client's actual brand, because the client is a Claude club. **Do not substitute the palette during any polish, distill, or audit pass.** Record this in `PRODUCT.md` under anti-references so it survives future runs.
+**One override you must respect:** the design-quality detector flags "warm cream background + terracotta accent (~#D97757)" as an AI tell. On this project it is not a tell — it is the client's actual brand, because the client is a Claude club. **Do not substitute the palette during any polish, distill, or audit pass.** Record this in `PRODUCT.md` under anti-references so it survives future runs.
 
 ---
 
@@ -82,7 +76,7 @@ Anthropic's real faces (Styrene, Tiempos, Copernicus) are commercially licensed 
 - **Body:** Lora
 - **Fallbacks:** Arial / Georgia
 
-Self-host as woff2, latin subset, `font-display: swap`, preload only the single display weight used above the fold. Set a real type scale with `/impeccable typeset` — don't leave defaults.
+Self-host as woff2, latin subset, `font-display: swap`, preload only the single display weight used above the fold. Set a real type scale — don't leave defaults.
 
 If you find something that reads closer to Styrene/Tiempos and is properly licensed for web use, propose it before switching.
 
@@ -111,7 +105,7 @@ Mimic anthropic.com: generous whitespace, a firm baseline grid, wide measure lim
 
 ### Deliverables
 
-Write `PRODUCT.md` (audience, mode per surface, brand voice, anti-references) and run `/impeccable document` to emit `DESIGN.md`.
+Write `PRODUCT.md` (audience, mode per surface, brand voice, anti-references) and emit `DESIGN.md`.
 
 **Anti-references for PRODUCT.md:** purple gradients, glassmorphism, icon tile stacks, italic serif display type, pulsing status dots, numbered section labels, nested cards, "Boost your productivity"-grade marketing copy.
 
@@ -247,7 +241,7 @@ GA4 via `gtag`, measurement ID in an env var (`NEXT_PUBLIC_GA_ID` or equivalent)
 
 ### Final pass
 
-Run `/impeccable audit`, then `/impeccable polish`. Target zero detector findings — **except** the warm-background/coral rule, which is an approved brand exception per §0.
+Run a production-quality audit, then a final polish pass. Target zero detector findings — **except** the warm-background/coral rule, which is an approved brand exception per §0.
 
 ---
 

@@ -111,10 +111,20 @@ is not sure they are technical enough to belong. A page that shouts, animates, a
 stacks feature-cards reads as a product pitch. A page that reads like a well-set
 document reads as an invitation.
 
+**The hero mark.** A cropped Claude Spark bleeding off the hero's bottom right,
+clipped by the section. On a phone it sits *behind* the two calls to action at
+30% rather than being pushed below them; the hero used to buy 240px of bottom
+padding purely to keep them apart, which wasted a band of screen where space is
+scarcest. The filled coral button is opaque and unaffected. The secondary
+button is transparent at rest, so its ink label does sit over the mark, which
+is what sets the opacity: measured, ink on the blended ground is 12.94:1.
+
 **Key Characteristics:**
 - Warm paper ground (#faf9f5), never pure white
 - Serif body, geometric-sans display — reading voice and title voice are distinct
-- Exactly one motion primitive sitewide
+- One motion primitive sitewide, plus two approved and scoped: the pitch flow's
+  step transition (`/events/pitch`) and the events page's hover reveal. All
+  three are removed under `prefers-reduced-motion` (see Components)
 - Borders and tonal shifts instead of shadows; the system is flat
 - Sentence case everywhere; no eyebrows, no chips, no section numbers
 - Generous vertical space, body measure held to 65–75ch
@@ -312,15 +322,218 @@ highlighter sweep beneath the label. The current page is marked with a persisten
 sweep rather than a color change. Below 768px the nav collapses to a disclosure
 menu; the join action stays a filled coral button and never hides behind the menu.
 
+### Homepage events block
+
+The interest banner ("Build with us this semester") leads this block and appears
+nowhere else. It used to be the block's *empty state* and also sat at the top of
+the events page; it now lives here unconditionally, so the homepage carries the
+persuasion and the events page carries the operating detail. Moving it also took
+its 27KB graphic off the events page, which is why that route measures faster
+than the rest of the site.
+
+Directly beneath it, up to three upcoming events as plain rows: date, title,
+time and location from the left, and the RSVP pushed to the right edge, which is
+the banner's right edge since both share the container. Detail first and action
+second, so it reads in that order and the RSVP lands last in the tab order,
+where an action belongs. Below 520px the row stacks and the action sits under
+its event rather than beside it.
+
+Each RSVP carries a visually hidden "on Luma for {title}", because a page of
+links all reading "RSVP" is unusable in a screen reader's link list. An entry
+with no link yet shows a dashed, inert "Details soon" in the same slot.
+
+The time and the location run inline with a middot between them on a wide
+screen and stack on a phone, where the two together wrap mid-phrase.
+
+There is no "see the full calendar" link under the list. The banner's own ghost
+link covers it, and that link always points at `/events` rather than the Google
+Calendar embed: sending people off-site to a Google view of the same events is
+the reason "Open the full calendar" came off the events page too.
+
+The section takes its accessible name from the banner's own heading, so the list
+sits directly under the flyer with no heading wedged between them.
+
+### Events page (`/events`)
+
+The page title and the section title are one heading, "Upcoming events", set at
+the section size rather than the page-title size. A page title above a section
+title saying nearly the same thing was noise.
+
+Built from the "Workshops & Events calendar page" handoff. That handoff's
+structure is kept in full; its visual language is not, because it specifies a
+different design system (Hanken Grotesk, Source Serif 4, JetBrains Mono,
+shadows, pill radii, a `kraft` accent) and says in its own words to prefer the
+target codebase's system where one exists. This one exists.
+
+**Event kinds.** Three, derived from the calendar entry's own title, because a
+Google Calendar ICS feed carries no colour or category field.
+
+| Kind | Fill | Label on it | Trigger |
+|---|---|---|---|
+| Info session | Near-Black Ink | Warm Paper, 17.50:1 | "info session", "intro", "orientation", "kickoff" |
+| Workshop | Claude Coral | Near-Black Ink, 5.90:1 | the default |
+| Hackathon | Olive | Near-Black Ink, 5.01:1 | anything ending "athon", "hack night" |
+
+Olive replaces the handoff's `kraft` #CD9A6B. It is already defined as a rare
+categorical accent, which is exactly this use. This was Slate Blue first, which
+separated from coral more cleanly but read as foreign against warm paper; olive
+sits in the same earth family as the coral and the ground.
+
+**Colour is never the only cue.** Every chip, tile and legend row names its kind
+in text, which is what carries the distinction rather than hue alone. Legend
+swatches carry a hairline because Claude Coral is 2.96:1 against paper as a bare
+fill, under the 3:1 floor for a graphic that means something.
+
+- **Feature tiles.** Up to three upcoming events above the calendar. Oat panels
+  on a hairline; the next event up is the one inverted tile, the same emphasis
+  device the board cards use, which keeps coral to the small accent the system
+  budgets for. The handoff fills tiles one, two and three dark, coral, light
+  regardless of content; that is dropped.
+
+  **Two faces, swapped in place.** At rest a tile shows its kind, the day, the
+  title, and time plus location. Hovering or clicking replaces that content with
+  the detail face: kind and date on one line, title, description, When, Where,
+  and an RSVP button. **The card does not change size**, so nothing on the page
+  moves. Both faces are always rendered, stacked in a single grid cell, so the
+  box is as tall as the taller of them whichever is showing; the hidden one
+  keeps its space and leaves the accessibility tree.
+
+  Hover and click are two independent reasons to be open: hovering is transient
+  and closes when the pointer leaves, clicking pins it. Touch and keyboard have
+  no hover at all, so the click path is what serves them. The toggle is a real
+  `<button>` carrying `aria-expanded`, laid over the card rather than wrapping
+  it, because the detail face contains a link and a link cannot sit inside a
+  button.
+
+  The handoff's hover lift and shadow are dropped; the border takes coral
+  instead. The RSVP button fills with paper on the inverted tile, where the
+  standard ink-on-ink outline would be invisible.
+
+  The design's third detail row, "Who: Open to all", is **not** built. A Google
+  Calendar entry has no such field, and inventing one would be making up facts
+  about a session. When and Where come from real fields; Who does not.
+
+- **Row filling.** The Upcoming row is always three columns wide and never ends
+  ragged. Three events fill it. One or two leave a dashed "No additional events"
+  card spanning the remainder. None at all gives a single dashed card across the
+  whole row reading "No events planned at this time! Check back at a later
+  date." Dashed rather than solid, the same way the empty board photo slot reads
+  as reserved rather than broken.
+- **Filter chips.** Single select, defaulting to All, filtering the tiles and
+  the grid together. The handoff's pill is squared to the 4px corner. Selected
+  is an ink fill rather than a colour change. A chip only appears for a kind
+  that is actually on the calendar.
+- **Month grid.** Sunday-first, per the handoff. Stays a real `<table>` so a
+  screen reader can announce the weekday for a cell. Days carrying events take
+  the Oat tonal step.
+
+  **On a phone the grid fits the viewport rather than scrolling sideways.** Seven
+  columns at that width are roughly 36px each, which cannot carry an event
+  title, so the weekday headers drop to a single letter and the chips become
+  plain colour bars, with every word of the detail moving into the card that
+  opens on tap. The titles are visually hidden rather than removed, so a screen
+  reader still reads "Chatathon with AINU, 11:00am, Hackathon" off a bar. Bars
+  hold 24px of height, the smallest target WCAG 2.5.8 allows.
+- **Event detail.** A popover anchored to the chip, above it where there is room
+  and below it near the top of the grid, carrying the same facts as a tile's
+  detail face plus its RSVP. It is a sibling of the scroll shell rather than a
+  child, because the shell clips horizontally on narrow screens and would cut
+  the card in half; its position is measured against the wrapper on open and
+  clamped so it cannot hang off an edge. It has no shadow, per the system: a 1px
+  ink border is what separates it from the grid underneath, a step stronger than
+  the usual hairline because it has to read as floating rather than inset.
+
+  It opens on hover, on focus and on click. Hover closes on a short delay, which
+  is what lets the pointer cross the gap between chip and card. Clicking pins
+  it, and pinning is the only case that moves focus, since stealing focus on
+  hover would be hostile. Escape closes it.
+- **Legend.** Three swatch-and-label rows under the grid.
+
+> **Approved exception 5 — the reveal.** Both hover details animate: a short
+> fade with a few pixels of travel, `--reveal-in` 190ms in and `--reveal-out`
+> 110ms out on the sweep's own ease-out curve. This is a third motion primitive
+> and the system otherwise permits one. It was approved explicitly, on the
+> grounds that a detail card which simply blinks in and out under the pointer
+> reads as a glitch rather than as a response.
+>
+> Three details make it feel deliberate rather than decorative:
+> - **The tile's two faces cross-fade with a handoff, not a dissolve.** The
+>   outgoing face clears in 110ms and the incoming one waits that long before
+>   starting, so two sets of text are never stacked half-visible on each other.
+> - **`visibility` is staggered against the fade**, instant on the way in and
+>   delayed on the way out, so the hidden face leaves the accessibility tree and
+>   stops taking pointer events without cutting the fade short.
+> - **The calendar card stays mounted while you move from chip to chip**, so its
+>   `left` and `top` glide it to the next anchor instead of blinking out and
+>   back. That travel is what makes moving along a row of events feel
+>   continuous.
+>
+> It is confined to the events page, and under `prefers-reduced-motion: reduce`
+> it is removed entirely: the faces still swap and the card still appears, they
+> simply do not travel or fade.
+- **Not here.** "Open the full calendar" was removed: it sent people off the
+  site to a Google view of the events already on the page. The ICS subscribe
+  link stays, because that is the one thing the page cannot do itself.
+
+The handoff's "Sponsored by Anthropic" footer credit is **not** built. The club
+is affiliated with Anthropic's program, not sponsored by it, and PRODUCT.md is
+explicit that the relationship must not be overstated. A previous revision
+removed the sponsor lockup for the same reason.
+
+### Pitch flow (`/events/pitch`)
+
+A full-viewport, one-question-at-a-time form in the manner of a Typeform,
+supplied as a direct instruction. It is the only chromeless route: no site
+header, no footer, no sticky CTA, just a hairline bar carrying the club lockup
+and a close control back to `/events`.
+
+- **Screens.** A welcome screen, five questions, an ending. Each screen owns the
+  page's single `<h1>`, because on a surface showing one question that question
+  is the page's subject. The prerendered HTML therefore ships the welcome
+  screen's heading, which is also what a crawler should read.
+- **Question type** is Poppins at Title scale (`--step-2`), a step below the
+  welcome and ending screens, which sit at Headline scale. No new type token.
+- **Answer field** is underlined rather than boxed, set at `--step-lead` so it
+  clears the 16px threshold that triggers zoom on iOS. The coral underline is a
+  supporting cue only; the focus indicator is the system's 2px Burnt Terracotta
+  ring, because coral at 2.96:1 cannot carry a focus indicator on its own.
+- **Progress** is a 4px rail pinned to the bottom of the viewport, filled in
+  Claude Coral, reporting questions *completed* rather than questions reached.
+- **Step controls** are a 44px pair at bottom right. Disabled states use Pale
+  Clay, which is below every contrast floor and correct here: WCAG exempts
+  inactive controls, and reading as unavailable is the point.
+
+> **Approved exception 3 — the second motion primitive.** Advancing a step
+> raises the incoming screen 24px and fades it in over 260ms on the sweep's
+> ease-out curve, reversing direction on the way back, with the progress rail
+> travelling on the same curve. This is a second animation and the system
+> otherwise permits exactly one. It was approved explicitly, on the grounds that
+> one-question-at-a-time is the pattern that was asked for and that without a
+> transition the screen simply cuts, which reads as a page load rather than as
+> moving through a form. It is confined to this route, it never fires on first
+> paint — so no screen on this site animates itself into view on load — and
+> under `prefers-reduced-motion: reduce` it is removed entirely, exactly as the
+> highlighter is. Do not generalise it to any other surface.
+
+> **Approved exception 4 — the question number.** Each question is preceded by
+> its number in Burnt Terracotta, which the system otherwise bans as a section
+> number above a heading. Here it is wayfinding inside a five-step form rather
+> than decoration on a page heading: the progress rail says how far along you
+> are but not which question you are answering. It is `aria-hidden`, so the
+> field's accessible name stays the question alone, and the count is given to
+> assistive tech separately as "Question N of 5".
+
 ### The Highlighter (signature)
 
-The system's one motion primitive and its defining component. A coral band, 0.34em
+The system's primary motion primitive and its defining component. A coral band, 0.34em
 tall (0.42em at display size), painted as a background gradient sitting at 88% of
 the line box so it reads as marked *beneath* the words rather than boxed around
 them. It grows from 0% to 100% width over 150ms on an ease-out curve.
 
 It appears in exactly three places: the primary CTA on hover, navigation links on
-hover and focus, and one phrase in the hero that marks itself once on load.
+hover and focus, and one phrase in the hero that marks itself once on load. The
+pitch flow's step transition and the events page's hover reveal are the system's
+only other animations, both documented above as approved exceptions.
 `box-decoration-break: clone` makes it mark each line separately when a phrase
 wraps, the way a real highlighter would.
 
@@ -343,12 +556,15 @@ mark still appears, it simply does not travel.
 - **Don't** substitute the warm-paper-plus-terracotta palette. A slop detector will
   flag it as an AI tell; on this project it is the client's actual brand and the
   finding is a known false positive. This is recorded in PRODUCT.md and is binding.
-- **Don't** add a second animation. No scroll reveals, no fades, no parallax, no
-  counters, no hover-lifts, no page transitions, no smooth scrolling.
+- **Don't** add a fourth animation. No scroll reveals, no parallax, no counters,
+  no hover-lifts, no page transitions, no smooth scrolling. The highlighter, the
+  pitch flow's step transition and the events page's hover reveal are the
+  complete set, and the latter two are confined to their own surfaces.
 - **Don't** use `box-shadow` for depth. The single permitted use is a focus
   ring: the interest banner's CTA carries `0 0 0 3px rgba(217,119,87,0.45)` on
   `:focus-visible`, which is an accessibility affordance, not decoration.
-- **Don't** put an eyebrow, kicker, chip, or section number above a heading.
+- **Don't** put an eyebrow, kicker, chip, or section number above a heading. The
+  pitch flow's question number is the single approved exception.
 - **Don't** set Pale Clay (#b0aea5) as text at any size.
 - **Don't** nest cards, or use same-size icon-plus-heading-plus-text cards as the
   page's structure.

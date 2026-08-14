@@ -1,6 +1,6 @@
 # Handoff
 
-Paste this whole file into a fresh session to pick the work up.
+Read this first to pick the work up.
 
 ---
 
@@ -11,18 +11,20 @@ separately; both are already implemented.
 
 ## What it is
 
-A four-route marketing site for an official Anthropic Claude Builder Club
+A five-route marketing site for an official Anthropic Claude Builder Club
 chapter at Northeastern. React 19 + Vite 7 + Tailwind 3, prerendered to static
 HTML, deployed on Netlify.
 
-Routes: `/`, `/about`, `/workshops`, and a real `/404`.
+Routes: `/`, `/about`, `/events`, `/events/pitch`, and a real `/404`.
+
+`/workshops` was renamed to `/events` (and `/workshops/pitch` to `/events/pitch`).
+`netlify.toml` carries 301s from the old paths, so existing links keep working.
 
 ## Repo and branch
 
 - Repo: `https://github.com/Claude-Builder-Club-NEU/anthropic-club-website`
 - Working branch: `rebuild/phase-0-setup`, **14 commits ahead of `main`, 0
   behind**. Nothing has been merged yet.
-- Local clone: `C:\Users\salam\Documents\Claude\anthropic-club-website`
 - Push access confirmed for GitHub user `lamouro` (admin on the org repo).
 
 ## THE MOST IMPORTANT THING
@@ -51,7 +53,7 @@ npm run og           # regenerate the OG image, manual, rarely needed
 
 `npm run build` runs four stages: `fetch-events` and `build-headshots`, then
 the client build, then an SSR build, then `scripts/prerender.mjs` which writes
-`dist/index.html`, `dist/about/index.html`, `dist/workshops/index.html`,
+`dist/index.html`, `dist/about/index.html`, `dist/events/index.html`,
 `dist/404.html`, plus `sitemap.xml` and `robots.txt`.
 
 ## Verifying work — read this before measuring anything
@@ -80,25 +82,37 @@ npx --yes lighthouse@12 "http://localhost:4173/" \
   --output=json --output-path=./lh.json --quiet
 ```
 
-Current baseline, mobile, all three content routes: **99–100 performance,
-100 accessibility, 100 best practices, 100 SEO**, LCP under 2000ms, CLS 0.
-Do not regress these.
+Current measurements, mobile (2026-08-13, after the events page landed):
 
-The design detector is also available and is worth running after UI edits:
+| Route | Perf | A11y | BP | SEO | LCP |
+|---|---|---|---|---|---|
+| `/` | 99 | 100 | 100 | 100 | 2057ms |
+| `/about` | 99 | 100 | 100 | 100 | 2116ms |
+| `/events` | 100 | 100 | 100 | 100 | 1354ms |
+| `/events/pitch` | 99 | 100 | 100 | 100 | 1954ms |
 
-```bash
-node "C:/Users/salam/.claude/skills/impeccable/scripts/detect.mjs" --json \
-  src/index.css src/components src/pages src/lib tailwind.config.js index.html
-```
+Accessibility, best practices and SEO are 100 everywhere and must stay there.
 
-It should report exactly one finding: `codex-grid-background`. That one is a
+`/events` measures fastest because the interest banner, and its 27KB graphic,
+moved to the homepage. That is also the whole story of the performance drift on
+the other routes: the single shared stylesheet is render-blocking on every page,
+so hand-written CSS for one surface is paid for by all of them. Recovering the
+last point or two means per-route CSS, which needs either code splitting (breaks
+the prerender, since `renderToString` cannot resolve `React.lazy`) or a per-route
+`<link>` injected from `headFor` against an unfingerprinted file in `public/`.
+Neither is free. PRODUCT.md's floor is >=95 and that holds comfortably.
+
+A local design-quality linter is run over `src/index.css`, `src/components`,
+`src/pages`, `src/lib`, `tailwind.config.js` and `index.html` after UI edits.
+
+It should report exactly one finding: a decorative grid background. That one is a
 documented, approved exception (see below). Anything else is new and should be
 fixed or documented in `DESIGN.md`, not ignored.
 
-The in-app browser pane frequently stops compositing frames. When that happens
+A headless browser preview can stop compositing frames. When that happens
 screenshots fail, CSS transitions freeze mid-value, `loading="lazy"` never
 fires, and scroll events stop dispatching. None of those are bugs in the site.
-Measure the DOM with `javascript_tool` instead; it keeps working.
+Measure the DOM from the console instead; that keeps working.
 
 ## Architecture, the non-obvious parts
 
@@ -115,9 +129,36 @@ marker. Add a route in `ROUTES` and the sitemap follows automatically.
 **Events.** Read at *build time* from a public Google Calendar ICS by
 `scripts/fetch-events.mjs` into `src/lib/events.generated.json`. There is no
 client-side API key and no write path from the site. A calendar outage writes
-an empty array rather than failing the build. Currently empty because the
-calendar ID has not been supplied, so every events surface renders its empty
-state, which is the correct shipping state.
+an empty array rather than failing the build.
+
+The calendar ID is now supplied and wired: `claudebuildersclubneu@gmail.com`,
+in `src/lib/links.js` and as `GCAL_ID`. `fetch-events.mjs` reads `.env` itself
+so local builds fetch without extra setup. Sharing was switched to "See all
+event details" on 2026-08-13 and the feed now carries real titles, locations and
+descriptions. Nothing on the events page is hardcoded, so the page shows exactly
+what the feed gives it.
+
+**How a calendar entry becomes a card.** There is a convention here and the
+board needs to know it, because nothing else on the site can supply this:
+
+| Google Calendar field | What the site does with it |
+|---|---|
+| **Title** | The card title. Also decides the kind: anything ending "athon" is a hackathon, "info session" / "intro" / "orientation" / "kickoff" is an info session, everything else is a workshop |
+| **Location** | Shown beside the time, and as "Where" in the detail |
+| **Description** | **The Luma link first, the blurb after it.** The link becomes the "RSVP on Luma" button and is never printed as text; the prose after it becomes the description line |
+
+So a description is written like this:
+
+```
+https://lu.ma/claude-info-session
+What the club is, what we build, and how to get involved. Open to all.
+```
+
+`scripts/fetch-events.mjs` splits those at build time into `rsvpUrl` and
+`description`. It copes with the link being wrapped in an anchor, which is what
+the Google Calendar web UI does, and with a "RSVP:" style label in front of it.
+If the blurb is written *above* the link instead, that is used rather than
+nothing. An entry with no link renders no RSVP button rather than a dead one.
 
 **Headshots.** Masters live in `board-src/<slug>.jpg` and are **never
 deployed**. `scripts/build-headshots.mjs` emits 320/480/640 in AVIF/WebP/JPEG
@@ -144,10 +185,13 @@ accident.
 - **`--gray-mid #b0aea5` cannot carry text at any size** (2.11:1). Secondary
   text is `--gray-text: #686560`. The original brief assigned gray-mid to
   "secondary text"; that was unusable and the deviation is recorded.
-- **One motion primitive exists sitewide**: the coral highlighter sweep, 150ms
-  ease-out. No scroll reveals, no fades, no smooth scrolling, no GIFs. Adding a
-  second animation contradicts the brief the whole system is built on. Jackson
-  asked about GIFs once; that question is still open and is his call.
+- **Three motion primitives exist**, all approved and all documented in
+  `DESIGN.md`: the coral highlighter sweep (150ms, sitewide), the pitch flow's
+  step transition (260ms, `/events/pitch` only), and the events page's hover
+  reveal (190ms in / 110ms out, `/events` only). Do not add a fourth. No scroll
+  reveals, no parallax, no smooth scrolling, no GIFs. All three come off under
+  `prefers-reduced-motion`. Jackson asked about GIFs once; that question is
+  still open and is his call.
 - **No `box-shadow` for depth.** Depth is tonal. There is exactly one in the
   codebase, the interest banner CTA's focus ring, which is a focus indicator
   rather than decoration and is specified by that band's design.
@@ -186,25 +230,47 @@ them as this club's identity would overstate the relationship.
 | # | Needed | Blocks |
 |---|---|---|
 | 1 | Repoint Netlify at this repo | **Everything. Nothing is live.** |
-| 2 | Public Google Calendar ID (`GCAL_ID`) | Events, the calendar, the FAQ calendar link |
-| 3 | `VITE_WEB3FORMS_KEY` set in **Netlify** env vars | Workshop pitch form on the deployed site |
-| 4 | `VITE_GA_ID` | Analytics. Absent ID is a clean no-op |
-| 5 | Slack shared-invite link | The current URL is a workspace sign-in, useless to a prospective member |
-| 6 | Rotate the N8N webhook | It sat in `src/.env` in a public repo. Untracking it does not remove it from history |
-| 7 | Showcase content | The Workshops showcase renders an empty state |
-| 8 | Custom emoji set | Link hub uses authored SVG marks in the meantime |
+| 2 | `GCAL_ID` set in **Netlify** env vars | Events on the deployed site. The value is `claudebuildersclubneu@gmail.com` |
+| 3 | Luma links in each calendar entry's description | That event's RSVP button. Optional club-wide fallback: `LUMA_URL` in `src/lib/links.js` |
+| 4 | `VITE_WEB3FORMS_KEY` set in **Netlify** env vars | Workshop pitch form on the deployed site |
+| 5 | `VITE_GA_ID` | Analytics. Absent ID is a clean no-op |
+| 6 | Slack shared-invite link | The current URL is a workspace sign-in, useless to a prospective member |
+| 7 | ~~Rotate the N8N webhook~~ **RESOLVED** | Nothing was ever exposed here. See below |
+| 8 | Showcase content | The events page showcase renders an empty state |
+| 9 | Custom emoji set | Link hub uses authored SVG marks in the meantime |
+
+**Blocker 7 was a false alarm, and the record is now corrected.** `src/.env`
+*was* committed, in `ba45c15`, and removed in `2de9847`. But the file is 14
+bytes and reads `N8N_WEBHOOK =` with an **empty value**: no credential was ever
+in it. A scan across every commit and every reachable blob for private keys,
+cloud tokens, `sk-`/`ghp_`/`xoxb-`/`AIza` shaped credentials and webhook URLs
+found nothing. Rotation is not required on account of this repository. Note the
+live site builds from a *different* repo, `shourya0523/anthropic-club-website`,
+which cannot be inspected from here; if the webhook was ever real, check there.
+
+The calendar's public sharing must stay on **See all event details**. Set to
+*See only free/busy* instead, every entry arrives as `SUMMARY:Busy` with no
+LOCATION and no DESCRIPTION line at all, and no amount of parsing can recover
+what was never sent. That was the state for most of 2026-08-13; it is fixed.
 
 The Web3Forms key **is** set locally in a gitignored `.env` and the form works
-in dev. `.env.example` documents all three variables.
+in dev. `GCAL_ID` is set there too, and `scripts/fetch-events.mjs` now reads
+`.env` directly, so a local build fetches the calendar with no extra setup. A
+real environment variable still overrides the file, which is how Netlify wins.
+`.env.example` documents every variable.
 
 ## Open questions and known issues
 
-- **`README.md` is entirely stale.** It still describes React 18, Space Grotesk
-  and JetBrains Mono, a `/join` page and the old coral palette. None of that is
-  true. It is the first thing a newcomer reads. Worth rewriting.
-- `LINKEDIN_PREVIEW_FIX.md` (2.7KB) and `context.json` (24KB) are orphans,
-  referenced nowhere. `context.json` has some real project background in it if
-  anyone wants to mine it before deleting.
+- ~~`README.md` is entirely stale.~~ **Rewritten 2026-08-13** against the real
+  stack, routes, env vars and calendar convention.
+- ~~`LINKEDIN_PREVIEW_FIX.md` and `context.json` are orphans.~~ **Both deleted
+  2026-08-13**, recoverable from git history. The first told people to share
+  `claudebuilders.com`, the parked domain; the second was the original brief,
+  long superseded by `PRODUCT.md` and `DESIGN.md`.
+- **Security posture is documented in `SECURITY.md`** and was audited on
+  2026-08-13: trust boundaries, data flows, variable mapping, headers and the
+  dependency record. Production dependencies are at zero advisories and should
+  stay there.
 - **Lucas's email was supplied misspelt** as `salzgeber.l@northesatern.edu`.
   Stored as `northeastern.edu`. Unconfirmed.
 - **Alex Green's role**: the brief's notes say his role is missing, but the

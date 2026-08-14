@@ -13,6 +13,20 @@
 # 404 for anything unknown. The old rule returned 200 for every URL on the
 # domain, which told crawlers that every typo was a valid page.
 
+# /workshops became /events. These are permanent, so anything already linking to
+# the old path (Instagram bio, Linktree, a flyer QR code, search results) follows
+# through instead of hitting the 404 page. The splat rule covers the pitch form
+# and anything added under the section later.
+[[redirects]]
+  from = "/workshops/*"
+  to = "/events/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/workshops"
+  to = "/events"
+  status = 301
+
 # Long-cache the fingerprinted build output.
 [[headers]]
   for = "/assets/*"
@@ -31,6 +45,38 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     X-Frame-Options = "SAMEORIGIN"
+
+    # Force HTTPS for a year. Netlify already serves this domain over TLS only,
+    # so this closes the first-visit downgrade window rather than changing how
+    # anything is served. `preload` is deliberately NOT set: that commits the
+    # domain to a browser-shipped list which is slow and awkward to undo, and it
+    # should be an explicit decision rather than a side effect of a header edit.
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+    # Nothing here uses a camera, a microphone, a location or a payment handler.
+    # Denying them outright means a future dependency cannot quietly start.
+    Permissions-Policy = "accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), xr-spatial-tracking=()"
+
+    # Content Security Policy. Derived from what the built output actually
+    # requests, not from a template:
+    #
+    #   script-src   the one fingerprinted bundle, plus Google Tag Manager,
+    #                which src/lib/analytics.js injects at runtime once
+    #                VITE_GA_ID exists. The only inline <script> tags are
+    #                application/ld+json, which is data and is never executed,
+    #                so no hash or nonce is needed and 'unsafe-inline' is not
+    #                granted to scripts.
+    #   connect-src  Web3Forms takes the workshop pitch POST; the analytics
+    #                hosts take GA4 beacons, including its regional endpoints.
+    #   img-src      data: is required because Vite inlines the small brand SVGs.
+    #   style-src    'unsafe-inline' is required: React writes layout values as
+    #                inline style attributes. Style injection cannot execute
+    #                script, and the alternative is rewriting every style prop
+    #                in the codebase to buy very little.
+    #   frame-src / object-src  nothing is embedded, so both are shut off.
+    #   frame-ancestors  the modern replacement for X-Frame-Options above,
+    #                which is kept for older browsers.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; form-action 'self'; frame-src 'none'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
 
 # Events come from a Google Calendar read at BUILD time, so the site only
 # refreshes when it rebuilds. Once GCAL_ID is set, add a scheduled build

@@ -12,7 +12,7 @@ import { InstagramIcon, LinkedInIcon, SlackIcon } from "./Icons";
 const NAV = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
-  { to: "/workshops", label: "Workshops" },
+  { to: "/events", label: "Events" },
 ];
 
 /** Shared container inset. The header uses the same one as every page so the

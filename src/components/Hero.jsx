@@ -95,7 +95,7 @@ const Hero = () => {
           >
             Join the club
           </a>
-          <Link className="btn btn--secondary" to="/workshops">
+          <Link className="btn btn--secondary" to="/events">
             See upcoming events
           </Link>
         </div>

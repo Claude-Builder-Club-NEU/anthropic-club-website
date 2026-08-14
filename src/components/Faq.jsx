@@ -45,7 +45,7 @@ const Faq = () => (
     className="border-t border-rule bg-gray-light"
   >
     <div className="mx-auto max-w-6xl px-6 py-16 sm:px-10 sm:py-24 lg:px-16">
-      <h2 id="faq-heading">Questions</h2>
+      <h2 id="faq-heading">FAQs</h2>
 
       <div className="mt-10 max-w-measure">
         {FAQ.map(({ q, a, links }) => (

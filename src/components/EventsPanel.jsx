@@ -1,71 +1,85 @@
-import { Link } from "react-router-dom";
-import { upcoming, formatEventDate } from "../lib/events";
-import { ArrowRightIcon } from "./Icons";
+import { upcoming, formatEventDate, formatEventTimeRange } from "../lib/events";
+import { LUMA_URL } from "../lib/links";
 import InterestBanner from "./InterestBanner";
 
 /**
- * The no-events state is now the interest banner from the 3b handoff.
- * Re-exported under the old name so both call sites keep working.
+ * Homepage events block: the interest banner, then whatever is coming up listed
+ * directly beneath it, each row ending in an RSVP pushed to the right so it
+ * lines up with the banner's own right edge.
+ *
+ * The banner used to be this block's *empty state* and also sat on the events
+ * page. It now leads here unconditionally and appears nowhere else, so the
+ * homepage carries the persuasion and the events page carries the operating
+ * detail. With nothing on the calendar the banner is the whole block, which is
+ * the honest empty state anyway: it already says the calendar is being put
+ * together.
+ *
+ * The section takes its accessible name from the banner's own heading, so the
+ * list sits directly under the flyer with no heading wedged in between.
  */
-export const EventsEmpty = () => <InterestBanner />;
-
-/** The populated state: a dated list, no cards. */
-export const EventsList = ({ events }) => (
-  <ul className="list-none space-y-0 p-0">
-    {events.map((event) => (
-      <li
-        key={event.id}
-        className="border-t border-rule py-6 first:border-t-0 first:pt-0"
-      >
-        <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-6">
-          <p className="meta shrink-0" style={{ maxWidth: "none" }}>
-            {formatEventDate(event)}
-          </p>
-          <div className="min-w-0">
-            <h3 className="text-step-3">{event.title}</h3>
-            {event.location && (
-              <p className="mt-1 text-small text-gray-text">{event.location}</p>
-            )}
-            {event.description && (
-              <p className="mt-2 text-small text-gray-text">
-                {event.description}
-              </p>
-            )}
-          </div>
-        </div>
-      </li>
-    ))}
-  </ul>
-);
-
-/**
- * Upcoming events section. `limit` caps the homepage at three; the workshops
- * page passes none.
- */
-const EventsPanel = ({ limit, headingId = "events-heading", showViewAll }) => {
+const EventsPanel = ({ limit }) => {
   const events = upcoming();
   const shown = limit ? events.slice(0, limit) : events;
 
   return (
     <section
-      aria-labelledby={headingId}
+      aria-labelledby="ib-heading"
       className="mx-auto w-full max-w-6xl px-6 py-16 sm:px-10 sm:py-24 lg:px-16"
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-4">
-        <h2 id={headingId}>Upcoming events</h2>
-        {showViewAll && shown.length > 0 && (
-          <Link
-            to="/workshops"
-            className="inline-flex items-center gap-1.5 font-display text-small no-underline sweep"
-          >
-            View full calendar <ArrowRightIcon width={16} height={16} />
-          </Link>
-        )}
-      </div>
+      <InterestBanner />
 
-      <div className="mt-10">
-        {shown.length === 0 ? <EventsEmpty /> : <EventsList events={shown} />}
-      </div>
+      {shown.length > 0 && (
+        <ul className="home-events">
+          {shown.map((event) => {
+            const rsvp = event.rsvpUrl || LUMA_URL;
+            return (
+              <li key={event.id} className="home-event">
+                {/* Detail first, action second: it reads in that order and it
+                    puts the RSVP last in the tab order, where an action
+                    belongs. The button is pushed to the row's right edge, which
+                    is the banner's right edge, since both share the container. */}
+                <div className="home-event__body">
+                  <p className="meta" style={{ maxWidth: "none" }}>
+                    {formatEventDate(event)}
+                  </p>
+                  <h3 className="home-event__title">{event.title}</h3>
+                  {/* Two spans rather than one string: they run inline with a
+                      separator on a wide screen and stack on a narrow one,
+                      where a time and a room name on one line wrap badly. */}
+                  <p className="home-event__meta">
+                    <span className="home-event__time">
+                      {formatEventTimeRange(event)}
+                    </span>
+                    {event.location && (
+                      <span className="home-event__where">
+                        {event.location}
+                      </span>
+                    )}
+                  </p>
+                </div>
+
+                {rsvp ? (
+                  <a
+                    className="home-event__rsvp"
+                    href={rsvp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    RSVP
+                    {/* Several rows each labelled only "RSVP" would be
+                        indistinguishable in a screen reader's link list. */}
+                    <span className="sr-only"> on Luma for {event.title}</span>
+                  </a>
+                ) : (
+                  <span className="home-event__rsvp home-event__rsvp--none">
+                    Details soon
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </section>
   );
 };

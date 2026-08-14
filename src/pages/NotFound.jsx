@@ -4,10 +4,14 @@ import { INTEREST_FORM } from "../lib/links";
 /**
  * 404.
  *
- * Returns a real HTTP 404, not a soft 200 — see public/_redirects, which serves
- * this page's prerendered HTML with an explicit 404 status. The previous
- * catch-all rewrote every unknown path to index.html with a 200, which told
- * crawlers that every typo was a real page.
+ * Returns a real HTTP 404, not a soft 200. There is no catch-all rewrite in
+ * netlify.toml, so Netlify serves the prerendered 404.html with a genuine 404
+ * status for any unmatched path. The previous catch-all rewrote every unknown
+ * path to index.html with a 200, which told crawlers that every typo was a real
+ * page.
+ *
+ * (An earlier version of this comment pointed at public/_redirects. No such
+ * file exists or is needed; the behaviour comes from Netlify's default.)
  */
 const NotFound = () => (
   <section className="mx-auto max-w-6xl px-6 py-24 sm:px-10 sm:py-32 lg:px-16">
@@ -34,8 +38,8 @@ const NotFound = () => (
         </Link>
       </li>
       <li>
-        <Link to="/workshops" className="font-display no-underline sweep">
-          Workshops and events
+        <Link to="/events" className="font-display no-underline sweep">
+          Events and calendar
         </Link>
       </li>
       <li>

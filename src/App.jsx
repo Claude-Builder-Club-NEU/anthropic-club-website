@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, Outlet, useLocation } from "react-router-dom";
 import Layout from "./components/Layout";
 import StickyCta from "./components/StickyCta";
 import Home from "./pages/Home";
 import About from "./pages/About";
-import Workshops from "./pages/Workshops";
+import Events from "./pages/Events";
+import Pitch from "./pages/Pitch";
 import NotFound from "./pages/NotFound";
 import "./App.css";
 
@@ -31,18 +32,38 @@ function ScrollToTop() {
   return null;
 }
 
+/**
+ * Every route that wears the site chrome. Layout supplies the header, the
+ * footer and the <main> landmark; StickyCta sits inside it exactly where it
+ * did before this became a layout route, so its behaviour is unchanged.
+ */
+const SiteChrome = () => (
+  <Layout>
+    <Outlet />
+    <StickyCta />
+  </Layout>
+);
+
 function App() {
   return (
-    <Layout>
+    <>
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/workshops" element={<Workshops />} />
-        <Route path="*" element={<NotFound />} />
+        {/* Chromeless on purpose. The pitch flow fills the viewport and asks
+            one question at a time; a header, a footer and a sticky "Join the
+            club" CTA would all pull against the question on screen. It brings
+            its own bar and its own <main>. Ranked above the catch-all by
+            specificity, so the static segments win. */}
+        <Route path="/events/pitch" element={<Pitch />} />
+
+        <Route element={<SiteChrome />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
       </Routes>
-      <StickyCta />
-    </Layout>
+    </>
   );
 }
 
