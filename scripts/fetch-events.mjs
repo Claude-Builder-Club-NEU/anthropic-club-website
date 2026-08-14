@@ -5,8 +5,10 @@
  * src/lib/events.generated.json. Runs before every build (see package.json
  * "prebuild"), so a Netlify scheduled rebuild is what keeps the site fresh.
  *
- * Configure with GCAL_ID in the Netlify build environment, e.g.
- *   GCAL_ID=abc123@group.calendar.google.com
+ * NO CONFIGURATION IS REQUIRED. The calendar address falls back to CALENDAR_ID
+ * in src/lib/links.js, which is committed, so a fresh deploy builds with events
+ * out of the box. Set GCAL_ID in the environment only to point a build at a
+ * different calendar.
  *
  * Deliberate choices:
  * - ICS, not the REST API, so there is no API key to leak or restrict.
@@ -18,6 +20,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { CALENDAR_ID } from "../src/lib/links.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(__dirname, "../src/lib/events.generated.json");
@@ -48,7 +51,24 @@ function loadDotEnv() {
 
 loadDotEnv();
 
-const GCAL_ID = process.env.GCAL_ID || "";
+/**
+ * Calendar address, resolved in order of precedence:
+ *
+ *   1. GCAL_ID in the real environment  (Netlify build variable)
+ *   2. GCAL_ID in a local .env          (a developer's machine)
+ *   3. CALENDAR_ID committed in src/lib/links.js
+ *
+ * Step 3 is what lets a deploy work with no build configuration at all. The
+ * calendar address is not a secret: it is the public identifier of a publicly
+ * shared calendar, it is already committed as CALENDAR_ID because the site
+ * builds human-facing links from it, and it authorises nothing. Requiring it to
+ * be set a second time in a dashboard only creates a way for the deployed site
+ * to silently build with no events while local builds have them.
+ *
+ * The first two still win, so pointing a branch deploy at a different calendar
+ * remains a one-variable change.
+ */
+const GCAL_ID = process.env.GCAL_ID || CALENDAR_ID || "";
 const HORIZON_DAYS = 400;
 
 function write(events, note) {
