@@ -29,17 +29,27 @@ Routes: `/`, `/about`, `/events`, `/events/pitch`, and a real `/404`.
 
 ## THE MOST IMPORTANT THING
 
-**None of this work is live.** `claudebuildersneu.com` is a Netlify site that
-builds from a *different* repository, `shourya0523/anthropic-club-website`, not
-this one. Verified by fingerprinting the deployed JS bundle against both
-rosters.
+**This repository IS what serves `claudebuildersneu.com`, from the `main`
+branch.** An earlier version of this file claimed the live site built from
+`shourya0523/anthropic-club-website`. That was wrong, and it was repeated for a
+long time. Verified 2026-08-13 by fetching the live page and diffing it against
+`origin/main:index.html`: the only differences are the transformations
+`vite build` itself makes, `/favicon.png` becoming `./favicon.png` under the old
+`base: "./"`, and the dev entry `/src/main.jsx` replaced by the built bundle.
+`main`'s own `netlify.toml` carries `command = "npm run build"`,
+`publish = "dist"`, and the SPA catch-all that matches how the live site
+behaves.
 
-Until someone repoints Netlify at this repo, every change here is invisible to
-the public. That is a Netlify dashboard action (Site configuration → Build &
-deploy → link to a different repository) and cannot be done from code. Whoever
-owns that Netlify site has to do it.
+**So merging this branch into `main` publishes it.** Before doing that:
 
-Do not tell Jackson a change is "live" without checking this first.
+1. **Set `GCAL_ID` and `VITE_WEB3FORMS_KEY` in Netlify's build environment.**
+   Without the first, the deployed site builds with zero events even though the
+   calendar has entries. Without the second, the pitch form degrades to a link.
+2. **Note `NODE_VERSION`.** `main` currently pins 18, which cannot build Vite 7.
+   This branch sets 22. That change has to land or the deploy fails.
+3. **Note the removed catch-all.** `main` rewrites every path to `index.html`
+   with a 200. This branch removes that, because every route is now a real
+   prerendered file and unknown paths should return a genuine 404.
 
 ## Running it
 
@@ -244,9 +254,8 @@ them as this club's identity would overstate the relationship.
 bytes and reads `N8N_WEBHOOK =` with an **empty value**: no credential was ever
 in it. A scan across every commit and every reachable blob for private keys,
 cloud tokens, `sk-`/`ghp_`/`xoxb-`/`AIza` shaped credentials and webhook URLs
-found nothing. Rotation is not required on account of this repository. Note the
-live site builds from a *different* repo, `shourya0523/anthropic-club-website`,
-which cannot be inspected from here; if the webhook was ever real, check there.
+found nothing. Rotation is not required: this repository is also what serves the
+live site, so there is no second repo left to check.
 
 The calendar's public sharing must stay on **See all event details**. Set to
 *See only free/busy* instead, every entry arrives as `SUMMARY:Busy` with no

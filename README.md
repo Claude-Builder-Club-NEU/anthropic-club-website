@@ -14,10 +14,11 @@ React 19 · Vite 7 · Tailwind 3 · Prerendered to static HTML · Netlify
 ---
 
 > [!IMPORTANT]
-> **This repository is not what currently serves `claudebuildersneu.com`.**
-> The live Netlify site builds from a different repository. Until someone
-> repoints Netlify at this one, nothing here is visible to the public. That is a
-> dashboard action, not a code change. See `HANDOFF.md`.
+> **`claudebuildersneu.com` is served from this repository's `main` branch.**
+> Netlify builds `main` with `npm run build` and publishes `dist/`. Merging to
+> `main` therefore publishes. Set `GCAL_ID` and `VITE_WEB3FORMS_KEY` in the
+> Netlify build environment first, or the deploy will build with no events and a
+> degraded pitch form.
 
 ---
 
