@@ -4,8 +4,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Pinned Anthropic brand values. See PRODUCT.md — this palette is the
-        // client's real brand and must not be substituted.
+        // Pinned Anthropic brand values. This palette is the client's real
+        // brand and must not be substituted.
         paper: "var(--paper)",
         ink: "var(--ink)",
         coral: "var(--coral)",

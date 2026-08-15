@@ -96,7 +96,7 @@ keys, cloud tokens, `sk-`/`ghp_`/`xoxb-`/`AIza` shaped credentials, and webhook
 URLs. **Nothing found.** One file, `src/.env`, was committed in `ba45c15` and
 removed in `2de9847`; it is 14 bytes and reads `N8N_WEBHOOK =` with an **empty
 value**, so no credential was ever exposed through this repository. This
-corrects a long-standing entry in `HANDOFF.md` which assumed it had been.
+corrects a long-standing assumption that a credential had been exposed.
 
 `.gitignore` covers `.env`, `.env.*` (with `.env.example` re-included),
 `src/.env`, and every AI-harness config directory. `.env` is not tracked.

@@ -23,7 +23,8 @@ import { ArrowRightIcon, CalendarIcon } from "../components/Icons";
  * time. Nothing here is hardcoded, so an empty calendar renders empty states
  * rather than invented sessions. The handoff's seven sample events are not
  * carried across: its own README marks five of them as filled-in guesses with
- * placeholder rooms, and PRODUCT.md forbids shipping invented programming.
+ * placeholder rooms, and inventing programming the club has not scheduled is
+ * not something this site does.
  */
 const Events = () => {
   // Memoised because upcoming() builds a fresh array on every call. Without

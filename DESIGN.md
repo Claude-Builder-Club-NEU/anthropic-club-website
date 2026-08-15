@@ -476,9 +476,9 @@ fill, under the 3:1 floor for a graphic that means something.
   link stays, because that is the one thing the page cannot do itself.
 
 The handoff's "Sponsored by Anthropic" footer credit is **not** built. The club
-is affiliated with Anthropic's program, not sponsored by it, and PRODUCT.md is
-explicit that the relationship must not be overstated. A previous revision
-removed the sponsor lockup for the same reason.
+is affiliated with Anthropic's program, not sponsored by it, and the
+relationship must not be overstated. A previous revision removed the sponsor
+lockup for the same reason.
 
 ### Pitch flow (`/events/pitch`)
 
@@ -555,7 +555,7 @@ mark still appears, it simply does not travel.
 ### Don't:
 - **Don't** substitute the warm-paper-plus-terracotta palette. A slop detector will
   flag it as an AI tell; on this project it is the client's actual brand and the
-  finding is a known false positive. This is recorded in PRODUCT.md and is binding.
+  finding is a known false positive. This is binding.
 - **Don't** add a fourth animation. No scroll reveals, no parallax, no counters,
   no hover-lifts, no page transitions, no smooth scrolling. The highlighter, the
   pitch flow's step transition and the events page's hover reveal are the
