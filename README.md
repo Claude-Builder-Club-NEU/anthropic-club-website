@@ -75,7 +75,8 @@ The calendar is the single source of truth for what the club is running.
 calendar's public ICS feed and writes `src/lib/events.generated.json`. Nothing
 is fetched from the browser, so there is no API key in the bundle, no runtime
 dependency on Google being up, and no way for the public site to write back. A
-calendar outage writes an empty array rather than failing the build.
+calendar outage never fails the build and never overwrites good data: the
+previously generated events are kept exactly as they were.
 
 One calendar entry becomes an event card, a calendar chip and a detail popover.
 The mapping is a convention the board needs to know, because nothing else can
@@ -103,8 +104,15 @@ Google Calendar web UI produces, and with an "RSVP:" style label in front of it.
 > description, and there is nothing the site can do to recover what was never
 > sent. This is the single most common way to break the events page.
 
-Because events are read at build time, **add a scheduled Netlify build** so new
-entries appear without someone manually deploying.
+Because events are read at build time, a scheduled GitHub Action
+(`.github/workflows/refresh-events.yml`) re-reads the calendar **every hour**,
+commits the result only when it actually changed, and lets that push trigger a
+deploy. Add an event to the calendar and it appears on the site within the hour,
+with nobody touching the repository. There is a **Run workflow** button on the
+Actions tab if you do not want to wait.
+
+A failed fetch never overwrites good data, so a network blip changes nothing
+rather than emptying the calendar.
 
 ### 🎟️ Luma — per-event RSVP
 

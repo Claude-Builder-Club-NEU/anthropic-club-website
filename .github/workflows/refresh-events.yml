@@ -1,0 +1,93 @@
+# Keeps the site's events in step with the Google Calendar.
+#
+# WHY THIS EXISTS
+# Events are read at build time, not when a visitor loads the page. That is what
+# lets the site be fully static: no API key in the browser, no runtime
+# dependency on Google, no write path from the public internet. The cost is that
+# adding a calendar entry changes nothing until something rebuilds.
+#
+# This job closes that gap. It re-reads the calendar on a schedule and commits
+# the result only when it actually changed. The commit is a normal push, so
+# whatever is watching this repository deploys it the usual way.
+#
+# WHY IT DOES NOT JUST BUILD
+# It runs one script, not the whole build, so it needs no npm install and
+# finishes in seconds: fetch-events.mjs imports only Node builtins and
+# src/lib/links.js. Deploying is left to the host, which already knows how.
+#
+# SAFETY
+# fetch-events.mjs never overwrites good data with an empty array. A network
+# blip or a Google rate-limit leaves the generated file untouched, which means
+# no diff, no commit, and no deploy. Silence on failure is the correct outcome.
+
+name: Refresh events from Google Calendar
+
+on:
+  schedule:
+    # Hourly. The job itself is nearly free; a deploy only happens on the runs
+    # where the calendar actually changed. GitHub's cron is best-effort and can
+    # lag by several minutes under load, which is fine for event listings.
+    - cron: "17 * * * *"
+  # Adds a "Run workflow" button on the Actions tab, for when someone adds an
+  # event and does not want to wait for the next hour.
+  workflow_dispatch:
+
+# Only the generated file is ever written.
+permissions:
+  contents: write
+
+# Never let two runs race each other into a push conflict.
+concurrency:
+  group: refresh-events
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Read the calendar
+        run: node scripts/fetch-events.mjs
+
+      - name: Commit only if the calendar actually changed
+        id: sync
+        run: |
+          if git diff --quiet -- src/lib/events.generated.json; then
+            echo "No change on the calendar. Nothing to deploy."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          count=$(node -e "console.log(require('./src/lib/events.generated.json').length)")
+          echo "Calendar changed. Now $count event(s)."
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/lib/events.generated.json
+          git commit -m "Refresh events from the calendar ($count upcoming)"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      # Optional second path to a deploy, and deliberately gated on an actual
+      # change: firing it every hour would rebuild the site hourly and burn the
+      # host's build minutes for nothing.
+      #
+      # A build hook is more reliable than trusting a bot push to reach the
+      # host's webhook. Add NETLIFY_BUILD_HOOK under
+      # Settings > Secrets and variables > Actions if you have dashboard access.
+      # Without the secret this step no-ops, so the workflow is valid either way.
+      - name: Ping the deploy hook, if one is configured
+        if: steps.sync.outputs.changed == 'true'
+        env:
+          HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "No NETLIFY_BUILD_HOOK secret set; relying on the push to trigger a deploy."
+            exit 0
+          fi
+          curl -fsS -X POST -d '{}' "$HOOK" && echo "Deploy hook triggered."

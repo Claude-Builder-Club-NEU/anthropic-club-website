@@ -77,6 +77,37 @@ function write(events, note) {
   console.log(`[events] wrote ${events.length} event(s) — ${note}`);
 }
 
+/**
+ * A failed fetch must never overwrite good data with an empty array.
+ *
+ * This used to write `[]` on any failure, reasoning that a calendar outage
+ * should not fail the build. That is right, but writing an empty array is the
+ * wrong way to achieve it, and it becomes actively dangerous once a scheduled
+ * job runs this on a timer: one network blip or one Google rate-limit would
+ * commit an empty file and wipe every event off the live site until somebody
+ * noticed.
+ *
+ * Leaving the previously generated file alone satisfies the original goal, the
+ * build still succeeds, and a transient failure now changes nothing at all,
+ * which means the refresh workflow sees no diff and does not deploy.
+ *
+ * The empty array is still written when there is genuinely nothing to keep, so
+ * a first run against an unreachable calendar still produces a valid build.
+ */
+function keepExisting(reason) {
+  if (existsSync(OUT)) {
+    let count = "existing";
+    try {
+      count = JSON.parse(readFileSync(OUT, "utf8")).length;
+    } catch {
+      /* unreadable, but still better than clobbering it */
+    }
+    console.warn(`[events] ${reason} — keeping the ${count} event(s) already generated`);
+    return;
+  }
+  write([], `${reason} — nothing previously generated, shipping empty state`);
+}
+
 /** Unfold RFC 5545 line continuations (a leading space continues the line). */
 function unfold(ics) {
   return ics.replace(/\r?\n[ \t]/g, "");
@@ -263,7 +294,7 @@ async function main() {
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(20000) });
     if (!res.ok) {
-      write([], `calendar responded ${res.status} — check it is public`);
+      keepExisting(`calendar responded ${res.status} — check it is public`);
       return;
     }
     const horizon = Date.now() + HORIZON_DAYS * 864e5;
@@ -272,8 +303,7 @@ async function main() {
       .sort((a, b) => new Date(a.start) - new Date(b.start));
     write(events, `fetched from ${GCAL_ID}`);
   } catch (err) {
-    // A calendar outage must not fail the build.
-    write([], `fetch failed (${err.message}) — shipping empty state`);
+    keepExisting(`fetch failed (${err.message})`);
   }
 }
 
