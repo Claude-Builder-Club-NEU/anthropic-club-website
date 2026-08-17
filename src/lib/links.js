@@ -10,31 +10,46 @@ export const LINKEDIN =
 export const LINKTREE = "https://linktr.ee/claudeNortheastern";
 
 /**
- * Slack shared invite, supplied 2026-08-17.
+ * Slack domain signup. Set 2026-08-17.
  *
- * Replaces the bare workspace URL (https://claudebuildersclub.slack.com),
- * which only resolved for people who were already members. The one link on the
- * site aimed squarely at prospective members was therefore the one link a
- * prospective member could not use. Verified live before it shipped: the URL
- * renders a real join page rather than an expired-invite error.
+ * This is the /signup path, NOT the bare workspace URL and NOT a shared
+ * invite. Each of the three behaves differently and only this one is correct
+ * here:
  *
- * Two things to know about a shared invite, neither of which applied to the
- * workspace URL it replaces:
+ *   https://claudebuildersclub.slack.com          resolves only for people who
+ *                                                 are already members, so the
+ *                                                 one link aimed at prospective
+ *                                                 members was the one link they
+ *                                                 could not use.
  *
- * Slack can set these to expire, and an expired one fails silently from the
- * site's side. Nothing here can detect it, so set the invite to never expire,
- * or re-check it at the start of each semester.
+ *   https://join.slack.com/.../shared_invite/...  admits anyone holding the
+ *                                                 link, regardless of email
+ *                                                 domain. That is what a shared
+ *                                                 invite is FOR, which makes it
+ *                                                 the wrong thing to publish on
+ *                                                 a public website: it is the
+ *                                                 documented bypass around the
+ *                                                 workspace's own domain rule.
  *
- * It is a public join link on a public site, so anyone who finds the page can
- * enter the workspace, not only Northeastern students. That is the intent for
- * an open club, but it is a deliberate choice rather than a side effect.
+ *   /signup                                       self-service, and gated on
+ *                                                 the approved email domain.
+ *
+ * The workspace already restricts signup to northeastern.edu, so this page
+ * renders an email field suffixed with @northeastern.edu and tells anyone
+ * without one to ask an admin for an invitation. A prospective student gets in
+ * without a board member in the loop, and nobody else gets in at all.
+ *
+ * NOTE: only northeastern.edu is on Slack's approved list. The pitch form
+ * accepts husky.neu.edu and neu.edu as well (see NEU_EMAIL in
+ * components/WorkshopForm.jsx), so a student on a husky address can pitch a
+ * workshop but cannot join the Slack. Add the other two in Slack under
+ * Settings and administration, Workspace settings, to close that gap.
  *
  * The name is kept as SLACK_WORKSPACE because three consumers import it
  * (Layout, LinkHub and the outbound-click tracker in analytics.js), and the
  * destination, not the identifier, is what changed.
  */
-export const SLACK_WORKSPACE =
-  "https://join.slack.com/t/claudebuildersclub/shared_invite/zt-463tkfvd1-88ra5Rls6VolFMdsZ~mOFQ";
+export const SLACK_WORKSPACE = "https://claudebuildersclub.slack.com/signup";
 
 /**
  * Canonical origin. Moved from claudebuildersneu.com on 2026-08-17.
