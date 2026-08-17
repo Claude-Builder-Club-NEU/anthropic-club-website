@@ -5,7 +5,7 @@
  * HTML. A client-only SPA cannot do this — every route would share one title —
  * which is why the build prerenders.
  *
- * Canonical origin is claudebuildersneu.com. The old markup pointed OG and
+ * Canonical origin is claudeneu.com. The old markup pointed OG and
  * Twitter tags at claudebuilders.com, which is a PARKED domain serving no site,
  * so link previews resolved to nothing at all.
  */

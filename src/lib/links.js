@@ -19,8 +19,28 @@ export const LINKTREE = "https://linktr.ee/claudeNortheastern";
  */
 export const SLACK_WORKSPACE = "https://claudebuildersclub.slack.com";
 
-/** Canonical origin. Note: claudebuilders.com is a parked domain, not this site. */
-export const SITE_ORIGIN = "https://claudebuildersneu.com";
+/**
+ * Canonical origin. Moved from claudebuildersneu.com on 2026-08-17.
+ *
+ * Every canonical tag, OG image URL, sitemap entry and the robots.txt sitemap
+ * line derive from this one value, so a domain move is this constant and
+ * nothing else. It is baked in at BUILD time, so none of them change until the
+ * site rebuilds.
+ *
+ * No trailing slash: consumers concatenate a route path directly onto it, and
+ * one here would emit "//about" in every canonical.
+ *
+ * https, not http: Netlify serves this domain over TLS only, and the CSP sets
+ * upgrade-insecure-requests, so an http origin here would advertise a URL that
+ * only ever redirects.
+ *
+ * Keep claudebuildersneu.com attached to the same Netlify site as an alias.
+ * Netlify 301s aliases to the primary domain, which is what stops the printed
+ * flyers, the QR codes and the Instagram bio from dying on the move.
+ *
+ * Note: claudebuilders.com is a parked domain and has never been this site.
+ */
+export const SITE_ORIGIN = "https://claudeneu.com";
 
 /* ------------------------------------------------------------------------ *
  * BLOCKED VALUES

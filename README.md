@@ -14,7 +14,7 @@ React 19 · Vite 7 · Tailwind 3 · Prerendered to static HTML · Netlify
 ---
 
 > [!IMPORTANT]
-> **`claudebuildersneu.com` is served from this repository's `main` branch.**
+> **`claudeneu.com` is served from this repository's `main` branch.**
 > Netlify builds `main` with `npm run build` and publishes `dist/`. Merging to
 > `main` therefore publishes. Set `GCAL_ID` and `VITE_WEB3FORMS_KEY` in the
 > Netlify build environment first, or the deploy will build with no events and a
