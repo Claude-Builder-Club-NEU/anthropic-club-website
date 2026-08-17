@@ -10,14 +10,31 @@ export const LINKEDIN =
 export const LINKTREE = "https://linktr.ee/claudeNortheastern";
 
 /**
- * Slack workspace, supplied 2026-08-13.
+ * Slack shared invite, supplied 2026-08-17.
  *
- * Note this is a workspace URL, not a shared-invite link, so it only resolves
- * for people who are already members. Replace it with a shared invite
- * (Slack, People, Invite people, "Share invite link") so that a prospective
- * member can actually get in.
+ * Replaces the bare workspace URL (https://claudebuildersclub.slack.com),
+ * which only resolved for people who were already members. The one link on the
+ * site aimed squarely at prospective members was therefore the one link a
+ * prospective member could not use. Verified live before it shipped: the URL
+ * renders a real join page rather than an expired-invite error.
+ *
+ * Two things to know about a shared invite, neither of which applied to the
+ * workspace URL it replaces:
+ *
+ * Slack can set these to expire, and an expired one fails silently from the
+ * site's side. Nothing here can detect it, so set the invite to never expire,
+ * or re-check it at the start of each semester.
+ *
+ * It is a public join link on a public site, so anyone who finds the page can
+ * enter the workspace, not only Northeastern students. That is the intent for
+ * an open club, but it is a deliberate choice rather than a side effect.
+ *
+ * The name is kept as SLACK_WORKSPACE because three consumers import it
+ * (Layout, LinkHub and the outbound-click tracker in analytics.js), and the
+ * destination, not the identifier, is what changed.
  */
-export const SLACK_WORKSPACE = "https://claudebuildersclub.slack.com";
+export const SLACK_WORKSPACE =
+  "https://join.slack.com/t/claudebuildersclub/shared_invite/zt-463tkfvd1-88ra5Rls6VolFMdsZ~mOFQ";
 
 /**
  * Canonical origin. Moved from claudebuildersneu.com on 2026-08-17.
