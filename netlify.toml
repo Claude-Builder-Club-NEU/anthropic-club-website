@@ -85,12 +85,10 @@
     #                hosts take GA4 beacons, including its regional endpoints;
     #                and the Supabase project takes attendance check-ins.
     #
-    #                >>> THE SUPABASE HOST BELOW IS A PLACEHOLDER. <<<
-    #                Replace YOUR-PROJECT-REF with the real project ref, which
-    #                is the first label of VITE_SUPABASE_URL. Until you do,
-    #                /attendance will fail in the browser with a CSP violation
-    #                rather than a network error, which looks like a bug in the
-    #                form and is not.
+    #                The host is the club's own project and must match the
+    #                first label of VITE_SUPABASE_URL. If the project is ever
+    #                recreated the ref changes, and check-in then fails with a
+    #                CSP violation that looks like a bug in the form and is not.
     #
     #                Named host, not https://*.supabase.co. The wildcard would
     #                let any page on this origin talk to ANY Supabase project,
@@ -106,7 +104,7 @@
     #   frame-src / object-src  nothing is embedded, so both are shut off.
     #   frame-ancestors  the modern replacement for X-Frame-Options above,
     #                which is kept for older browsers.
-    Content-Security-Policy = "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com https://YOUR-PROJECT-REF.supabase.co https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; form-action 'self'; frame-src 'none'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com https://rdbyncjtnmjqgncrauwl.supabase.co https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; form-action 'self'; frame-src 'none'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
 
 # Events come from a Google Calendar read at BUILD time, so the site only
 # refreshes when it rebuilds. That is automated in

@@ -29,10 +29,26 @@ that this file previously marked **N/A** are now live, and the sections below
 were rewritten on that basis. Amending the old text would have left a document
 whose opening premise contradicted its own tables.
 
-> **Status:** the schema, the policies and the client are written and reviewed;
-> they have **not yet been run against a live Supabase project**. Nothing in §3
-> is confirmed by execution. Re-verify every claim there on the day the project
-> is created, and update this line.
+> **Status:** the schema ran against the live project on **2026-08-19** and every
+> claim in §3 was verified by execution, not by reading. Results:
+>
+> | Check | Result |
+> |---|---|
+> | Tables with RLS enabled | **3 of 3** |
+> | Policies granting anon anything | **0** |
+> | `anon` can `SELECT` / `INSERT` on `checkins` | **false / false** |
+> | `anon` can `SELECT` on `ballots` | **false** |
+> | `anon` can `EXECUTE check_in` | **true** |
+> | `current_session()` returns the room code | **false** |
+> | Email normalised (` Rodriguez.M@Northeastern.EDU ` → stored) | `rodriguez.m@northeastern.edu` |
+> | Second check-in for the same address | **1 row, not 2** |
+> | Expired code / wrong domain / wrong code | `code_expired` / `email_domain` / `code_invalid` |
+> | `husky.neu.edu` accepted | **true** |
+> | Ballot `created_at` truncated to the hour | **true** |
+>
+> Still unverified: the **browser** path end to end, which needs the client
+> pointed at the project. The CSP re-verification in §7 is also still
+> outstanding.
 
 ---
 
@@ -267,10 +283,9 @@ not `https://*.supabase.co` on purpose: the wildcard would let this origin talk
 to *any* Supabase project, including one an attacker controls, which is most of
 what `connect-src` exists to prevent here.
 
-> **Outstanding:** the host in `netlify.toml` is still the placeholder
-> `https://YOUR-PROJECT-REF.supabase.co`. Until it is replaced, `/attendance`
-> and the ballot fail in the browser with a CSP violation that looks like a form
-> bug and is not.
+The host is now the club's real project. If the project is ever recreated the
+ref changes, and check-in then fails with a CSP violation that looks like a form
+bug and is not.
 
 Two deliberate concessions, recorded rather than hidden:
 
