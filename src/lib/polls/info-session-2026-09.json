@@ -10,7 +10,7 @@
     "requireAllAnswers": true
   },
   "castTitle": "Your ballot is in.",
-  "castBody": "Results go up on the screen at the end of the session. The three winning workshops land on the events calendar the same night.",
+  "castBody": "The three winning workshops land on the events calendar the same night.",
   "sections": [
     {
       "key": "ballot",

@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import {
   answerKey,
   castBallot,
-  clearProgress,
   hasBackend,
   KNOWN_TYPES,
   loadProgress,
@@ -153,15 +152,6 @@ const Ballot = ({ poll }) => {
     }
   }
 
-  function startOver() {
-    clearProgress(poll.slug);
-    setAnswers({});
-    setIndex(0);
-    setPhase(PHASE.section);
-    setStatus("idle");
-    setError("");
-  }
-
   /* --- Not configured --------------------------------------------------- */
   if (!hasBackend) {
     return (
@@ -172,7 +162,7 @@ const Ballot = ({ poll }) => {
           anything. Nothing you enter here would be counted.
         </p>
         <Link className="btn btn--secondary" to="/polls">
-          Back to all polls
+          Back to polls
         </Link>
       </div>
     );
@@ -211,26 +201,26 @@ const Ballot = ({ poll }) => {
     );
   }
 
-  /* --- Cast ------------------------------------------------------------- */
+  /* --- Cast -------------------------------------------------------------
+     The ballot is closed, so this screen carries no progress bars, no eyebrow
+     and no way back into it. Section bars would invite a reader to look for a
+     step still to do; there is none, and the copy already said this closes the
+     ballot. Two ways out, both real buttons, and nothing that restarts a thing
+     that cannot be restarted. */
   if (phase === PHASE.cast) {
     return (
       <div className="ballot">
-        <Progress sections={sections} index={sections.length} />
-        <p className="ballot__eyebrow">Ballot cast · thank you</p>
         <h1 className="ballot__title" tabIndex={-1} ref={headingRef}>
           {poll.castTitle || "Your ballot is in."}
         </h1>
         {poll.castBody && <p className="ballot__lead">{poll.castBody}</p>}
         <div className="ballot__actions">
           <Link className="btn btn--coral" to="/events">
-            See the calendar
+            View calendar
           </Link>
-          <Link className="ballot__quiet" to="/polls">
-            Back to all polls
+          <Link className="btn btn--secondary" to="/polls">
+            Back to polls
           </Link>
-          <button type="button" className="ballot__quiet" onClick={startOver}>
-            Start over
-          </button>
         </div>
       </div>
     );

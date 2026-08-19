@@ -56,7 +56,7 @@ const Poll = () => {
             It may have closed, or the link may be wrong.
           </p>
           <Link className="btn btn--secondary" to="/polls">
-            Back to all polls
+            Back to polls
           </Link>
         </div>
       </Shell>
@@ -93,7 +93,7 @@ const Poll = () => {
             votes together.
           </p>
           <Link className="btn btn--secondary" to="/polls">
-            Back to all polls
+            Back to polls
           </Link>
         </div>
       </Shell>

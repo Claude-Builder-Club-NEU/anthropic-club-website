@@ -3241,17 +3241,6 @@ textarea.pf-input {
   margin-top: var(--space-8);
 }
 
-.ballot__quiet {
-  background: none;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  font-family: var(--font-mono);
-  font-size: var(--step-meta);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--gray-text);
-}
 
 .ballot__notice {
   margin-inline: auto;
