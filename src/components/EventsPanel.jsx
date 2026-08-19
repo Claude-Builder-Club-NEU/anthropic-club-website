@@ -1,4 +1,9 @@
-import { upcoming, formatEventDate, formatEventTimeRange } from "../lib/events";
+import {
+  upcoming,
+  formatEventDate,
+  formatEventTimeRange,
+  rsvpLabel,
+} from "../lib/events";
 import { LUMA_URL } from "../lib/links";
 import InterestBanner from "./InterestBanner";
 
@@ -32,6 +37,7 @@ const EventsPanel = ({ limit }) => {
         <ul className="home-events">
           {shown.map((event) => {
             const rsvp = event.rsvpUrl || LUMA_URL;
+            const label = rsvpLabel(rsvp);
             return (
               <li key={event.id} className="home-event">
                 {/* Detail first, action second: it reads in that order and it
@@ -65,10 +71,15 @@ const EventsPanel = ({ limit }) => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    RSVP
+                    {label.action}
                     {/* Several rows each labelled only "RSVP" would be
-                        indistinguishable in a screen reader's link list. */}
-                    <span className="sr-only"> on Luma for {event.title}</span>
+                        indistinguishable in a screen reader's link list. The
+                        service is named here only when rsvpLabel supplies one,
+                        so a Google Form reads "Sign up for <event>" rather
+                        than claiming to be Luma. */}
+                    <span className="sr-only">
+                      {label.via ? ` ${label.via}` : ""} for {event.title}
+                    </span>
                   </a>
                 ) : (
                   <span className="home-event__rsvp home-event__rsvp--none">

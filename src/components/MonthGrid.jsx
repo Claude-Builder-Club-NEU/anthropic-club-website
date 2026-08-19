@@ -4,6 +4,7 @@ import {
   kindOf,
   formatEventTimeShort,
   formatEventTimeRange,
+  rsvpLabel,
 } from "../lib/events";
 import { LUMA_URL } from "../lib/links";
 import { ArrowRightIcon } from "./Icons";
@@ -345,7 +346,8 @@ const MonthGrid = ({ events = [] }) => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                RSVP on Luma <ArrowRightIcon width={15} height={15} />
+                {rsvpLabel(shown.rsvpUrl || LUMA_URL).full}{" "}
+                <ArrowRightIcon width={15} height={15} />
               </a>
             )}
           </div>

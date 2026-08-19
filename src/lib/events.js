@@ -164,5 +164,51 @@ export function eventJsonLd(event, origin) {
   };
 }
 
+/* ------------------------------------------------------------------------ *
+ * Signup labels
+ *
+ * The RSVP link is whatever the board put on line 1 of the calendar entry, and
+ * that is not always Luma. The Chatathon is run with the partner club AINU and
+ * signs up through a Google Form, so a button reading "RSVP on Luma" would name
+ * the wrong service and promise the wrong kind of page: Luma is an RSVP you
+ * confirm in a click, a Google Form is a set of questions to fill in.
+ *
+ * The label is therefore derived from the destination rather than assumed. The
+ * board keeps pasting a link and the site works out what to call it, which is
+ * the same bargain as kindOf() above: nothing new for them to learn and no code
+ * change per event.
+ *
+ * `via` names the service only where naming it tells the reader something. On
+ * Luma it does, because "RSVP on Luma" sets the expectation of a one-click
+ * confirmation on a page they may already have an account for. On a Google Form
+ * it does not: "Sign up" already says what happens, and "Sign up on Google
+ * Forms" reads as though the form were the point rather than the hackathon.
+ * ------------------------------------------------------------------------ */
+
+const RSVP_LABELS = [
+  [/^https?:\/\/(?:www\.)?(?:lu\.ma|luma\.com)\//i, { action: "RSVP", via: "on Luma" }],
+  [/^https?:\/\/(?:docs\.google\.com\/forms\/|forms\.gle\/)/i, { action: "Sign up", via: "" }],
+];
+
+/**
+ * How to label an event's signup link, derived from where it points.
+ *
+ * Returns null when there is no link, which every caller already treats as
+ * "render no button rather than one that goes nowhere".
+ *
+ * An unrecognised host falls back to a bare "RSVP" rather than guessing at a
+ * service name. That is the safe direction: a generic verb is always true,
+ * whereas naming the wrong service is a small lie printed on a button.
+ *
+ * @param {string|null|undefined} url
+ * @returns {{action: string, via: string, full: string}|null}
+ */
+export function rsvpLabel(url) {
+  if (!url) return null;
+  const match = RSVP_LABELS.find(([re]) => re.test(url));
+  const { action, via } = match ? match[1] : { action: "RSVP", via: "" };
+  return { action, via, full: via ? `${action} ${via}` : action };
+}
+
 export const hasEvents = ALL.length > 0;
 export default ALL;

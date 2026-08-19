@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { KINDS, kindOf, formatEventTimeRange } from "../lib/events";
+import { KINDS, kindOf, formatEventTimeRange, rsvpLabel } from "../lib/events";
 import { LUMA_URL } from "../lib/links";
 import { ArrowRightIcon } from "./Icons";
 
@@ -50,6 +50,7 @@ const EventTile = ({ event, lead = false }) => {
 
   const time = formatEventTimeRange(event);
   const rsvp = event.rsvpUrl || LUMA_URL;
+  const label = rsvpLabel(rsvp);
 
   return (
     <li
@@ -135,9 +136,11 @@ const EventTile = ({ event, lead = false }) => {
               )}
             </dl>
 
-            {/* The RSVP link parsed out of this entry's own calendar
+            {/* The signup link parsed out of this entry's own calendar
                 description. LUMA_URL is a club-wide fallback; with neither, no
-                button rather than one that goes nowhere. */}
+                button rather than one that goes nowhere. The wording follows
+                the destination: Luma entries read "RSVP on Luma", a Google
+                Form reads "Sign up". */}
             {rsvp && (
               <a
                 className="event-tile__rsvp"
@@ -145,7 +148,7 @@ const EventTile = ({ event, lead = false }) => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                RSVP on Luma <ArrowRightIcon width={16} height={16} />
+                {label.full} <ArrowRightIcon width={16} height={16} />
               </a>
             )}
           </div>
