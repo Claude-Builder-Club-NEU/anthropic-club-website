@@ -59,9 +59,11 @@ Two rules follow from that and are worth knowing before you change anything:
 | `/404` | A real HTTP 404 with links back to everything, not a soft 200 |
 
 Neither `/polls` nor `/attendance` is in the top nav. Both are surfaces for a
-room that is already in a session with the URL on a slide, and a permanent tab
-leading to "nothing open right now" is a dead end on every other page. The
-Attendance tab does appear once the build has database credentials.
+room already in a session, reached from a URL on a slide or a code on a
+projector, rather than reasons for a stranger to visit the site. On most days
+there is no session open and no ballot running, so a permanent tab for either
+would be a dead end on every other page. Both routes stay reachable and
+`/polls` stays indexed, so direct links, QR codes and search results all work.
 
 `/workshops` was renamed to `/events`; permanent redirects in `netlify.toml`
 keep old links from Instagram bios and printed QR codes working.

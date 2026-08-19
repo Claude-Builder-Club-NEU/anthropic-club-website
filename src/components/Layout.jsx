@@ -7,31 +7,24 @@ import {
   LINKEDIN,
   SLACK_WORKSPACE,
 } from "../lib/links";
-import { hasBackend } from "../lib/supabase";
 import { InstagramIcon, LinkedInIcon, SlackIcon } from "./Icons";
 
 /**
- * Primary nav.
+ * Primary nav. Three entries, and neither /polls nor /attendance is among them.
  *
- * Polls is deliberately NOT here. It is a surface for a room that is already
- * in a session and has the URL on a slide, not a reason for a stranger to
- * visit the site, and a permanent tab leading to "nothing open right now" is a
- * dead end on every page. The route stays reachable and the page is still
- * indexed, so a direct link and a search result both work.
+ * Both are surfaces for a room that is already in a session with the URL on a
+ * slide or a code on a projector. Neither is a reason for a stranger to visit
+ * the site, which is what the nav is for. A permanent Attendance tab is also a
+ * dead end for the overwhelming majority of visits, since there is no session
+ * open on most days and the page can only say so.
  *
- * Attendance appears only once the build has database credentials. hasBackend
- * is a build-time constant, so the prerendered HTML and the hydrated client
- * always agree and nothing flickers. A deploy without the Supabase variables
- * therefore never advertises a tab whose page says "check-in is not switched
- * on yet", and the tab appears by itself on the first build after the
- * variables are set. That route is reachable either way too, so a code on a
- * slide still works while it is being set up.
+ * Both routes stay reachable, and /polls stays indexed, so a direct link, a QR
+ * code and a search result all still work. Only the advertisement is gone.
  */
 const NAV = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
   { to: "/events", label: "Events" },
-  ...(hasBackend ? [{ to: "/attendance", label: "Attendance" }] : []),
 ];
 
 /** Shared container inset. The header uses the same one as every page so the
