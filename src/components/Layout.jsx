@@ -11,20 +11,26 @@ import { hasBackend } from "../lib/supabase";
 import { InstagramIcon, LinkedInIcon, SlackIcon } from "./Icons";
 
 /**
- * Attendance appears in the nav only once the build has database credentials.
+ * Primary nav.
  *
- * hasBackend is a build-time constant, so the prerendered HTML and the
- * hydrated client always agree and there is no flicker. The effect is that a
- * deploy without the Supabase variables never advertises a tab whose page says
- * "check-in is not switched on yet", and the tab appears by itself on the first
- * build after the variables are set. The route stays reachable either way, so a
- * code on a slide pointing at /attendance still works while it is being set up.
+ * Polls is deliberately NOT here. It is a surface for a room that is already
+ * in a session and has the URL on a slide, not a reason for a stranger to
+ * visit the site, and a permanent tab leading to "nothing open right now" is a
+ * dead end on every page. The route stays reachable and the page is still
+ * indexed, so a direct link and a search result both work.
+ *
+ * Attendance appears only once the build has database credentials. hasBackend
+ * is a build-time constant, so the prerendered HTML and the hydrated client
+ * always agree and nothing flickers. A deploy without the Supabase variables
+ * therefore never advertises a tab whose page says "check-in is not switched
+ * on yet", and the tab appears by itself on the first build after the
+ * variables are set. That route is reachable either way too, so a code on a
+ * slide still works while it is being set up.
  */
 const NAV = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
   { to: "/events", label: "Events" },
-  { to: "/polls", label: "Polls" },
   ...(hasBackend ? [{ to: "/attendance", label: "Attendance" }] : []),
 ];
 

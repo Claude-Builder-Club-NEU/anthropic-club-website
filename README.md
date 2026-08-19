@@ -4,8 +4,9 @@
 
 **The website for Northeastern's chapter of Anthropic's Claude Builder Club program.**
 
-A five-route static site that runs on a Google Calendar and two form services,
-so the exec board can keep it current without ever opening this repository.
+A prerendered site that runs on a Google Calendar and a handful of services, so
+the exec board can keep it current without ever opening this repository. Two
+surfaces, check-in and polls, also read and write a small database.
 
 React 19 · Vite 7 · Tailwind 3 · Prerendered to static HTML · Netlify
 
@@ -16,9 +17,10 @@ React 19 · Vite 7 · Tailwind 3 · Prerendered to static HTML · Netlify
 > [!IMPORTANT]
 > **`claudeneu.com` is served from this repository's `main` branch.**
 > Netlify builds `main` with `npm run build` and publishes `dist/`. Merging to
-> `main` therefore publishes. Set `GCAL_ID` and `VITE_WEB3FORMS_KEY` in the
-> Netlify build environment first, or the deploy will build with no events and a
-> degraded pitch form.
+> `main` therefore publishes. Set `GCAL_ID`, `VITE_WEB3FORMS_KEY` and the two
+> `VITE_SUPABASE_*` variables in the Netlify build environment first, or the
+> deploy will build with no events, a degraded pitch form, and check-in and
+> polls unable to record anything.
 
 ---
 
@@ -51,7 +53,15 @@ Two rules follow from that and are worth knowing before you change anything:
 | `/about` | The club's story and the seven-person executive board, with headshots, roles, majors and contact links |
 | `/events` | Upcoming events as feature cards, a month calendar, and the two ways to get more involved |
 | `/events/pitch` | A full-screen, one-question-at-a-time form for pitching a workshop |
+| `/polls` | The polls hub: open ballots, ones opening soon, and results |
+| `/polls/<slug>` | One poll's ballot. Dynamic, so it is not prerendered; `netlify.toml` rewrites `/polls/*` to the hub |
+| `/attendance` | Session check-in and the term stamp card. `noindex`, and kept out of the sitemap |
 | `/404` | A real HTTP 404 with links back to everything, not a soft 200 |
+
+Neither `/polls` nor `/attendance` is in the top nav. Both are surfaces for a
+room that is already in a session with the URL on a slide, and a permanent tab
+leading to "nothing open right now" is a dead end on every other page. The
+Attendance tab does appear once the build has database credentials.
 
 `/workshops` was renamed to `/events`; permanent redirects in `netlify.toml`
 keep old links from Instagram bios and printed QR codes working.
@@ -145,8 +155,9 @@ which board member to email.
 
 `/events/pitch` asks five questions one screen at a time: name, Northeastern
 email, topic, rough timeframe, and what they would cover. Web3Forms posts the
-result straight to the board's inbox. There is **no backend to run and no
-database to secure**, which is the point.
+result straight to the board's inbox. This form in particular still has **no
+backend to run**, which is why it was chosen: a pitch is a message, and a
+message wants an inbox rather than a table.
 
 Specifics worth knowing:
 
@@ -155,6 +166,58 @@ Specifics worth knowing:
 - Without the access key the flow does not render a form that would silently
   fail; it routes people to the interest form instead.
 - The key is public by design (see [Environment](#environment)).
+
+### ✅ Attendance — check-in and the stamp card
+
+**What it does for the club:** it answers "who actually comes", and gives
+students a reason to keep coming. A six-character code goes on the screen at the
+front of the room; a student enters it with their name and Northeastern email
+and collects a stamp. Eight stamps to a card, one card per term.
+
+**There is no account and no password.** The email *is* the identity, and the
+card is simply the check-ins that share one address. Same address next week,
+same card. That is why the screen says so under the button, and why the
+confirmation echoes the address it saved to: a typo caught while the student is
+still standing in the room is a typo that costs nothing.
+
+The room code rotates every session and expires shortly after the start, so it
+cannot usefully be texted to somebody who did not come.
+
+Schema, policies and the two functions the browser may call are in
+`supabase/schema.sql`. The security model is worth reading before changing
+anything there: row-level security is on and **no policy grants the anon role
+anything**, so a leaked key reads nothing and writes nothing directly.
+
+> [!NOTE]
+> The officer roster view is **not built yet**. Adding a check-in by hand,
+> merging two addresses that turn out to be the same student, and generating a
+> room code are all currently direct SQL. That view reads other people's rows,
+> so it needs a real authenticated role rather than the public key.
+
+### 🗳️ Polls — deciding what the club runs
+
+**What it does for the club:** it turns "what should we run this term" from a
+show of hands into a count. A ballot runs during a session: pick three workshops
+in the order you want them, answer a few questions about timing, and say which
+socials you would actually turn up to.
+
+**Nothing asks for your name, and that is the point.** No email, no account, no
+IP. Students answer honestly about experience level because nothing is
+attributable. The cost is stated on screen: a second device can vote again,
+because deduping would require knowing who is voting.
+
+Between sections the ballot shows a two-minute countdown, so the room moves
+together and the presenter can talk through the section that just closed.
+
+**A poll is a file, not code.** Each one is a JSON definition in
+`src/lib/polls/`, and the ballot renders whatever question types it finds:
+ranked slots, single choice, multi choice, yes/no and free text. Adding the next
+poll is dropping a file in and adding one line to `POLLS` in `src/lib/polls.js`
+— no new component, no new route.
+
+The definitions live in git rather than the database on purpose: a poll is
+authored and reviewed like copy, so it belongs somewhere it can be diffed. The
+database holds only what people answered. See `supabase/polls.sql`.
 
 ### 📈 Google Analytics 4 — what people actually do
 
@@ -266,12 +329,20 @@ absent degrades to a defined state rather than breaking the build.
 | `GCAL_ID` | Public Google Calendar address | Events surfaces render their empty state |
 | `VITE_WEB3FORMS_KEY` | Destination inbox for the pitch form | The flow is replaced by a link to the interest form |
 | `VITE_GA_ID` | GA4 measurement ID | Analytics is a clean no-op; no script loads |
+| `VITE_SUPABASE_URL` | Supabase project REST origin | Attendance and polls render an explanatory panel instead of a form |
+| `VITE_SUPABASE_ANON_KEY` | Supabase anon key | As above. The Attendance tab also stays out of the nav |
 
 `VITE_`-prefixed values are **inlined into the client bundle at build time and
-are therefore public.** That is correct for both of them here: the Web3Forms key
-identifies a destination inbox and authorises nothing, and a GA measurement ID
-is public by design. Abuse of the form key is controlled by domain allowlist and
-rate limit in the Web3Forms dashboard, not by hiding it.
+are therefore public.** That is correct for all of them here. The Web3Forms key
+identifies a destination inbox and authorises nothing; a GA measurement ID is
+public by design; and the Supabase anon key is safe to publish **only because
+row-level security grants it nothing** and the four functions it can reach never
+return another person's data. See `SECURITY.md` §3.1 and §5.
+
+> [!CAUTION]
+> The Supabase **`service_role`** key bypasses row-level security entirely. It
+> must never appear in this repository, in any `VITE_` variable, or in this
+> site's Netlify build environment.
 
 **Anything genuinely secret must never take a `VITE_` prefix.** `GCAL_ID` has
 none, which is why it stays on the build machine.
@@ -310,11 +381,20 @@ Current mobile Lighthouse, measured on the built output:
 
 ## Security
 
-Full record in `SECURITY.md`. In short: no server, no database, no accounts, no
-cookies set by this site, and no write path from the public internet. Response
-headers including a Content Security Policy are set in `netlify.toml`, calendar
-data is treated as untrusted and URL-validated before it can reach a link, and
-production dependencies are held at **zero** advisories.
+Full record in `SECURITY.md`, rewritten on 2026-08-19 when attendance and polls
+added the site's first write path.
+
+The site is still prerendered and still sets no cookies of its own, but it now
+stores data: check-ins carry a student's name and Northeastern email, and
+ballots are anonymous. The access-control model is that **row-level security is
+enabled on every table and no policy grants the anon role anything** — all
+access is through four `SECURITY DEFINER` functions, none of which returns a row
+belonging to anyone but its caller. That is what makes publishing the anon key
+safe, and it is the property to protect in any future change.
+
+Response headers including a Content Security Policy are set in `netlify.toml`,
+calendar data is treated as untrusted and URL-validated before it can reach a
+link, and production dependencies are held at **zero** advisories.
 
 ```bash
 npm audit --omit=dev   # production dependencies: must stay at 0
