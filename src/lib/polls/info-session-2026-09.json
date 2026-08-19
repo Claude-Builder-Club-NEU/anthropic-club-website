@@ -1,0 +1,118 @@
+{
+  "slug": "info-session-2026-09",
+  "title": "Info Session Poll",
+  "subtitle": "Make your voice heard at Claude Builders Club",
+  "opensAt": "2026-09-17T18:00:00-04:00",
+  "closesAt": "2026-09-17T19:30:00-04:00",
+  "settings": {
+    "breakSeconds": 120,
+    "autoOpen": false,
+    "requireAllAnswers": true
+  },
+  "castTitle": "Your ballot is in.",
+  "castBody": "Results go up on the screen at the end of the session. The three winning workshops land on the events calendar the same night.",
+  "sections": [
+    {
+      "key": "ballot",
+      "label": "The ballot",
+      "title": "Three dates are empty.",
+      "lead": "Fill them in the order you want them. Whatever gets the most votes gets the room.",
+      "questions": [
+        {
+          "key": "workshops",
+          "type": "slots",
+          "prompt": "Pick three workshops in the order you want them",
+          "slots": [
+            { "label": "Slot 2", "date": "Oct 15" },
+            { "label": "Slot 3", "date": "Oct 29" },
+            { "label": "Slot 4", "date": "Nov 12" }
+          ],
+          "pool": [
+            { "key": "tools", "label": "Building tools with Claude", "level": "Beginner / Intermediate" },
+            { "key": "claude-code", "label": "Claude Code and how it actually works", "level": "Intermediate" },
+            { "key": "agents", "label": "Student agent builds: schedule, job tracker, co-op search", "level": "Intermediate" },
+            { "key": "school", "label": "Claude for school: assignments, notes, studying", "level": "Beginner" },
+            { "key": "side-projects", "label": "Claude Code for building side projects", "level": "Intermediate" },
+            { "key": "prompting", "label": "Prompting deep dive: getting better answers", "level": "Beginner" }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "timing",
+      "label": "Timing",
+      "title": "When we meet",
+      "lead": "Same three workshops, but they only work if you can show up.",
+      "questions": [
+        {
+          "key": "night",
+          "type": "single",
+          "prompt": "Best night for a biweekly 90-minute session",
+          "layout": "inline",
+          "options": [
+            { "key": "mon", "label": "Monday" },
+            { "key": "tue", "label": "Tuesday" },
+            { "key": "wed", "label": "Wednesday" },
+            { "key": "thu", "label": "Thursday" }
+          ]
+        },
+        {
+          "key": "experience",
+          "type": "single",
+          "prompt": "How much have you built with Claude so far?",
+          "options": [
+            { "key": "none", "label": "Haven't opened it yet" },
+            { "key": "few", "label": "Tried it a few times" },
+            { "key": "weekly", "label": "I use it most weeks" },
+            { "key": "shipping", "label": "I'm shipping with it" }
+          ]
+        },
+        {
+          "key": "saturday",
+          "type": "yesno",
+          "prompt": "Would you come to a Saturday three-hour build session?"
+        }
+      ]
+    },
+    {
+      "key": "socials",
+      "label": "Socials",
+      "title": "The rest of the semester",
+      "lead": "Workshops are half of it. This part decides the other half.",
+      "questions": [
+        {
+          "key": "socials",
+          "type": "multi",
+          "prompt": "Which socials would you actually show up to?",
+          "hint": "Pick as many as apply.",
+          "options": [
+            { "key": "cowork", "label": "Coffee and cowork, weekday mornings" },
+            { "key": "boba", "label": "Boba night" },
+            { "key": "demo", "label": "Demo night with pizza" },
+            { "key": "coop", "label": "Co-op and internship panel" },
+            { "key": "games", "label": "Game night" },
+            { "key": "showcase", "label": "End-of-semester showcase" }
+          ]
+        },
+        {
+          "key": "outcome",
+          "type": "single",
+          "prompt": "What do you most want to walk out with?",
+          "options": [
+            { "key": "resume", "label": "Something I can put on a resume" },
+            { "key": "tool", "label": "A tool I actually use for school" },
+            { "key": "understanding", "label": "A better handle on how Claude works" },
+            { "key": "people", "label": "People to build with" }
+          ]
+        },
+        {
+          "key": "writein",
+          "type": "text",
+          "prompt": "Anything we should run that isn't on this list?",
+          "optional": true,
+          "maxLength": 400
+        }
+      ]
+    }
+  ]
+}

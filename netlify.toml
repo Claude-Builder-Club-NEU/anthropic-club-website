@@ -13,6 +13,21 @@
 # 404 for anything unknown. The old rule returned 200 for every URL on the
 # domain, which told crawlers that every typo was a valid page.
 
+# A ballot lives at /polls/<slug>, and a poll is added by dropping a JSON file
+# into src/lib/polls/. There is therefore no prerendered HTML per slug and there
+# should not be: polls close, and stale files would outlive them.
+#
+# This is a SCOPED rewrite, not the catch-all the note above describes removing.
+# It serves the polls hub's HTML for anything under /polls/ so the client router
+# can resolve the slug, and it does so at 200 because the URL really is a page.
+# Every path outside /polls/ still falls through to a genuine 404. An unknown
+# slug is handled inside the app, which can say "that poll is not here" next to
+# a link to the ones that are, rather than a bare 404 page.
+[[redirects]]
+  from = "/polls/*"
+  to = "/polls/index.html"
+  status = 200
+
 # /workshops became /events. These are permanent, so anything already linking to
 # the old path (Instagram bio, Linktree, a flyer QR code, search results) follows
 # through instead of hitting the 404 page. The splat rule covers the pitch form

@@ -24,6 +24,7 @@ const NAV = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
   { to: "/events", label: "Events" },
+  { to: "/polls", label: "Polls" },
   ...(hasBackend ? [{ to: "/attendance", label: "Attendance" }] : []),
 ];
 

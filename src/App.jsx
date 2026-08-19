@@ -6,6 +6,8 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Events from "./pages/Events";
 import Attendance from "./pages/Attendance";
+import Polls from "./pages/Polls";
+import Poll from "./pages/Poll";
 import Pitch from "./pages/Pitch";
 import NotFound from "./pages/NotFound";
 import "./App.css";
@@ -62,6 +64,11 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/events" element={<Events />} />
           <Route path="/attendance" element={<Attendance />} />
+          <Route path="/polls" element={<Polls />} />
+          {/* Dynamic: one ballot per poll file, so there is no prerendered
+              HTML per slug. netlify.toml rewrites /polls/* to the hub so the
+              client router can resolve it. */}
+          <Route path="/polls/:slug" element={<Poll />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

@@ -2705,3 +2705,653 @@ textarea.pf-input {
   border-radius: 999px;
   padding: var(--space-2) var(--space-4);
 }
+
+/* ==========================================================================
+   Polls — /polls and /polls/:slug
+   Mockups: polls-01 through polls-07
+
+   The near-black ballot card is the one place on the site that inverts. It
+   earns that here because the hub's whole job is to make a single action
+   unmistakable in a room where people are half-watching a projector, and a
+   quiet page with one dark card does that without introducing a colour.
+   ========================================================================== */
+
+.pollhub__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+
+.pollhub__title {
+  font-family: var(--font-display);
+  font-size: var(--step-display);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.pollhub__lead {
+  margin-top: var(--space-4);
+  max-width: var(--measure-tight);
+  font-family: var(--font-body);
+  font-size: var(--step-lead);
+  color: var(--coral-text);
+}
+
+.pollhub__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.pollfilter {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--step-small);
+  color: var(--ink);
+}
+
+.pollfilter.is-on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.pollfilter:focus-visible {
+  outline: 2px solid var(--coral-text);
+  outline-offset: 2px;
+}
+
+.pollhub__section {
+  margin-top: var(--space-12);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-display);
+  font-size: var(--step-body);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.pollhub__empty {
+  margin-top: var(--space-8);
+  color: var(--gray-text);
+}
+
+/* --- The ballot card ----------------------------------------------------- */
+
+.pollcard {
+  position: relative;
+  overflow: hidden;
+  margin-top: var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--ink);
+  padding: var(--space-12);
+}
+
+.pollcard__body {
+  position: relative;
+  z-index: 1;
+  max-width: 34rem;
+}
+
+.pollcard__title {
+  font-family: var(--font-body);
+  font-size: var(--step-1);
+  line-height: 1.1;
+  color: var(--paper);
+}
+
+.pollcard__sub {
+  margin-top: var(--space-4);
+  font-family: var(--font-body);
+  font-size: var(--step-lead);
+  color: var(--gray-mid);
+}
+
+.pollcard__meta {
+  margin-top: var(--space-6);
+  font-family: var(--font-mono);
+  font-size: var(--step-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-mid);
+}
+
+.pollcard .btn {
+  margin-top: var(--space-8);
+}
+
+/* Watermark. A radial wash rather than an image: no extra request, nothing to
+   go missing under the CSP, and it scales with the card. */
+.pollcard__mark {
+  position: absolute;
+  right: -6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26rem;
+  height: 26rem;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(176, 174, 165, 0.22) 0%,
+    rgba(176, 174, 165, 0) 62%
+  );
+  pointer-events: none;
+}
+
+/* --- Results list -------------------------------------------------------- */
+
+.pollresults {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pollresult {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-6) 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+@media (min-width: 52rem) {
+  .pollresult {
+    grid-template-columns: 12rem 16rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--space-6);
+  }
+}
+
+.pollresult__when {
+  font-family: var(--font-mono);
+  font-size: var(--step-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-text);
+}
+
+.pollresult__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.pollresult__outcome {
+  color: var(--gray-text);
+}
+
+/* --- Ballot -------------------------------------------------------------- */
+
+.ballot {
+  margin-inline: auto;
+  max-width: 46rem;
+}
+
+.ballot__crumbs {
+  font-size: var(--step-small);
+  color: var(--gray-text);
+}
+
+.ballot__crumbs a {
+  color: var(--coral-text);
+}
+
+.ballotprog {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: var(--space-4);
+  list-style: none;
+  margin: var(--space-6) 0 var(--space-12);
+  padding: 0;
+}
+
+.ballotprog__bar {
+  display: block;
+  height: 2px;
+  background: var(--rule);
+}
+
+.ballotprog__step.is-done .ballotprog__bar {
+  background: var(--ink);
+}
+
+.ballotprog__step.is-current .ballotprog__bar {
+  background: var(--coral);
+}
+
+.ballotprog__label {
+  display: block;
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--step-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-text);
+}
+
+.ballotprog__step.is-current .ballotprog__label {
+  color: var(--coral-text);
+}
+
+.ballot__eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--step-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--coral-text);
+}
+
+.ballot__title {
+  margin-top: var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.ballot__title:focus-visible {
+  outline: 2px solid var(--coral-text);
+  outline-offset: 6px;
+}
+
+.ballot__lead {
+  margin-top: var(--space-4);
+  max-width: var(--measure);
+  color: var(--gray-text);
+}
+
+.ballot__form {
+  margin-top: var(--space-12);
+}
+
+.ballot__q {
+  border: 0;
+  padding: 0;
+  margin: 0 0 var(--space-12);
+}
+
+.ballot__legend {
+  padding: 0;
+}
+
+.ballot__prompt {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ballot__hint {
+  margin-top: var(--space-2);
+  font-size: var(--step-small);
+  color: var(--gray-text);
+}
+
+.ballot__text {
+  margin-top: var(--space-4);
+  width: 100%;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  font-family: var(--font-display);
+  font-size: var(--step-body);
+  color: var(--ink);
+}
+
+.ballot__text:focus-visible {
+  outline: 2px solid var(--coral-text);
+  outline-offset: 2px;
+}
+
+/* --- Choices ------------------------------------------------------------- */
+
+.choices {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.choices--inline {
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  justify-content: start;
+}
+
+@media (max-width: 40rem) {
+  .choices--inline {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+  }
+}
+
+.choice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  cursor: pointer;
+}
+
+/* Selected state is a tint AND a border, never colour alone. Coral at this
+   size is a fill, and the label has to stay readable sitting on it. */
+.choice--on {
+  background: #f6e7e0;
+  border-color: var(--coral);
+}
+
+.choice__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.choice__mark {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--gray-mid);
+  background: var(--paper);
+}
+
+.choice:has(input[type="checkbox"]) .choice__mark {
+  border-radius: 4px;
+}
+
+.choice--on .choice__mark {
+  border-color: var(--coral);
+  border-width: 5px;
+}
+
+.choice:has(input[type="checkbox"]).choice--on .choice__mark {
+  border-width: 1.5px;
+  background: var(--coral);
+}
+
+.choice__input:focus-visible + .choice__mark {
+  outline: 2px solid var(--coral-text);
+  outline-offset: 2px;
+}
+
+.choice__label {
+  font-family: var(--font-display);
+  color: var(--ink);
+}
+
+/* --- Ranked slots -------------------------------------------------------- */
+
+.slots__row {
+  display: grid;
+  gap: var(--space-4);
+  list-style: none;
+  margin: var(--space-6) 0 0;
+  padding: 0;
+}
+
+@media (min-width: 48rem) {
+  .slots__row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.slotcard {
+  display: flex;
+  flex-direction: column;
+  min-height: 13rem;
+  border-radius: var(--radius-lg);
+  background: var(--ink);
+  padding: var(--space-6);
+}
+
+.slotcard__head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--step-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.slotcard__label {
+  color: var(--coral);
+}
+
+.slotcard__date {
+  color: var(--gray-mid);
+}
+
+.slotcard__pick {
+  margin-top: auto;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.slotcard__title {
+  display: block;
+  font-family: var(--font-body);
+  font-size: var(--step-3);
+  color: var(--paper);
+}
+
+.slotcard__meta {
+  display: block;
+  margin-top: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--step-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gray-mid);
+}
+
+.slotcard__pick:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 4px;
+}
+
+.slotcard__empty {
+  margin-top: auto;
+  font-family: var(--font-mono);
+  font-size: var(--step-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-mid);
+}
+
+.slots__pooltitle {
+  margin-top: var(--space-12);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: var(--step-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-text);
+}
+
+.slots__pool {
+  display: grid;
+  gap: var(--space-4);
+  list-style: none;
+  margin: var(--space-4) 0 0;
+  padding: 0;
+}
+
+@media (min-width: 48rem) {
+  .slots__pool {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.poolitem {
+  display: flex;
+  gap: var(--space-3);
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.poolitem:hover,
+.poolitem:focus-visible {
+  border-color: var(--coral);
+}
+
+.poolitem:focus-visible {
+  outline: 2px solid var(--coral-text);
+  outline-offset: 2px;
+}
+
+.poolitem__plus {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--coral);
+  color: var(--coral-text);
+  font-family: var(--font-mono);
+}
+
+.poolitem__label {
+  display: block;
+  font-family: var(--font-display);
+  color: var(--ink);
+}
+
+.poolitem__level {
+  display: block;
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--step-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gray-text);
+}
+
+/* --- Submit and errors --------------------------------------------------- */
+
+.ballot__submit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-6);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--rule);
+}
+
+.ballot__submitnote,
+.ballot__error {
+  font-size: var(--step-small);
+  color: var(--gray-text);
+  max-width: 22rem;
+}
+
+.ballot__error {
+  color: var(--coral-text);
+  margin-bottom: var(--space-4);
+}
+
+.ballot__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.ballot__quiet {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--step-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-text);
+}
+
+.ballot__notice {
+  margin-inline: auto;
+  max-width: var(--measure-tight);
+  text-align: center;
+}
+
+.ballot__notice .btn {
+  margin-top: var(--space-8);
+}
+
+/* --- The break ----------------------------------------------------------- */
+
+.pollbreak {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--space-4);
+  background: var(--ink);
+  text-align: center;
+  padding: var(--space-8);
+}
+
+.pollbreak__eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--step-meta);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--coral);
+}
+
+.pollbreak__clock {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 18vw, 11rem);
+  font-weight: 300;
+  line-height: 1;
+  color: var(--paper);
+  font-variant-numeric: tabular-nums;
+}
+
+.pollbreak__note {
+  font-family: var(--font-body);
+  font-size: var(--step-lead);
+  color: var(--gray-mid);
+}
+
+.pollbreak__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: rgba(176, 174, 165, 0.25);
+}
+
+.pollbreak__fill {
+  height: 100%;
+  background: var(--coral);
+}

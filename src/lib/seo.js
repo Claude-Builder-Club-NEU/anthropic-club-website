@@ -54,6 +54,20 @@ export const ROUTES = [
   },
   {
     /**
+     * The hub only. Individual ballots at /polls/:slug are NOT prerendered and
+     * are not listed here: a poll is added by dropping a JSON file in, polls
+     * close, and a sitemap full of dead ballots is worse than one that points
+     * at the hub and lets it list what is live. netlify.toml rewrites
+     * /polls/* to this page so the client router can resolve a slug.
+     */
+    path: "/polls",
+    file: "polls/index.html",
+    title: `Polls | ${SITE_NAME}`,
+    description:
+      "Vote on what Claude Builders Club runs this term: which workshops, which night, and which socials. Anonymous, and nothing asks for your name.",
+  },
+  {
+    /**
      * noindex, and deliberately so. This is a working surface for people who
      * are already standing in the room with a code on the screen in front of
      * them. A crawler landing on a check-in form learns nothing about the club,
