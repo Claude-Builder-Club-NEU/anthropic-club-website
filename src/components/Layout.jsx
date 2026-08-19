@@ -13,6 +13,7 @@ const NAV = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
   { to: "/events", label: "Events" },
+  { to: "/attendance", label: "Attendance" },
 ];
 
 /** Shared container inset. The header uses the same one as every page so the

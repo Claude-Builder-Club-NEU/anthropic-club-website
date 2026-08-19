@@ -5,6 +5,7 @@ import StickyCta from "./components/StickyCta";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Events from "./pages/Events";
+import Attendance from "./pages/Attendance";
 import Pitch from "./pages/Pitch";
 import NotFound from "./pages/NotFound";
 import "./App.css";
@@ -60,6 +61,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/attendance" element={<Attendance />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

@@ -53,6 +53,21 @@ export const ROUTES = [
       "Propose a workshop for Northeastern's Claude Builders Club. Tell us the topic, roughly when, and what you would cover, and a board member follows up about scheduling it.",
   },
   {
+    /**
+     * noindex, and deliberately so. This is a working surface for people who
+     * are already standing in the room with a code on the screen in front of
+     * them. A crawler landing on a check-in form learns nothing about the club,
+     * and a search result pointing at it would send students somewhere they
+     * cannot use. It stays out of the sitemap for the same reason.
+     */
+    path: "/attendance",
+    file: "attendance/index.html",
+    title: `Check in | ${SITE_NAME}`,
+    description:
+      "Check in to a Claude Builders Club session with the code on the screen and collect a stamp on your card for the term.",
+    noindex: true,
+  },
+  {
     path: "/404",
     file: "404.html",
     title: `Page not found | ${SITE_NAME}`,
