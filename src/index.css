@@ -2571,6 +2571,17 @@ textarea.pf-input {
   border-color: var(--coral-text);
 }
 
+/* The base stylesheet caps every <p> at --measure (68ch) with margin 0. Inside
+   a centred column that leaves any paragraph narrower than its parent sitting
+   flush left rather than centred, which is off by about 35px here and reads as
+   a misalignment rather than a measure. Every centred paragraph in this block
+   therefore has to opt back in; .checkin__lead and .checkin__saved already do
+   it alongside their own max-width. */
+.checkin__stampline,
+.checkin__error {
+  margin-inline: auto;
+}
+
 .checkin__error {
   margin-top: var(--space-2);
   font-size: var(--step-small);
