@@ -51,6 +51,23 @@ create table if not exists public.sessions (
   unique (term, slot)
 );
 
+-- A code the officer can create but no student can type is a session nobody can
+-- attend, and it fails silently at the worst possible moment: in the room, at
+-- the start, with thirty people waiting. The browser strips any character
+-- outside this alphabet (CODE_ALPHABET in src/lib/attendance.js), so a code
+-- containing one is unenterable by construction. The database therefore refuses
+-- to store one.
+--
+-- Excluded on purpose: I, L, O, S, 0, 1, 5 — the pairs that are
+-- indistinguishable on a projector from the back of a lecture theatre.
+--
+-- Found the hard way: a seeded code of "TESTAB" contained an S, the client
+-- silently reduced it to "TETAB", and check-in was impossible with no error
+-- that pointed at the cause.
+alter table public.sessions drop constraint if exists sessions_code_typeable;
+alter table public.sessions add constraint sessions_code_typeable
+  check (code ~ '^[ABCDEFGHJKMNPQRTUVWXYZ2346789]{6}$');
+
 -- Codes are compared case-insensitively, so uniqueness has to be too. Otherwise
 -- two live sessions could hold "4K9P2M" and "4k9p2m" and the lookup would be
 -- ambiguous exactly when it matters.
@@ -121,6 +138,28 @@ language sql
 immutable
 as $fn$
   select p_email ~* '^[^@[:space:]]+@(northeastern\.edu|husky\.neu\.edu|neu\.edu)$';
+$fn$;
+
+-- ---------------------------------------------------------------------------
+-- Officer helper: generate a code that is typeable by construction.
+--
+-- Not granted to anon. Writing a code by hand invites exactly the mistake the
+-- constraint above now catches, so the safe alphabet lives in one place and an
+-- officer never has to remember it:
+--
+--   insert into sessions (term, slot, title, starts_at, room, code, code_expires_at)
+--   values ('fall-2026', 3, 'Workshop', '2026-11-05 18:30-05', 'Snell 108',
+--           public.new_session_code(), now() + interval '90 minutes');
+-- ---------------------------------------------------------------------------
+
+create or replace function public.new_session_code()
+returns text
+language sql
+volatile
+as $fn$
+  select string_agg(
+    substr('ABCDEFGHJKMNPQRTUVWXYZ2346789', 1 + floor(random() * 29)::int, 1), '')
+  from generate_series(1, 6);
 $fn$;
 
 -- ---------------------------------------------------------------------------
