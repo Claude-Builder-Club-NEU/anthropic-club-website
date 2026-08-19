@@ -7,13 +7,24 @@ import {
   LINKEDIN,
   SLACK_WORKSPACE,
 } from "../lib/links";
+import { hasBackend } from "../lib/supabase";
 import { InstagramIcon, LinkedInIcon, SlackIcon } from "./Icons";
 
+/**
+ * Attendance appears in the nav only once the build has database credentials.
+ *
+ * hasBackend is a build-time constant, so the prerendered HTML and the
+ * hydrated client always agree and there is no flicker. The effect is that a
+ * deploy without the Supabase variables never advertises a tab whose page says
+ * "check-in is not switched on yet", and the tab appears by itself on the first
+ * build after the variables are set. The route stays reachable either way, so a
+ * code on a slide pointing at /attendance still works while it is being set up.
+ */
 const NAV = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
   { to: "/events", label: "Events" },
-  { to: "/attendance", label: "Attendance" },
+  ...(hasBackend ? [{ to: "/attendance", label: "Attendance" }] : []),
 ];
 
 /** Shared container inset. The header uses the same one as every page so the
