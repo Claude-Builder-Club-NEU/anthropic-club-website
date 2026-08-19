@@ -44,23 +44,27 @@ const Polls = () => {
     : [];
 
   return (
-    <section className="mx-auto w-full max-w-6xl px-6 py-16 sm:px-10 sm:py-24 lg:px-16">
-      <div className="pollhub__head">
+    <section className="mx-auto w-full max-w-6xl px-6 pb-4 pt-14 sm:px-10 sm:pt-16 lg:px-16">
+      {/* Deliberately the same head as the events page: same .upcoming-head
+          layout, the same .page-title--section heading size, the same
+          subhead treatment and the same .filter-chip row. Two pages that do
+          the same job for the reader, listing things with a filter across the
+          top, should not look like two different products. */}
+      <div className="upcoming-head">
         <div>
-          <h1 className="pollhub__title">Polls</h1>
-          <p className="pollhub__lead">
+          <h1 className="page-title--section">Polls</h1>
+          <p className="mt-2 text-small text-gray-text">
             You decide what we run. Nothing asks for your name.
           </p>
         </div>
 
-        <div className="pollhub__filters" role="tablist" aria-label="Poll status">
+        <div className="filter-row" role="group" aria-label="Filter polls by status">
           {FILTERS.map((f) => (
             <button
               key={f.key}
               type="button"
-              role="tab"
-              aria-selected={filter === f.key}
-              className={`pollfilter${filter === f.key ? " is-on" : ""}`}
+              className="filter-chip"
+              aria-pressed={filter === f.key}
               onClick={() => setFilter(f.key)}
             >
               {f.label}
@@ -68,10 +72,6 @@ const Polls = () => {
           ))}
         </div>
       </div>
-
-      <h2 className="pollhub__section">
-        {FILTERS.find((f) => f.key === filter)?.label}
-      </h2>
 
       {!now ? null : shown.length === 0 ? (
         <p className="pollhub__empty">

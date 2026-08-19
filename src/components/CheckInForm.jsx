@@ -19,9 +19,14 @@ import StampCard from "./StampCard";
  * between a student pressing a button and seeing whether it worked.
  *
  * IDENTITY: there is no account and no password. The Northeastern email is the
- * key, and the card is simply the check-ins that share it. The line under the
- * button says so, because a student typing an address into a form is entitled
- * to know what it is for.
+ * key, and the card is simply the check-ins that share it.
+ *
+ * THE FORM IS REVEALED IN TWO STEPS. The code comes first on its own, and the
+ * name and email appear only once six characters are in. Everything on screen
+ * at once was three things to read before knowing which one to start with; this
+ * way the screen asks for exactly one thing, and the thing it asks for is the
+ * one written on the wall in front of the student. The reveal latches, so
+ * backspacing a character does not snatch the fields away mid-typing.
  *
  * The six boxes are ONE input, not six. Six inputs with focus-forwarding is the
  * usual approach and it is consistently hostile: paste puts one character in
@@ -39,12 +44,14 @@ const CheckInForm = () => {
   const [status, setStatus] = useState("idle"); // idle | sending | done | error
   const [result, setResult] = useState(null);
   const [serverError, setServerError] = useState("");
+  const [revealed, setRevealed] = useState(false);
 
-  const codeRef = useRef(null);
   const doneRef = useRef(null);
+  const nameRef = useRef(null);
 
-  // Which session the room is in. Runs once; a session that starts mid-visit is
-  // not worth polling for, and the code itself is the real check anyway.
+  // Which session the room is in. The name of it still heads the page; only the
+  // date/time/room line was dropped, since a student standing in the room does
+  // not need to be told which room they are standing in.
   useEffect(() => {
     if (!hasBackend) {
       setLoading(false);
@@ -58,12 +65,20 @@ const CheckInForm = () => {
     return () => ac.abort();
   }, []);
 
-  // Move focus to the confirmation heading so the outcome is announced. Not on
-  // first paint: stealing focus on load would fight a screen reader reading the
-  // session name.
+  // Move focus to the confirmation heading so the outcome is announced.
   useEffect(() => {
     if (status === "done") doneRef.current?.focus();
   }, [status]);
+
+  // Once the code is complete, reveal the rest and put the caret in it. The
+  // latch means it never disappears again.
+  useEffect(() => {
+    if (!revealed && values.code.length === CODE_LENGTH) {
+      setRevealed(true);
+      // After paint, so the field exists to receive focus.
+      requestAnimationFrame(() => nameRef.current?.focus());
+    }
+  }, [values.code, revealed]);
 
   const setField = (field) => (e) => {
     const raw = e.target.value;
@@ -94,8 +109,6 @@ const CheckInForm = () => {
         setStatus("done");
         return;
       }
-      // A refusal, not a failure. Put the message under the field that caused
-      // it so the fix is where the eye already is.
       const field = reasonField(data?.reason);
       const message = reasonMessage(data?.reason);
       if (field) setErrors({ [field]: message });
@@ -108,8 +121,7 @@ const CheckInForm = () => {
     }
   }
 
-  /* --- Not configured. Same posture as the pitch form without its access key:
-         say what is true rather than render a form that posts into the void. */
+  /* --- Not configured --------------------------------------------------- */
   if (!hasBackend) {
     return (
       <div className="checkin__notice">
@@ -124,23 +136,20 @@ const CheckInForm = () => {
 
   /* --- Stamped ---------------------------------------------------------- */
   if (status === "done" && result) {
-    // Both halves of the eyebrow come from one instant. Taking the time from
-    // now and the date from the session looks identical almost always and then
-    // prints "12:05AM · NOV 5" on the sixth, which is the kind of detail
-    // someone notices on a screenshot and stops trusting.
+    // Both halves of the line come from one instant. Taking the time from now
+    // and the date from the session prints the wrong date either side of
+    // midnight, which is the kind of detail someone notices on a screenshot.
     const at = new Date();
-    const stampedTime = at
+    const time = at
       .toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
       .replace(" ", "")
       .toUpperCase();
-    const stampedDate = at
-      .toLocaleDateString("en-US", { month: "short", day: "numeric" })
-      .toUpperCase();
+    const month = at.toLocaleDateString("en-US", { month: "long" });
 
     return (
       <div className="checkin checkin--done">
-        <p className="checkin__eyebrow">
-          Checked in · {stampedTime} · {stampedDate}
+        <p className="checkin__stampline">
+          Checked In at {time} on {month} {ordinal(at.getDate())}
         </p>
         <h1 className="checkin__title" tabIndex={-1} ref={doneRef}>
           You&apos;re stamped for {result.session?.title}.
@@ -155,10 +164,6 @@ const CheckInForm = () => {
           email={result.email}
           card={result.card}
         />
-
-        <p className="checkin__note">
-          Same email next session, same card.
-        </p>
       </div>
     );
   }
@@ -169,16 +174,12 @@ const CheckInForm = () => {
 
   return (
     <div className="checkin">
-      <p className="checkin__eyebrow">
-        {loading
-          ? "Loading the session"
-          : session
-            ? sessionMeta(session)
-            : "No session open right now"}
-      </p>
-
       <h1 className="checkin__title">
-        {session ? `Check in to ${session.title}` : "Check in"}
+        {loading
+          ? "Check in"
+          : session
+            ? `Check in to ${session.title}`
+            : "Check in"}
       </h1>
 
       <p className="checkin__lead">
@@ -194,7 +195,6 @@ const CheckInForm = () => {
           </label>
           <input
             id="ci-code"
-            ref={codeRef}
             className="codefield__input"
             value={values.code}
             onChange={setField("code")}
@@ -225,85 +225,83 @@ const CheckInForm = () => {
           </p>
         )}
 
-        <div className="checkin__fields">
-          <div className="field">
-            <label className="field__label" htmlFor="ci-name">
-              Name
-            </label>
-            <input
-              id="ci-name"
-              className="field__input"
-              value={values.name}
-              onChange={setField("name")}
-              autoComplete="name"
-              aria-describedby={errors.name ? "ci-name-error" : undefined}
-              aria-invalid={errors.name ? "true" : undefined}
-            />
-            {errors.name && (
-              <p id="ci-name-error" className="checkin__error" role="alert">
-                {errors.name}
+        {/* Step two. Labels are visually hidden rather than removed: the
+            placeholder is the visible label, and a placeholder alone leaves a
+            screen reader with an unnamed field. */}
+        {revealed && (
+          <>
+            <div className="checkin__fields">
+              <div className="field">
+                <label className="sr-only" htmlFor="ci-name">
+                  Name
+                </label>
+                <input
+                  id="ci-name"
+                  ref={nameRef}
+                  className="field__input"
+                  placeholder="Name"
+                  value={values.name}
+                  onChange={setField("name")}
+                  autoComplete="name"
+                  aria-describedby={errors.name ? "ci-name-error" : undefined}
+                  aria-invalid={errors.name ? "true" : undefined}
+                />
+                {errors.name && (
+                  <p id="ci-name-error" className="checkin__error" role="alert">
+                    {errors.name}
+                  </p>
+                )}
+              </div>
+
+              <div className="field">
+                <label className="sr-only" htmlFor="ci-email">
+                  Northeastern email
+                </label>
+                <input
+                  id="ci-email"
+                  className="field__input field__input--mono"
+                  type="email"
+                  placeholder="Northeastern email"
+                  value={values.email}
+                  onChange={setField("email")}
+                  autoComplete="email"
+                  spellCheck="false"
+                  aria-describedby={errors.email ? "ci-email-error" : undefined}
+                  aria-invalid={errors.email ? "true" : undefined}
+                />
+                {errors.email && (
+                  <p id="ci-email-error" className="checkin__error" role="alert">
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {serverError && (
+              <p className="checkin__error" role="alert">
+                {serverError}
               </p>
             )}
-          </div>
 
-          <div className="field">
-            <label className="field__label" htmlFor="ci-email">
-              Northeastern email
-            </label>
-            <input
-              id="ci-email"
-              className="field__input field__input--mono"
-              type="email"
-              value={values.email}
-              onChange={setField("email")}
-              autoComplete="email"
-              spellCheck="false"
-              aria-describedby={errors.email ? "ci-email-error" : undefined}
-              aria-invalid={errors.email ? "true" : undefined}
-            />
-            {errors.email && (
-              <p id="ci-email-error" className="checkin__error" role="alert">
-                {errors.email}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {serverError && (
-          <p className="checkin__error" role="alert">
-            {serverError}
-          </p>
+            <button
+              type="submit"
+              className="btn btn--coral checkin__submit"
+              disabled={sending}
+            >
+              {sending ? "Checking in…" : "Check in"}
+            </button>
+          </>
         )}
-
-        <button
-          type="submit"
-          className="btn btn--coral checkin__submit"
-          disabled={sending}
-        >
-          {sending ? "Checking in…" : "Check in"}
-        </button>
-
-        {/* The identity model, said out loud. */}
-        <p className="checkin__note">
-          No account, no password. Your Northeastern email is the card. Check in
-          with the same one every week and the stamps stack up.
-        </p>
       </form>
     </div>
   );
 };
 
-/** "WORKSHOP · THU NOV 5 · 6:30PM · SNELL 108" */
-function sessionMeta(session) {
-  const d = new Date(session.starts_at);
-  const day = d
-    .toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
-    .toUpperCase();
-  const time = d
-    .toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
-    .replace(" ", "")
-    .toUpperCase();
-  return [day, time, session.room].filter(Boolean).join(" · ");
+/** 1st, 2nd, 3rd, 4th … 21st. The teens are the exception that needs the %100. */
+function ordinal(n) {
+  const suffixes = ["th", "st", "nd", "rd"];
+  const teen = n % 100;
+  return `${n}${suffixes[(teen - 20) % 10] || suffixes[teen] || suffixes[0]}`;
 }
 
 /** "fall-2026" is what the database stores; "Fall 2026" is what a card shows. */

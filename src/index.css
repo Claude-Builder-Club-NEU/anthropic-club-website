@@ -2419,6 +2419,15 @@ textarea.pf-input {
   text-transform: uppercase;
 }
 
+/* "Checked In at 2:11PM on August 19th". Sentence case and the display face,
+   not the mono uppercase eyebrow the other screens use: this is a sentence
+   about what just happened, not a label. */
+.checkin__stampline {
+  font-family: var(--font-display);
+  font-size: var(--step-small);
+  color: var(--gray-text);
+}
+
 .checkin__title {
   font-family: var(--font-body);
   font-size: var(--step-1);
@@ -2433,8 +2442,7 @@ textarea.pf-input {
 }
 
 .checkin__lead,
-.checkin__saved,
-.checkin__note {
+.checkin__saved {
   color: var(--gray-text);
   margin-inline: auto;
   max-width: var(--measure-tight);
@@ -2447,13 +2455,14 @@ textarea.pf-input {
 
 .checkin__saved {
   margin-top: var(--space-4);
-  font-size: var(--step-body);
+  /* One line, always. An address that wraps mid-domain is hard to check at a
+     glance, and checking it is the entire purpose of echoing it back. It
+     shrinks to fit instead, with a floor that stays legible. */
+  white-space: nowrap;
+  font-size: clamp(0.75rem, 3.4vw, var(--step-body));
+  max-width: 100%;
 }
 
-.checkin__note {
-  margin-top: var(--space-6);
-  font-size: var(--step-small);
-}
 
 .checkin__form {
   margin-top: var(--space-12);
@@ -2527,14 +2536,6 @@ textarea.pf-input {
   }
 }
 
-.field__label {
-  display: block;
-  font-family: var(--font-display);
-  font-size: var(--step-small);
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: var(--space-2);
-}
 
 .field__input {
   width: 100%;
@@ -2549,6 +2550,16 @@ textarea.pf-input {
 
 .field__input--mono {
   font-family: var(--font-mono);
+}
+
+/* The placeholder IS the visible label now, so it has to be readable rather
+   than a hint. --gray-mid is 2.11:1 on paper and cannot carry text; this is
+   the lightest value in the system that still passes, and the real label is
+   kept in the DOM as .sr-only so a screen reader is not left with an unnamed
+   field. */
+.field__input::placeholder {
+  color: var(--gray-text);
+  opacity: 0.7;
 }
 
 .field__input:focus-visible {
@@ -2603,6 +2614,14 @@ textarea.pf-input {
   }
 }
 
+/* A containment context so the address below can size itself against this
+   column rather than the viewport. Without it, cqi units have nothing to
+   resolve against and the address keeps its maximum size and overflows. */
+.stampcard__id {
+  container-type: inline-size;
+  min-width: 0;
+}
+
 .stampcard__term {
   font-family: var(--font-mono);
   font-size: var(--step-meta);
@@ -2626,9 +2645,12 @@ textarea.pf-input {
 
 .stampcard__email {
   font-family: var(--font-mono);
-  font-size: var(--step-small);
   color: var(--gray-text);
-  overflow-wrap: anywhere;
+  /* Sized against the card's own column, not the viewport, because that column
+     is what the address has to fit inside. cqi is 1% of the container's inline
+     size, so a long address shrinks and a short one does not. */
+  white-space: nowrap;
+  font-size: min(var(--step-small), calc(100cqi / (var(--email-chars, 24) * 0.62)));
 }
 
 .stampcard__strip {
@@ -2695,16 +2717,6 @@ textarea.pf-input {
   color: var(--ink);
 }
 
-.stampcard__reward {
-  font-family: var(--font-mono);
-  font-size: var(--step-meta);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--coral-text);
-  background: var(--paper);
-  border-radius: 999px;
-  padding: var(--space-2) var(--space-4);
-}
 
 /* ==========================================================================
    Polls — /polls and /polls/:slug
@@ -2716,66 +2728,13 @@ textarea.pf-input {
    quiet page with one dark card does that without introducing a colour.
    ========================================================================== */
 
-.pollhub__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-8);
-}
 
-.pollhub__title {
-  font-family: var(--font-display);
-  font-size: var(--step-display);
-  font-weight: 700;
-  line-height: 1;
-  color: var(--ink);
-}
 
-.pollhub__lead {
-  margin-top: var(--space-4);
-  max-width: var(--measure-tight);
-  font-family: var(--font-body);
-  font-size: var(--step-lead);
-  color: var(--coral-text);
-}
 
-.pollhub__filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
 
-.pollfilter {
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--rule);
-  background: var(--paper);
-  padding: var(--space-3) var(--space-4);
-  font-family: var(--font-display);
-  font-size: var(--step-small);
-  color: var(--ink);
-}
 
-.pollfilter.is-on {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--paper);
-}
 
-.pollfilter:focus-visible {
-  outline: 2px solid var(--coral-text);
-  outline-offset: 2px;
-}
 
-.pollhub__section {
-  margin-top: var(--space-12);
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--rule);
-  font-family: var(--font-display);
-  font-size: var(--step-body);
-  font-weight: 600;
-  color: var(--ink);
-}
 
 .pollhub__empty {
   margin-top: var(--space-8);

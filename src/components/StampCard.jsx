@@ -52,7 +52,18 @@ const StampCard = ({ term, name, email, card = [] }) => {
         <p className="stampcard__term">{term}</p>
         <h2 className="stampcard__heading">Stamp card</h2>
         {name && <p className="stampcard__name">{name}</p>}
-        {email && <p className="stampcard__email">{email}</p>}
+        {/* The address sizes itself against this column. --email-chars lets the
+            CSS do the arithmetic: a monospace glyph advances about 0.62em, so
+            dividing the column width by (chars x 0.62) is the largest size that
+            still fits on one line. A short address keeps the normal size. */}
+        {email && (
+          <p
+            className="stampcard__email"
+            style={{ "--email-chars": email.length }}
+          >
+            {email}
+          </p>
+        )}
       </div>
 
       <div className="stampcard__body">
@@ -84,11 +95,11 @@ const StampCard = ({ term, name, email, card = [] }) => {
           ))}
         </ol>
 
+        {/* No reward is named here. The card should not promise something the
+            club has not committed to handing out; a full card can earn whatever
+            the board decides at the time. */}
         <p className="stampcard__foot">
           <span className="stampcard__togo">{remainingLabel(card)}</span>
-          {/* The reward the card is for. A chip rather than a button: there is
-              nothing to press, it is what a full card earns. */}
-          <span className="stampcard__reward">Sticker pack</span>
         </p>
       </div>
     </section>
