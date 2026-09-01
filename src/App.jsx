@@ -7,11 +7,13 @@ import About from "./pages/About";
 import Events from "./pages/Events";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import Unsubscribe from "./pages/Unsubscribe";
 import Attendance from "./pages/Attendance";
 import Polls from "./pages/Polls";
 import Poll from "./pages/Poll";
 import Pitch from "./pages/Pitch";
 import NotFound from "./pages/NotFound";
+import { UNSUBSCRIBE_PATH } from "./lib/unsubscribe";
 import "./App.css";
 
 /**
@@ -74,6 +76,14 @@ function App() {
               and hand crawlers a 200 for every typo. */}
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/attendance" element={<Attendance />} />
+          {/* Reached only from the newsletter footer. The path is a random
+              20-character slug, so it cannot be found by guessing, and the
+              route is noindex in lib/seo.js, which also keeps it out of
+              sitemap.xml. Nothing on the site links to it. The slug is
+              imported rather than written out here so the router, the route
+              table and the page cannot drift apart. */}
+          <Route path={UNSUBSCRIBE_PATH} element={<Unsubscribe />} />
+
           <Route path="/polls" element={<Polls />} />
           {/* Dynamic: one ballot per poll file, so there is no prerendered
               HTML per slug. netlify.toml rewrites /polls/* to the hub so the

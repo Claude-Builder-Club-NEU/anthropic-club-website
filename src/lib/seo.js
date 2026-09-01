@@ -14,6 +14,7 @@ import { BOARD } from "./board";
 import { POSTS, authorFor, findPost } from "./blog";
 import { faqJsonLd } from "./faq";
 import { SITE_ORIGIN, INSTAGRAM, LINKEDIN, INTEREST_FORM } from "./links";
+import { UNSUBSCRIBE_PATH, UNSUBSCRIBE_SLUG } from "./unsubscribe";
 
 const SITE_NAME = "Claude Builders Club @ Northeastern";
 const OG_IMAGE = `${SITE_ORIGIN}/og.png`;
@@ -123,6 +124,30 @@ export const ROUTES = [
     title: `Check in | ${SITE_NAME}`,
     description:
       "Check in to a Claude Builders Club session with the code on the screen and collect a stamp on your card for the term.",
+    noindex: true,
+  },
+  {
+    /**
+     * The newsletter's unsubscribe page, at a random 20-character path.
+     *
+     * noindex, and for a stronger reason than /attendance above. That page is
+     * merely useless to a searcher; this one should not be FINDABLE. The random
+     * slug stops it being guessed, noindex keeps it out of search results, and
+     * `noindex` also drops it from sitemap.xml, since the prerenderer builds
+     * that list from the routes that lack this flag.
+     *
+     * It is deliberately absent from robots.txt as well. A Disallow line is a
+     * public list of the paths you did not want found, so putting it there
+     * would publish exactly what the random slug is for.
+     *
+     * Prerendered like every other route, so the form is on screen before any
+     * JavaScript runs.
+     */
+    path: UNSUBSCRIBE_PATH,
+    file: `${UNSUBSCRIBE_SLUG}/index.html`,
+    title: `Unsubscribe | ${SITE_NAME}`,
+    description:
+      "Stop receiving the Claude Builders Club newsletter at Northeastern.",
     noindex: true,
   },
   {
