@@ -5,6 +5,8 @@ import StickyCta from "./components/StickyCta";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Events from "./pages/Events";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import Attendance from "./pages/Attendance";
 import Polls from "./pages/Polls";
 import Poll from "./pages/Poll";
@@ -63,6 +65,14 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/blog" element={<Blog />} />
+          {/* Every published post is prerendered to its own HTML file, so an
+              unknown slug is a genuine 404 from Netlify and never reaches this
+              route in production. There is deliberately NO /blog/* rewrite in
+              netlify.toml: the /polls/* one exists because a ballot has no
+              prerendered file, and copying it here would cost per-post titles
+              and hand crawlers a 200 for every typo. */}
+          <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/attendance" element={<Attendance />} />
           <Route path="/polls" element={<Polls />} />
           {/* Dynamic: one ballot per poll file, so there is no prerendered

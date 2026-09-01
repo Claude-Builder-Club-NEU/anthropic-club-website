@@ -33,14 +33,26 @@ async function main() {
 
   for (const route of ROUTES) {
     const appHtml = render(route.path);
+    /**
+     * Function replacers, not strings.
+     *
+     * String.replace treats `$$`, `$&`, `` $` `` and `$'` in a STRING
+     * replacement as substitution patterns, so a post whose text contains a
+     * dollar sign would corrupt the page: `$'` inserts everything after the
+     * placeholder, which duplicates the tail of the template into the middle of
+     * the article and strands the rest of the post outside #root. A function's
+     * return value is inserted literally, which is the whole fix. This was
+     * harmless while every route's head and body came from hard-coded strings,
+     * and stopped being harmless when post prose started flowing through here.
+     */
     const html = template
-      .replace("<!--app-head-->", headFor(route))
+      .replace("<!--app-head-->", () => headFor(route))
       // The template's dev-only <title> would otherwise duplicate the real one.
       .replace(
         /<title>Claude Builders Club @ Northeastern<\/title>\s*/,
         ""
       )
-      .replace("<!--app-html-->", appHtml);
+      .replace("<!--app-html-->", () => appHtml);
 
     const out = join(DIST, route.file);
     mkdirSync(dirname(out), { recursive: true });
@@ -50,15 +62,27 @@ async function main() {
 
   // sitemap.xml — indexable routes only.
   const indexable = ROUTES.filter((r) => !r.noindex);
+
+  // Per-route overrides, with the previous behaviour as the default, so every
+  // page that existed before the blog emits exactly the line it emitted then.
+  // Blog routes set their own: a published post is finished writing, so asking
+  // a crawler back monthly is a request to refetch an unchanged file.
+  const changefreq = (r) =>
+    r.changefreq || (r.path === "/" ? "weekly" : "monthly");
+  const priority = (r) => r.priority || (r.path === "/" ? "1.0" : "0.8");
+
   const sitemap =
     `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
     indexable
       .map(
         (r) =>
+          // Child order is fixed by the sitemap schema: loc, lastmod,
+          // changefreq, priority. A validator rejects them out of order.
           `  <url>\n    <loc>${SITE_ORIGIN}${r.path}</loc>\n` +
-          `    <changefreq>${r.path === "/" ? "weekly" : "monthly"}</changefreq>\n` +
-          `    <priority>${r.path === "/" ? "1.0" : "0.8"}</priority>\n  </url>`
+          (r.lastmod ? `    <lastmod>${r.lastmod}</lastmod>\n` : "") +
+          `    <changefreq>${changefreq(r)}</changefreq>\n` +
+          `    <priority>${priority(r)}</priority>\n  </url>`
       )
       .join("\n") +
     `\n</urlset>\n`;

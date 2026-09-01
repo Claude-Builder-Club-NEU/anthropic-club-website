@@ -54,6 +54,20 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# Blog image derivatives, written by scripts/build-blog-images.mjs.
+#
+# NOT `immutable`, unlike /assets/*. These filenames carry a width but no
+# content hash, so replacing a picture reuses its URL. Pinning them forever
+# would strand the old bytes in every visitor's cache with no way to evict them.
+#
+# The path is /blog-img/ and not /blog/ deliberately: a rule written for
+# "/blog/*" would also match the prerendered /blog/<slug>/index.html and put an
+# image cache policy on the post pages themselves.
+[[headers]]
+  for = "/blog-img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, must-revalidate"
+
 [[headers]]
   for = "/*"
   [headers.values]

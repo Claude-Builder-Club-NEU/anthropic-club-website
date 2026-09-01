@@ -11,11 +11,44 @@
  */
 
 import { BOARD } from "./board";
+import { POSTS, authorFor, findPost } from "./blog";
 import { faqJsonLd } from "./faq";
 import { SITE_ORIGIN, INSTAGRAM, LINKEDIN, INTEREST_FORM } from "./links";
 
 const SITE_NAME = "Claude Builders Club @ Northeastern";
 const OG_IMAGE = `${SITE_ORIGIN}/og.png`;
+
+/**
+ * One prerendered route per blog post.
+ *
+ * The OPPOSITE call to /polls, and deliberately. A ballot closes, so only the
+ * hub is prerendered and netlify.toml rewrites the slugs onto it. A post does
+ * not close: its URL is meant to be shared and to keep resolving, and a crawler
+ * should find real HTML carrying that post's own title. So each one is a real
+ * file here, with a real title, description, canonical and sitemap line, and an
+ * unpublished slug stays a genuine 404.
+ *
+ * Every field past `description` is OPTIONAL in headFor() and
+ * structuredDataFor(), which is why the seven routes below emit exactly the
+ * tags they emitted before any of this existed.
+ */
+const postRoute = (post) => ({
+  path: `/blog/${post.slug}`,
+  file: `blog/${post.slug}/index.html`,
+  // The pipe, not a dash, same as every other title in this array.
+  title: `${post.title} | ${SITE_NAME}`,
+  description: post.excerpt,
+  slug: post.slug,
+  ogType: "article",
+  author: authorFor(post)?.name || null,
+  publishedTime: post.date,
+  modifiedTime: post.updated || null,
+  // A published post is finished writing. Weekly would ask crawlers to keep
+  // returning to a file that is not going to change.
+  changefreq: "yearly",
+  priority: "0.6",
+  lastmod: post.updated || post.date,
+});
 
 /**
  * Titles use a pipe separator rather than the em dash the first brief pinned.
@@ -52,6 +85,17 @@ export const ROUTES = [
     description:
       "Propose a workshop for Northeastern's Claude Builders Club. Tell us the topic, roughly when, and what you would cover, and a board member follows up about scheduling it.",
   },
+  {
+    path: "/blog",
+    file: "blog/index.html",
+    title: `Blog | ${SITE_NAME}`,
+    description:
+      "Write-ups from Northeastern's Claude Builders Club: what happened at the sessions we run, and notes on what members are building.",
+    changefreq: "weekly",
+    priority: "0.7",
+    ...(POSTS[0] ? { lastmod: POSTS[0].updated || POSTS[0].date } : {}),
+  },
+  ...POSTS.map(postRoute),
   {
     /**
      * The hub only. Individual ballots at /polls/:slug are NOT prerendered and
@@ -138,11 +182,85 @@ export const boardJsonLd = () =>
  * always meant to move together; they still do.
  */
 
+const postUrl = (post) => `${SITE_ORIGIN}/blog/${post.slug}`;
+
+/** Blog — the index only. */
+export const blogJsonLd = () => ({
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "@id": `${SITE_ORIGIN}/blog#blog`,
+  name: `${SITE_NAME} blog`,
+  url: `${SITE_ORIGIN}/blog`,
+  inLanguage: "en-US",
+  publisher: {
+    "@type": "EducationalOrganization",
+    name: SITE_NAME,
+    url: SITE_ORIGIN,
+  },
+  // Omitted entirely while there are no posts. `blogPost: []` is a claim that
+  // the blog is empty; saying nothing is not.
+  ...(POSTS.length
+    ? {
+        blogPost: POSTS.map((post) => ({
+          "@type": "BlogPosting",
+          "@id": postUrl(post),
+          headline: post.title,
+          url: postUrl(post),
+          datePublished: post.date,
+        })),
+      }
+    : {}),
+});
+
+/** BlogPosting — one per post route. */
+export const blogPostingJsonLd = (post) => {
+  const author = authorFor(post);
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": postUrl(post),
+    mainEntityOfPage: { "@type": "WebPage", "@id": postUrl(post) },
+    url: postUrl(post),
+    // post.title, not route.title: the route appends the site name for the
+    // browser tab, and a headline is truncated around 110 characters.
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.date,
+    ...(post.updated ? { dateModified: post.updated } : {}),
+    inLanguage: "en-US",
+    image: [OG_IMAGE],
+    // Resolved from lib/board.js, never free text, so a byline cannot credit
+    // somebody who is not on the board.
+    author: author
+      ? {
+          "@type": "Person",
+          name: author.name,
+          ...(author.role ? { jobTitle: author.role } : {}),
+          ...(author.linkedin ? { sameAs: [author.linkedin] } : {}),
+        }
+      : { "@type": "Organization", name: SITE_NAME, url: SITE_ORIGIN },
+    publisher: {
+      "@type": "EducationalOrganization",
+      name: SITE_NAME,
+      url: SITE_ORIGIN,
+      logo: { "@type": "ImageObject", url: `${SITE_ORIGIN}/favicon.png` },
+    },
+    isPartOf: { "@type": "Blog", "@id": `${SITE_ORIGIN}/blog#blog` },
+  };
+};
+
 /** Every JSON-LD block for a route, ready to serialise. */
 export function structuredDataFor(route) {
   const blocks = [organizationJsonLd()];
   if (route.path === "/") blocks.push(faqJsonLd());
   if (route.path === "/about") blocks.push(...boardJsonLd());
+  if (route.path === "/blog") blocks.push(blogJsonLd());
+  // `slug` is set only by postRoute(), so this is the post hook and cannot fire
+  // on the index or on any other route. A startsWith("/blog/") test would.
+  if (route.slug) {
+    const post = findPost(route.slug);
+    if (post) blocks.push(blogPostingJsonLd(post));
+  }
   return blocks;
 }
 
@@ -150,7 +268,19 @@ export function structuredDataFor(route) {
 export function headFor(route) {
   const canonical = `${SITE_ORIGIN}${route.path === "/404" ? "/404" : route.path}`;
   const esc = (s) =>
-    String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+    String(s)
+      // Collapsed first: a description carrying a newline would otherwise break
+      // the attribute across lines in the emitted HTML.
+      .replace(/\s+/g, " ")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/"/g, "&quot;");
+
+  /**
+   * Per-route override, defaulting to what this function emitted before it
+   * existed, so a route that does not set it is byte identical.
+   */
+  const ogType = route.ogType || "website";
 
   const tags = [
     `<title>${esc(route.title)}</title>`,
@@ -159,7 +289,7 @@ export function headFor(route) {
     route.noindex
       ? `<meta name="robots" content="noindex, follow" />`
       : `<meta name="robots" content="index, follow" />`,
-    `<meta property="og:type" content="website" />`,
+    `<meta property="og:type" content="${ogType}" />`,
     `<meta property="og:site_name" content="${esc(SITE_NAME)}" />`,
     `<meta property="og:locale" content="en_US" />`,
     `<meta property="og:url" content="${canonical}" />`,
@@ -176,6 +306,28 @@ export function headFor(route) {
     `<meta name="twitter:description" content="${esc(route.description)}" />`,
     `<meta name="twitter:image" content="${OG_IMAGE}" />`,
   ];
+
+  /**
+   * article:* means nothing on og:type=website and a validator flags it there,
+   * so posts set these and nothing else does.
+   *
+   * article:author is deliberately absent: the OG spec wants an og:profile
+   * document in that slot and a LinkedIn page is not one. The byline goes out
+   * as the standard author meta plus a real Person inside the BlogPosting
+   * JSON-LD, which is what search engines actually read.
+   */
+  if (route.author)
+    tags.push(`<meta name="author" content="${esc(route.author)}" />`);
+  if (ogType === "article") {
+    if (route.publishedTime)
+      tags.push(
+        `<meta property="article:published_time" content="${esc(route.publishedTime)}" />`
+      );
+    if (route.modifiedTime)
+      tags.push(
+        `<meta property="article:modified_time" content="${esc(route.modifiedTime)}" />`
+      );
+  }
 
   for (const block of structuredDataFor(route)) {
     tags.push(

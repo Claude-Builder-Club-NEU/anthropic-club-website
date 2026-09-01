@@ -3314,3 +3314,535 @@ textarea.pf-input {
   height: 100%;
   background: var(--coral);
 }
+
+/* ==========================================================================
+   Blog — /blog and /blog/<slug>
+
+   The index is a RULED TABLE, not a card grid. This site already owns that
+   object twice, in .home-event and .pollresult, and a table is the one shape
+   that holds both states this page has: one post on launch day and forty
+   later. Nothing here is a card, so nothing needs a fill, a border box or a
+   radius; only the media inside a row is rounded.
+
+   The 52rem grid stop is .pollresult's, which is the site's other ruled table.
+
+   No eyebrow anywhere: the date sits beside the title above 52rem and below
+   the excerpt on a phone, so it is never a kicker above a heading. Hover is
+   the sitewide highlighter and nothing else.
+   ========================================================================== */
+
+.postindex {
+  margin: var(--space-12) 0 0;
+  padding: 0;
+  list-style: none;
+  /* Each row opens with a hairline, so the table needs one to close on. */
+  border-bottom: 1px solid var(--rule);
+}
+
+/* Cannot happen at launch. It exists so the page can never render a bare list
+   if every post is unpublished. */
+.postindex__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 8rem;
+  margin-top: var(--space-12);
+  padding: var(--space-6);
+  border: 1px dashed var(--rule);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+/* Areas rather than source order, so the reading order and the visual order
+   never fight: the date is last in the DOM on a phone and first in the left
+   column on a wide screen, and it is a heading's sibling in neither. */
+.postrow {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(4.5rem, 22vw, 5.5rem);
+  grid-template-areas:
+    "title   thumb"
+    "excerpt excerpt"
+    "when    when";
+  column-gap: var(--space-4);
+  padding: var(--space-6) 0;
+  border-top: 1px solid var(--rule);
+}
+
+@media (min-width: 52rem) {
+  .postrow {
+    grid-template-columns: 8rem minmax(0, 1fr) var(--postrow-thumb, 10rem);
+    grid-template-areas:
+      "when title   thumb"
+      "when excerpt thumb";
+    column-gap: var(--space-8);
+    align-items: start;
+    padding: var(--space-8) 0;
+  }
+}
+
+/* The date column and the plate each span both text rows. */
+.postrow__when {
+  grid-area: when;
+  max-width: none;
+  white-space: nowrap;
+  /* Lands the date's cap height within a pixel of the title's, with no magic
+     offset to maintain. */
+  line-height: 1.5;
+  margin-top: var(--space-4);
+}
+
+@media (min-width: 52rem) {
+  .postrow__when {
+    margin-top: 0;
+  }
+}
+
+.postrow__title {
+  grid-area: title;
+  min-width: 0;
+  font-size: var(--step-3);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.postrow__link {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+/* Stretches the target over the whole row, plate included, while the link's
+   accessible name stays the title alone. The price, accepted: excerpt text on
+   this page cannot be selected. The alternative leaves the picture dead.
+
+   z-index is REQUIRED, not tidiness. .postrow__thumb is also positioned, is
+   also z-index auto, and is the last child of the row, so without a stack level
+   here it paints over this overlay and wins the hit test: the plate would be
+   the one part of the row a click did not reach, which is the opposite of what
+   this rule is for. The overlay has no background, so raising it changes
+   nothing visible. */
+.postrow__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* .event-tile__blurb's declaration block with a different clamp, so the two
+   objects read as siblings. It renders at EVERY width: hiding it on a phone
+   would leave the index with nothing to read and no reason to tap. */
+.postrow__excerpt {
+  grid-area: excerpt;
+  margin-top: var(--space-3);
+  font-size: var(--step-small);
+  line-height: 1.6;
+  color: var(--gray-text);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.postrow__thumb {
+  grid-area: thumb;
+  position: relative;
+  /* Fixed by the container, not by the image, so a row with no picture
+     reserves the identical box and the table never changes height as
+     derivatives decode. */
+  aspect-ratio: 16 / 9;
+  align-self: start;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--gray-light);
+}
+
+.postrow__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- The lead row ------------------------------------------------------ */
+
+/* Three changes and nothing else. No fill, no border, no second card shape. */
+.postrow[data-lead="true"] .postrow__title {
+  font-size: var(--step-2);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.postrow[data-lead="true"] .postrow__excerpt {
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+/* Above 1024px the newest post's headline sets LARGER than the page title
+   above it. That inversion is the point: on a page of writing, the newest
+   piece should be the loudest object, not the word "Blog". Gated here because
+   at 832px the title column falls to about 400px and a headline this size
+   breaks badly in it. */
+@media (min-width: 64rem) {
+  .postrow[data-lead="true"] {
+    --postrow-thumb: 16rem;
+  }
+
+  .postrow[data-lead="true"] .postrow__title {
+    font-size: var(--step-1);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+  }
+}
+
+/* A lead with no picture drops the column outright. At 256px a dashed
+   rectangle is a hole; at the 72 to 160px a standard row uses, the same frame
+   genuinely reads as reserved, which is why only the lead does this. */
+.postrow[data-nomedia="true"] {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "title"
+    "excerpt"
+    "when";
+}
+
+@media (min-width: 52rem) {
+  .postrow[data-nomedia="true"] {
+    grid-template-columns: 8rem minmax(0, 1fr);
+    grid-template-areas:
+      "when title"
+      "when excerpt";
+  }
+}
+
+/* --- Hover and focus --------------------------------------------------- */
+
+/* One property on one element: the sitewide highlighter, fired from the row.
+   Firing .sweep from an ancestor is not a new primitive, since .sweep.is-current
+   and .sweep[data-marked="true"] are two shipped alternative triggers, and it
+   reuses .sweep's own transition so the prefers-reduced-motion block already
+   neutralises it. Keyboard focus lands on the <a> and takes the global focus
+   ring around the headline words rather than around the whole row. */
+.postrow:hover .postrow__link,
+.postrow:focus-within .postrow__link,
+.postnext:hover .postnext__link,
+.postnext:focus-within .postnext__link {
+  background-size: 100% var(--sweep-height);
+}
+
+/* --- The reserved frame ------------------------------------------------ */
+
+/* Shared by a row's plate and a figure's box. Inset by 4px rather than drawn
+   on the boundary, where a dashed line reads as a rendering fault, and
+   --gray-mid because the hairline is invisible on the oat ground beneath.
+   (DESIGN.md bans Pale Clay as TEXT; this is a border.) */
+.postreserved {
+  position: absolute;
+  inset: var(--space-1);
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--gray-mid);
+  border-radius: var(--radius);
+  color: var(--gray-text);
+}
+
+/* ==========================================================================
+   A post — /blog/<slug>
+   ========================================================================== */
+
+/* The reading column is CENTRED, the text inside it is not. Prose clamps
+   itself to the 68ch measure and figures fill this shell, so an image breaks
+   64px past the text on each side while sharing one centre axis. A 68ch column
+   pinned left inside a 1024px container leaves a third of the page empty on
+   any post without pictures. .checkin is the shipped precedent. */
+.postarticle {
+  margin-inline: auto;
+  width: 100%;
+  max-width: calc(var(--measure) + var(--space-32));
+}
+
+/* --- Prose ------------------------------------------------------------- */
+
+/* THE COLUMN IS THE CONTAINER, and that is the whole trick.
+
+   `--measure` is 68ch, and `ch` resolves against the font of the element the
+   property lands on, not against the page. Capping each block individually
+   therefore gave every block a different column: a `p` at 17px Lora computed
+   718px, an h2 at 24px Poppins computed 1054px and a pull quote at 21px Lora
+   computed 887px, so the two largest blocks were wider than the 846px shell
+   they sat in and hung outside the paragraph column. Measured in Chrome, not
+   estimated.
+
+   Capping .postprose ONCE resolves the ch a single time in the body font, and
+   every child is then bounded by its parent's box regardless of its own size.
+   Blocks that want the full shell break back out below, which is 18 fewer
+   lines than the alternative and has no browser support question attached. */
+.postprose {
+  margin-top: var(--space-12);
+  margin-inline: auto;
+  max-width: var(--measure);
+  overflow-wrap: break-word;
+}
+
+/* 24px between blocks against a 28px line: clearly separated without opening
+   holes in the column. */
+.postprose > * + * {
+  margin-top: var(--space-6);
+}
+
+/* Body copy needs no declarations at all: Lora at --step-body on body's 1.65
+   leading, with the global text-wrap: pretty. */
+
+/* More space above than below, so a heading binds to what it introduces. All
+   three global h2 values are overridden: --step-2 tops out at 34px and would
+   fight the page title at a 68ch measure. */
+.postprose h2 {
+  font-size: var(--step-3);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin-top: var(--space-12);
+}
+
+.postprose :where(h2) + * {
+  margin-top: var(--space-4);
+}
+
+/* Poppins at body size is unmistakably structural beside Lora, so the third
+   level does not need to be larger. letter-spacing: 0 is required: the global
+   h3 carries -0.01em and body sizes never take negative tracking. */
+.postprose h3 {
+  font-family: var(--font-display);
+  font-size: var(--step-body);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+  margin-top: var(--space-8);
+}
+
+.postprose :where(h3) + * {
+  margin-top: var(--space-2);
+}
+
+/* Tailwind's preflight strips both, so they are restored here. The marker is
+   --gray-text and never --gray-mid: a marker renders a glyph, and Pale Clay
+   measures 2.11:1 on paper. */
+.postprose ul {
+  list-style: disc;
+  padding-left: var(--space-6);
+}
+
+.postprose ol {
+  list-style: decimal;
+  padding-left: var(--space-6);
+}
+
+.postprose li::marker {
+  color: var(--gray-text);
+}
+
+.postprose li + li {
+  margin-top: var(--space-2);
+}
+
+/* Inline links need no colour rule: the global anchor already gives burnt
+   terracotta with a from-font underline. They carry .sweep as well, exactly as
+   the two inline links in About.jsx already do. */
+
+.postprose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--gray-light);
+  padding: 1px 5px;
+  border-radius: var(--radius);
+}
+
+/* Oat with a hairline, not inverted ink. The site's only inverted surfaces are
+   full-width bands and the portrait board cards; an ink slab mid-column would
+   be the heaviest object on a reading page. It fills the shell like a figure,
+   so code has horizontal room and the page body never scrolls sideways. */
+.postcode {
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+  line-height: 1.6;
+  background: var(--gray-light);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  /* Code scrolls inside its own box; the page body never scrolls sideways. */
+  overflow-x: auto;
+  tab-size: 2;
+}
+
+.postcode code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* A scrollable region is keyboard focusable in Chrome, and the global focus
+   ring hardcodes the 4px radius, which would cut the corners of this 8px
+   panel. */
+.postcode:focus-visible {
+  border-radius: var(--radius-lg);
+}
+
+/* Hairlines above and below, never a left border, which is the only construct
+   of the three that the no-coloured-left-border rule permits. Roman rather
+   than italic: at this size over three lines, italic Lora is heavy. */
+.postquote {
+  margin: var(--space-8) 0;
+  padding: var(--space-6) 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--step-lead);
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.postquote p + p {
+  margin-top: var(--space-4);
+}
+
+.postquote__cite {
+  display: block;
+  margin-top: var(--space-3);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--step-meta);
+  font-style: normal;
+  color: var(--gray-text);
+}
+
+/* --- The breakout ------------------------------------------------------ */
+
+/* A figure and a code block step 64px past the prose on each side, which lands
+   them exactly on the shell's edges since the shell is the measure plus 128px.
+   The two share one centre axis, so the page reads as a single column with two
+   widths rather than as two columns.
+
+   Gated at 58rem because below it the shell IS the content width: there is no
+   64px of room on either side to step into, and taking it anyway would push
+   the figure off the screen. On a phone a figure simply fills the column, which
+   is what it should do there in any case. */
+@media (min-width: 58rem) {
+  .postfigure[data-bleed="true"],
+  .postprose > .postcode {
+    width: calc(100% + var(--space-32));
+    margin-inline: calc(-1 * var(--space-16));
+  }
+
+  /* The caption stays on the prose column rather than following the picture
+     out, so a run of captions lines up with the paragraphs around them. */
+  .postfigure[data-bleed="true"] .postfigure__caption {
+    margin-inline: var(--space-16);
+  }
+}
+
+/* --- Figures ----------------------------------------------------------- */
+
+.postfigure {
+  margin: var(--space-12) 0;
+  margin-inline: auto;
+}
+
+/* A picture taller than it is wide takes a narrower column, because at the full
+   width it pushes the next paragraph off the screen. --measure-tight is a real
+   token; an invented rem cap would not be. Neither this nor an inset figure
+   carries data-bleed, so neither breaks out. */
+.postfigure[data-portrait="true"] {
+  max-width: var(--measure-tight);
+}
+
+/* The ratio lives on the box, so the space is reserved before any bytes
+   arrive and nothing reflows on decode. That is why this pipeline needs no
+   build-time dimension manifest. */
+.postfigure__box {
+  position: relative;
+  aspect-ratio: var(--figure-ratio, 16 / 9);
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--gray-light);
+}
+
+.postfigure__box img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Poppins rather than Lora, so a caption cannot be mistaken for a short
+   paragraph, and not .meta, because a caption is a sentence and an uppercase
+   tracked sentence is unreadable at length. The weight must be stated: Poppins
+   is self-hosted at 500 and 600 only and body sets font-synthesis-weight: none,
+   so an inherited 400 would silently render as 500. */
+.postfigure__caption {
+  margin-top: var(--space-3);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--step-meta);
+  line-height: 1.5;
+  color: var(--gray-text);
+}
+
+/* --- Article footer ---------------------------------------------------- */
+
+/* At the shell width rather than the prose measure, so it reads as closing the
+   whole article rather than the last paragraph. */
+.postfoot {
+  margin-top: var(--space-16);
+  border-top: 1px solid var(--rule);
+  padding-top: var(--space-8);
+}
+
+.postfoot > * + * {
+  margin-top: var(--space-6);
+}
+
+.postfoot p {
+  max-width: none;
+}
+
+/* .home-event's geometry, copied rather than shared so a homepage tweak cannot
+   silently change the blog. No top border: .postfoot's rule already opens it,
+   and two hairlines 32px apart look like a mistake. */
+.postnext {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--rule);
+}
+
+/* Title first, label second, so on stack the label falls BELOW the title and
+   is never an eyebrow. Matches .home-event's own stack width. */
+@media (max-width: 519px) {
+  .postnext {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+}
+
+.postnext__title {
+  min-width: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--step-3);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.postnext__link {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.postnext__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}

@@ -10,7 +10,7 @@ import {
 import { InstagramIcon, LinkedInIcon, SlackIcon } from "./Icons";
 
 /**
- * Primary nav. Three entries, and neither /polls nor /attendance is among them.
+ * Primary nav. Four entries, and neither /polls nor /attendance is among them.
  *
  * Both are surfaces for a room that is already in a session with the URL on a
  * slide or a code on a projector. Neither is a reason for a stranger to visit
@@ -20,11 +20,17 @@ import { InstagramIcon, LinkedInIcon, SlackIcon } from "./Icons";
  *
  * Both routes stay reachable, and /polls stays indexed, so a direct link, a QR
  * code and a search result all still work. Only the advertisement is gone.
+ *
+ * Blog stays marked on /blog/<slug> as well as on the index, and that marked
+ * tab is the wayfinding on a post page, which is why no post needs a back link
+ * above its heading. See inSection below for how, and for why it is not simply
+ * a matter of dropping `end`.
  */
 const NAV = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
   { to: "/events", label: "Events" },
+  { to: "/blog", label: "Blog" },
 ];
 
 /** Shared container inset. The header uses the same one as every page so the
@@ -33,6 +39,23 @@ const CONTAINER = "mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-16";
 
 const Layout = ({ children }) => {
   const location = useLocation();
+
+  /**
+   * Is the reader inside this nav item's section without being on the item's
+   * own page? Today that means a blog post.
+   *
+   * This exists so the highlight and the ARIA state can be set separately.
+   * Dropping `end` from the NavLink would mark the tab, but NavLink also emits
+   * aria-current="page" for anything it considers active, so a screen reader on
+   * /blog/september2026 would be told the Blog link IS the current page when it
+   * is not. Every NavLink therefore keeps `end`, which confines aria-current to
+   * an exact match, and the section highlight comes from `data-marked`, an
+   * alternative .sweep trigger the stylesheet already ships.
+   */
+  const inSection = (to) =>
+    to !== "/" &&
+    location.pathname !== to &&
+    location.pathname.startsWith(`${to}/`);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const headerRef = useRef(null);
@@ -98,15 +121,19 @@ const Layout = ({ children }) => {
             </span>
           </Link>
 
+          {/* gap-6 at md, not gap-8. A fourth nav entry plus the wordmark and
+              the coral button leaves roughly 20 to 30px of slack inside the
+              688px of content at 768px; the wider gap tips it into a wrap. */}
           <nav
             aria-label="Primary"
-            className="hidden items-center gap-8 md:flex"
+            className="hidden items-center gap-6 md:flex lg:gap-8"
           >
             {NAV.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
-                end={item.to === "/"}
+                end
+                data-marked={inSection(item.to) ? "true" : undefined}
                 className={({ isActive }) =>
                   `nav-link sweep no-underline${isActive ? " is-current" : ""}`
                 }
@@ -166,10 +193,12 @@ const Layout = ({ children }) => {
               <li key={item.to} className="border-b border-rule">
                 <NavLink
                   to={item.to}
-                  end={item.to === "/"}
+                  end
                   className={({ isActive }) =>
                     `block py-5 font-display text-step-3 font-semibold no-underline ${
-                      isActive ? "text-coral-text" : "text-ink"
+                      isActive || inSection(item.to)
+                        ? "text-coral-text"
+                        : "text-ink"
                     }`
                   }
                 >
