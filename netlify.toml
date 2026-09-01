@@ -42,6 +42,28 @@
   to = "/events"
   status = 301
 
+# A short link to say out loud and print on a slide: claudeneu.com/slack.
+#
+# A redirect rather than a page, so there is nothing to load and nothing to
+# read. Netlify matches this before it serves any file, so no HTML, no
+# JavaScript and no React route is involved, and it works with scripting off.
+#
+# 302, NOT 301, and that is the whole decision here. The other redirects in this
+# file are permanent moves between paths this site owns. This one points at a
+# THIRD PARTY url that can change: Slack's signup path, the workspace domain, or
+# the approved email domains. A 301 is cached by the browser more or less
+# forever, so anyone who followed the link once would keep being sent to the old
+# destination long after we fixed it, and we would have no way to reach them.
+#
+# The destination is SLACK_WORKSPACE in src/lib/links.js, and it is duplicated
+# here because TOML cannot import it. That file carries the full reasoning for
+# why it is the /signup path and not the bare workspace url or a shared invite.
+# CHANGE BOTH TOGETHER.
+[[redirects]]
+  from = "/slack"
+  to = "https://claudebuildersclub.slack.com/signup"
+  status = 302
+
 # Long-cache the fingerprinted build output.
 [[headers]]
   for = "/assets/*"

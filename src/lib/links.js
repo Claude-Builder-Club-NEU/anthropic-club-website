@@ -48,6 +48,12 @@ export const LINKTREE = "https://linktr.ee/claudeNortheastern";
  * The name is kept as SLACK_WORKSPACE because three consumers import it
  * (Layout, LinkHub and the outbound-click tracker in analytics.js), and the
  * destination, not the identifier, is what changed.
+ *
+ * DUPLICATED IN netlify.toml. claudeneu.com/slack is a 302 to this same url, so
+ * there is a short link to print on a slide. TOML cannot import this constant,
+ * so changing the destination means editing that redirect too. Nothing warns
+ * you if you forget: the site would keep working while the short link quietly
+ * sent people somewhere else.
  */
 export const SLACK_WORKSPACE = "https://claudebuildersclub.slack.com/signup";
 
