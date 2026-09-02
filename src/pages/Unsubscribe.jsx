@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { hasForm, requestUnsubscribe, validate } from "../lib/unsubscribe";
+import { hasBackend, requestUnsubscribe, validate } from "../lib/unsubscribe";
 import { INSTAGRAM } from "../lib/links";
 
 /**
@@ -12,9 +12,11 @@ import { INSTAGRAM } from "../lib/links";
  * reduced sending frequency, because every one of those is a way of not doing
  * what was asked.
  *
- * The request goes to Web3Forms and lands in the club inbox, the same path the
- * workshop pitch takes. A board member removes the address by hand. See
- * lib/unsubscribe.js for why that rather than the database.
+ * The request is written to the club's own Supabase project and the board reads
+ * it from the dashboard. It used to be email only, which failed silently for
+ * weeks: the mail was accepted and delivered somewhere nobody was reading. The
+ * email is still sent as a nudge, but the row is the record. See
+ * lib/unsubscribe.js.
  *
  * THE ADDRESS IS TYPED, NOT CARRIED IN THE URL.
  *
@@ -71,9 +73,11 @@ const Unsubscribe = () => {
   }
 
   /* --- Not configured --------------------------------------------------- */
-  /* Same degradation as the pitch flow: say so and give a real way through,
-     rather than a field that would report success and send nothing. */
-  if (!hasForm) {
+  /* Same degradation as the check-in form: say so and give a real way through,
+     rather than a field that would report success and store nothing. This is
+     the failure mode that actually bit us, so the page must never render a
+     working-looking form it cannot back. */
+  if (!hasBackend) {
     return (
       <Shell>
         <h1 style={{ maxWidth: "18ch" }}>Unsubscribe</h1>

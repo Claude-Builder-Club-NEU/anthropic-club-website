@@ -1,22 +1,24 @@
 /**
  * Unsubscribe: where the page lives, and how a request reaches the board.
  *
- * It posts to Web3Forms, the same service and the same access key the workshop
- * pitch already uses, so a request arrives as an email in the club inbox and an
- * officer removes the address from the mailing list by hand.
+ * THE DATABASE IS THE RECORD. The request is written to the club's own
+ * Supabase project, the same one attendance and polls already use, and the
+ * board reads it from the dashboard.
  *
- * WHY NOT THE DATABASE. Supabase is already wired up for attendance and polls,
- * and a table would give a deduplicated queue with a handled/not-handled
- * column. It would also mean a schema to run, a new public write endpoint to
- * reason about, and a stored list of people leaving the club, which is a thing
- * worth not accumulating. An inbox needs none of that, and at this volume an
- * email per request is the whole workflow. The trade you accept: no dedupe, so
- * a person who clicks twice sends two emails, and no record of which ones you
- * have already actioned beyond your own inbox.
+ * It used to post ONLY to Web3Forms, which emails the club inbox. That failed
+ * in the worst possible way: Web3Forms accepted every submission with a 200 and
+ * delivered the mail to an inbox nobody was reading, so requests were taken and
+ * then invisible. People asked to be removed and nothing reached anyone. An
+ * emailed notification is a convenience and must never be the only copy.
  *
- * A useful side effect: there is no lookup anywhere in this path, so the page
- * cannot be used to ask whether an address is on the list. A database-backed
- * version has to be careful never to answer that question. This one cannot.
+ * The email is still sent, best effort, so the board gets a nudge if the inbox
+ * is ever fixed. It cannot fail the request: the write happens first, and a
+ * rejected or unreachable Web3Forms is swallowed. Losing a notification is an
+ * annoyance; losing an unsubscribe is the thing this page exists to prevent.
+ *
+ * NO ORACLE. request_unsubscribe() answers identically whether or not the
+ * address was on any list, so the page cannot be used to ask who is a member.
+ * See supabase/unsubscribes.sql, which enforces that in SQL.
  *
  * THE URL IS UNGUESSABLE, NOT SECRET, and the difference matters.
  *
@@ -35,6 +37,10 @@
  * an unwanted visitor can do is send the board an email asking us to stop
  * writing to an address, which a person reads before acting on.
  */
+
+import { rpc, hasBackend } from "./supabase";
+
+export { hasBackend };
 
 /**
  * Where the page lives. Twenty characters from a 27-symbol alphabet, about 95
@@ -64,7 +70,12 @@ export const UNSUBSCRIBE_PATH = `/${UNSUBSCRIBE_SLUG}`;
 const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_KEY || "";
 const ENDPOINT = "https://api.web3forms.com/submit";
 
-export const hasForm = Boolean(ACCESS_KEY);
+/**
+ * Whether the OPTIONAL email notification can be sent. The page does not gate
+ * on this: storage is `hasBackend` from lib/supabase.js, and an unsubscribe is
+ * recorded whether or not anyone gets an email about it.
+ */
+const canEmail = Boolean(ACCESS_KEY);
 
 /**
  * Any syntactically plausible address, NOT just a Northeastern one.
@@ -103,11 +114,14 @@ export function validate(email) {
 }
 
 /**
- * Send the request.
+ * Record the request.
  *
- * Resolves true when Web3Forms accepted it. Every other outcome, a rejection or
- * a network failure, throws, so the caller has one success path and one failure
- * path rather than three states to tell apart.
+ * The Supabase write is the one that matters and the only one that can fail the
+ * call. The email is fired afterwards and its outcome is discarded: a broken
+ * notification must never turn into a lost unsubscribe.
+ *
+ * Resolves when the row is durable. Throws when it is not, so the page can tell
+ * the person to try again rather than reporting a success that did not happen.
  *
  * @param {string} email
  * @param {{botcheck?: boolean, signal?: AbortSignal}} [options]
@@ -115,7 +129,28 @@ export function validate(email) {
 export async function requestUnsubscribe(email, options = {}) {
   const clean = normalizeEmail(email);
 
-  const res = await fetch(ENDPOINT, {
+  const data = await rpc(
+    "request_unsubscribe",
+    { p_email: clean },
+    { signal: options.signal }
+  );
+
+  if (!data?.ok) {
+    throw new Error(data?.reason || "rejected");
+  }
+
+  // Best effort, deliberately not awaited into the result. A notification is a
+  // convenience; the row above is the record.
+  notify(clean, options.botcheck).catch(() => {});
+
+  return true;
+}
+
+/** The optional email nudge. Never throws into the caller. */
+async function notify(clean, botcheck) {
+  if (!canEmail) return;
+
+  await fetch(ENDPOINT, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -123,22 +158,14 @@ export async function requestUnsubscribe(email, options = {}) {
     },
     body: JSON.stringify({
       access_key: ACCESS_KEY,
-      // Prefixed so these sort together in the inbox and can be filtered into
-      // their own label without reading the body.
       subject: `Unsubscribe: ${clean}`,
       from_name: "Claude Builders Club website",
-      botcheck: options.botcheck ? "true" : "",
+      botcheck: botcheck ? "true" : "",
       email: clean,
-      // Spelled out because the email is read by a person who then goes and
-      // does something. A bare address in an inbox is a puzzle at 8am.
-      message: `Please remove ${clean} from the newsletter mailing list.`,
+      message:
+        `Please remove ${clean} from the newsletter mailing list. ` +
+        `This request is also recorded in Supabase, table public.unsubscribes, ` +
+        `which is the authoritative copy.`,
     }),
-    signal: options.signal,
   });
-
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok || !data.success) {
-    throw new Error(data.message || `Request failed (${res.status}).`);
-  }
-  return true;
 }
