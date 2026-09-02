@@ -27,7 +27,7 @@
  *
  * Two derivative sets per master:
  *   <name>-{848,1272,1696}.{avif,webp,jpg}       full-width figure, no crop
- *   <name>-card-{176,352,560}.{avif,webp,jpg}    16:9 crop for the /blog row
+ *   <name>-card-{480,720,1024}.{avif,webp,jpg}  16:9 crop for a /blog card
  *
  * Card crops are generated for EVERY master rather than for a conventional
  * filename, because they are small and because "the thumbnail silently did not
@@ -45,7 +45,7 @@ const OUT_DIR = resolve(__dirname, "../public/blog-img");
 
 /** Kept in step with FIGURE_WIDTHS and CARD_WIDTHS in src/lib/blog.js. */
 const FIGURE_WIDTHS = [848, 1272, 1696];
-const CARD_WIDTHS = [176, 352, 560];
+const CARD_WIDTHS = [480, 720, 1024];
 const CARD_RATIO = 16 / 9;
 
 const SOURCE_EXT = /\.(jpe?g|png)$/i;

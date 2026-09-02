@@ -27,7 +27,16 @@
  *   2. Give it the frontmatter below. `title`, `date` and `excerpt` are the
  *      three that matter; everything else is optional.
  *   3. Pictures are optional. Put masters in `blog-src/<slug>/` and see
- *      scripts/build-blog-images.mjs.
+ *      scripts/build-blog-images.mjs. One master named in `thumb:` lights up
+ *      BOTH surfaces: the 16:9 crop becomes the card on /blog and the uncropped
+ *      derivative becomes the post's banner plate.
+ *   4. A post must not OPEN with a full-width figure. Every post begins with the
+ *      banner plate, and a bleed figure computes to the identical width, so an
+ *      opening figure stacks a second shell-wide panel just under the first.
+ *      Start with prose or a heading. A figure anywhere after the first block is
+ *      fine, and an `?inset` or portrait figure is fine anywhere at all. This is
+ *      written down rather than thrown, because the parser has no notion of the
+ *      page's layout and a hard error would also block a legitimate inset opener.
  *
  * TO PARK AN UNFINISHED ONE
  *   Put it in `src/content/blog/drafts/` instead. It renders on the dev server
@@ -49,6 +58,18 @@
  *   author     optional slug from lib/board.js. A name is never free text, so a
  *              byline cannot credit somebody who is not on the board.
  *   updated    optional YYYY-MM-DD.
+ *   tag        optional one word, e.g. Newsletter, Recap, Notes. Printed on the
+ *              card and used for the index filter. The filter row only appears
+ *              once two or more distinct tags exist.
+ *
+ * Posts are NOT numbered. An issue number was rendered here for a while and was
+ * removed: it is a second identity competing with the title and the date, and on
+ * a blog that is not published to a fixed schedule it means very little. The
+ * post that wants to call itself an issue can say so in its own title, the way
+ * the first newsletter does.
+ *   from       optional short phrase naming where the post came from, e.g.
+ *              "Kickoff planning". It is the last item on the feature card's
+ *              meta line, and it is simply not printed when it is absent.
  */
 
 import { BOARD } from "./board";
@@ -56,6 +77,7 @@ import {
   parseFrontmatter,
   parseMarkdown,
   firstParagraphText,
+  textOf,
 } from "./markdown";
 
 const FILES = import.meta.glob("../content/blog/*.md", {
@@ -182,8 +204,33 @@ function toPost(path, raw) {
     thumb: data.thumb ? String(data.thumb) : null,
     thumbAlt: data.thumbAlt ? String(data.thumbAlt) : null,
     author: data.author ? String(data.author) : null,
+    // Optional, and absent by default. The index only renders a filter row when
+    // two or more tags actually exist across the posts, the same call
+    // Events.jsx makes for event kinds.
+    tag: data.tag ? String(data.tag) : null,
+    // Optional, e.g. which session a post came out of. Nothing is invented
+    // when it is missing: the meta line simply ends earlier.
+    from: data.from ? String(data.from) : null,
+    minutes: readingMinutes(blocks),
     blocks,
   };
+}
+
+/**
+ * Reading time in whole minutes, from the post's own words.
+ *
+ * 220 words a minute, which is the middle of the range for adult silent reading
+ * of ordinary prose. Fenced code is excluded because people skim code rather
+ * than read it, and a snippet would otherwise inflate the estimate; inline code
+ * is counted, because it is read as part of the sentence.
+ *
+ * Never below 1. "0 min read" is not a helpful thing to print on a card.
+ */
+function readingMinutes(blocks) {
+  const words = textOf(blocks, { skipCode: true })
+    .split(/\s+/)
+    .filter(Boolean).length;
+  return Math.max(1, Math.round(words / 220));
 }
 
 /**
@@ -216,7 +263,13 @@ export const POSTS = assertUnique(
         ? a.slug.localeCompare(b.slug)
         : b.date.localeCompare(a.date)
     )
+
 );
+
+/** Every tag in use, in the order posts were published. */
+export const TAGS = [
+  ...new Set(POSTS.map((post) => post.tag).filter(Boolean)),
+];
 
 export const hasPosts = POSTS.length > 0;
 
@@ -266,8 +319,12 @@ export function formatPostDate(iso) {
 
 const IMG_BASE = "/blog-img";
 
-/** 2x cover for the 88, 160 and 256 CSS px the thumbnail renders at. */
-export const CARD_WIDTHS = [176, 352, 560];
+/**
+ * The card's picture panel is a real image area, not a thumbnail, so the ladder
+ * is sized for it: 320 CSS px on the feature card's side panel and 500 on a
+ * small card's top band, both at 2x, plus a full-width phone.
+ */
+export const CARD_WIDTHS = [480, 720, 1024];
 
 /**
  * The article shell is `--measure` plus `--space-32`, which is 68ch of Lora at
@@ -284,9 +341,20 @@ export const FIGURE_WIDTHS = [848, 1272, 1696];
  * Measured against the real container insets, which step 24 / 40 / 64 as
  * Tailwind's sm and lg breakpoints pass. Do not assume lg:px-16 below 1024px.
  */
-export const CARD_SIZES = "(min-width: 52rem) 160px, 88px";
+/**
+ * Small cards run two-up above 900px, which is 500px each inside the 1024px
+ * content width with a 24px gap. Below that a card is the full content width,
+ * so the panel tracks the inset in force: 80px in the sm band, 48px below 640.
+ */
+export const CARD_SIZES =
+  "(min-width: 900px) 500px, (min-width: 640px) calc(100vw - 80px), calc(100vw - 48px)";
+
+/**
+ * The feature card's panel is a fixed 320px column beside the copy above 900px,
+ * and a full-width band on top below it.
+ */
 export const LEAD_CARD_SIZES =
-  "(min-width: 64rem) 256px, (min-width: 52rem) 160px, 88px";
+  "(min-width: 900px) 320px, (min-width: 640px) calc(100vw - 80px), calc(100vw - 48px)";
 
 /**
  * A figure that breaks out sits on the shell's edges, 846px, but only at 58rem

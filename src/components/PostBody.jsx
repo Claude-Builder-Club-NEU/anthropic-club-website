@@ -203,10 +203,16 @@ const Block = ({ block, slug, priority }) => {
  * `heroPriority` marks the post's FIRST figure as the LCP element, but only
  * when it opens the article. A figure four screens down is not the largest
  * contentful paint and loading it eagerly only delays the text.
+ *
+ * `hasBannerImage`, not `hasBanner`: EVERY post has a banner plate, but only
+ * some carry a photograph in it. An imageless plate fetches nothing, so an
+ * opening figure should keep the page's one priority slot. Gating on the banner
+ * existing would demote a legitimate opening figure on every post, which today
+ * is all of them.
  */
-const PostBody = ({ blocks, slug }) => {
+const PostBody = ({ blocks, slug, hasBannerImage = false }) => {
   const firstFigure = blocks.findIndex((block) => block.type === "figure");
-  const heroPriority = firstFigure === 0;
+  const heroPriority = firstFigure === 0 && !hasBannerImage;
 
   return (
     <div className="postprose">

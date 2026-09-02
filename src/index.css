@@ -3316,124 +3316,181 @@ textarea.pf-input {
 }
 
 /* ==========================================================================
-   Blog — /blog and /blog/<slug>
+   Blog index — /blog
 
-   The index is a RULED TABLE, not a card grid. This site already owns that
-   object twice, in .home-event and .pollresult, and a table is the one shape
-   that holds both states this page has: one post on launch day and forty
-   later. Nothing here is a card, so nothing needs a fill, a border box or a
-   radius; only the media inside a row is rounded.
+   ONE CARD OBJECT IN TWO SIZES. A picture panel and a block of copy inside a
+   hairline card on paper. The newest post takes the full width with its panel
+   down the right; everything after it sits two-up with the panel on top.
 
-   The 52rem grid stop is .pollresult's, which is the site's other ruled table.
+   THE CARD IS .link-card AT A LARGER SIZE. That component on the homepage is a
+   paper surface inside a hairline that turns its border coral and its ground
+   oat on hover, over the sweep's own 150ms. This reuses those exact two
+   properties and that exact timing, which is why the whole card animates and
+   the title carries no highlighter: two objects doing the same job should not
+   hover differently.
 
-   No eyebrow anywhere: the date sits beside the title above 52rem and below
-   the excerpt on a phone, so it is never a kicker above a heading. Hover is
-   the sitewide highlighter and nothing else.
+   The panel is sized for a real photograph rather than for a placeholder,
+   because one day it holds one. Until then it is a coral plate carrying the
+   Claude spark.
    ========================================================================== */
 
-.postindex {
-  margin: var(--space-12) 0 0;
-  padding: 0;
-  list-style: none;
-  /* Each row opens with a hairline, so the table needs one to close on. */
-  border-bottom: 1px solid var(--rule);
-}
-
-/* Cannot happen at launch. It exists so the page can never render a bare list
-   if every post is unpublished. */
-.postindex__empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 8rem;
-  margin-top: var(--space-12);
-  padding: var(--space-6);
-  border: 1px dashed var(--rule);
-  border-radius: var(--radius-lg);
-  text-align: center;
-}
-
-/* Areas rather than source order, so the reading order and the visual order
-   never fight: the date is last in the DOM on a phone and first in the left
-   column on a wide screen, and it is a heading's sibling in neither. */
-.postrow {
+.postcard {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(4.5rem, 22vw, 5.5rem);
-  grid-template-areas:
-    "title   thumb"
-    "excerpt excerpt"
-    "when    when";
-  column-gap: var(--space-4);
-  padding: var(--space-6) 0;
-  border-top: 1px solid var(--rule);
+  grid-template-columns: minmax(0, 1fr);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  /* 8px, the documented radius for a panel. The inner panel is square and gets
+     clipped back to it. */
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
-@media (min-width: 52rem) {
-  .postrow {
-    grid-template-columns: 8rem minmax(0, 1fr) var(--postrow-thumb, 10rem);
-    grid-template-areas:
-      "when title   thumb"
-      "when excerpt thumb";
-    column-gap: var(--space-8);
-    align-items: start;
-    padding: var(--space-8) 0;
+.postcard[data-feature="true"] {
+  margin-top: var(--space-8);
+}
+
+/* The feature turns into two columns once there is room for a 320px panel
+   beside a readable measure. Below that both sizes are the same object: panel
+   on top, copy underneath. */
+@media (min-width: 900px) {
+  .postcard[data-feature="true"] {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+  }
+
+  /* Copy first in the DOM so it is read first; the panel is placed to the right
+     visually. Reading order and visual order are set independently on purpose. */
+  .postcard[data-feature="true"] .postcard__body {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .postcard[data-feature="true"] .postcard__art {
+    grid-column: 2;
+    grid-row: 1;
   }
 }
 
-/* The date column and the plate each span both text rows. */
-.postrow__when {
-  grid-area: when;
-  max-width: none;
-  white-space: nowrap;
-  /* Lands the date's cap height within a pixel of the title's, with no magic
-     offset to maintain. */
-  line-height: 1.5;
-  margin-top: var(--space-4);
+/* --- The picture panel -------------------------------------------------- */
+
+/* 16:9 on a small card and on a narrow feature. The ratio is on the container,
+   not the image, so the card reserves the space before any bytes arrive and a
+   post with no picture occupies exactly the same box as one with. */
+.postcard__art {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--coral);
 }
 
-@media (min-width: 52rem) {
-  .postrow__when {
-    margin-top: 0;
+/* Beside the copy the panel is a column, so it takes its height from the card
+   and the ratio comes off. */
+@media (min-width: 900px) {
+  .postcard[data-feature="true"] .postcard__art {
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 17rem;
   }
 }
 
-.postrow__title {
-  grid-area: title;
+.postcard__art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* A paper tile carrying the Claude Spark, centred on the coral plate.
+   
+   The tile is doing brand work, not decoration. The Spark's own fill is --coral,
+   so on a coral plate it disappears, and assets/brand/README.md records the
+   program rule not to recolour the mark. A light tile under it means the mark
+   ships exactly as Anthropic drew it and is still legible. */
+.postcard__plate {
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  height: 5rem;
+  background: var(--paper);
+  border-radius: var(--radius-lg);
+}
+
+.postcard[data-feature="true"] .postcard__plate {
+  width: 6.5rem;
+  height: 6.5rem;
+}
+
+/* Proportional, never stretched: same rule. */
+.postcard__plate img {
+  width: 56%;
+  height: auto;
+}
+
+/* --- Copy --------------------------------------------------------------- */
+
+.postcard__body {
   min-width: 0;
+  padding: var(--space-6);
+}
+
+@media (min-width: 640px) {
+  .postcard[data-feature="true"] .postcard__body {
+    padding: var(--space-8);
+  }
+}
+
+@media (min-width: 900px) {
+  .postcard[data-feature="true"] .postcard__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--space-12);
+  }
+}
+
+.postcard__eyebrow {
+  max-width: none;
+  font-family: var(--font-mono);
+  font-size: var(--step-meta);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray-text);
+}
+
+.postcard__title {
+  margin-top: var(--space-3);
   font-size: var(--step-3);
-  line-height: 1.25;
+  line-height: 1.2;
   letter-spacing: -0.01em;
 }
 
-.postrow__link {
+.postcard[data-feature="true"] .postcard__title {
+  max-width: 20ch;
+  font-size: var(--step-2);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+/* Ink, not coral, and no underline: the card is the affordance, so a second
+   one on the words would be saying it twice. */
+.postcard__link {
   color: var(--ink);
   text-decoration: none;
 }
 
-/* Stretches the target over the whole row, plate included, while the link's
-   accessible name stays the title alone. The price, accepted: excerpt text on
-   this page cannot be selected. The alternative leaves the picture dead.
-
-   z-index is REQUIRED, not tidiness. .postrow__thumb is also positioned, is
-   also z-index auto, and is the last child of the row, so without a stack level
-   here it paints over this overlay and wins the hit test: the plate would be
-   the one part of the row a click did not reach, which is the opposite of what
-   this rule is for. The overlay has no background, so raising it changes
-   nothing visible. */
-.postrow__link::after {
+/* Stretches the target over the whole card while the accessible name stays the
+   title alone. z-index because the panel is positioned too and would otherwise
+   paint over this and take the clicks. */
+.postcard__link::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
 }
 
-/* .event-tile__blurb's declaration block with a different clamp, so the two
-   objects read as siblings. It renders at EVERY width: hiding it on a phone
-   would leave the index with nothing to read and no reason to tap. */
-.postrow__excerpt {
-  grid-area: excerpt;
+.postcard__excerpt {
   margin-top: var(--space-3);
   font-size: var(--step-small);
   line-height: 1.6;
@@ -3445,98 +3502,159 @@ textarea.pf-input {
   overflow: hidden;
 }
 
-.postrow__thumb {
-  grid-area: thumb;
-  position: relative;
-  /* Fixed by the container, not by the image, so a row with no picture
-     reserves the identical box and the table never changes height as
-     derivatives decode. */
-  aspect-ratio: 16 / 9;
-  align-self: start;
-  overflow: hidden;
-  border-radius: var(--radius-lg);
-  background: var(--gray-light);
-}
-
-.postrow__thumb img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* --- The lead row ------------------------------------------------------ */
-
-/* Three changes and nothing else. No fill, no border, no second card shape. */
-.postrow[data-lead="true"] .postrow__title {
-  font-size: var(--step-2);
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-}
-
-.postrow[data-lead="true"] .postrow__excerpt {
+.postcard[data-feature="true"] .postcard__excerpt {
+  margin-top: var(--space-4);
+  max-width: 52ch;
+  font-size: var(--step-body);
   -webkit-line-clamp: 3;
   line-clamp: 3;
 }
 
-/* Above 1024px the newest post's headline sets LARGER than the page title
-   above it. That inversion is the point: on a page of writing, the newest
-   piece should be the loudest object, not the word "Blog". Gated here because
-   at 832px the title column falls to about 400px and a headline this size
-   breaks badly in it. */
-@media (min-width: 64rem) {
-  .postrow[data-lead="true"] {
-    --postrow-thumb: 16rem;
+.postcard__meta {
+  margin-top: var(--space-4);
+  max-width: none;
+  font-size: var(--step-meta);
+  color: var(--gray-text);
+}
+
+.postcard__dot {
+  padding: 0 0.5ch;
+}
+
+/* --- Hover and focus ---------------------------------------------------- */
+
+/* .link-card's two properties and its timing, on the whole card. Nothing lifts,
+   nothing scales, and no text is marked. */
+.postcard {
+  transition: border-color var(--sweep-duration) var(--sweep-ease),
+    background-color var(--sweep-duration) var(--sweep-ease);
+}
+
+.postcard:hover,
+.postcard:focus-within {
+  border-color: var(--coral);
+  background-color: var(--gray-light);
+}
+
+/* The stylesheet's global reduced-motion block already zeroes every transition
+   duration, so the colours still change and simply do not travel. */
+
+/* --- The row of smaller cards ------------------------------------------- */
+
+.postcard-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  gap: var(--space-6);
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 900px) {
+  .postcard-row {
+    grid-template-columns: repeat(2, 1fr);
   }
-
-  .postrow[data-lead="true"] .postrow__title {
-    font-size: var(--step-1);
-    line-height: 1.08;
-    letter-spacing: -0.025em;
-  }
 }
 
-/* A lead with no picture drops the column outright. At 256px a dashed
-   rectangle is a hole; at the 72 to 160px a standard row uses, the same frame
-   genuinely reads as reserved, which is why only the lead does this. */
-.postrow[data-nomedia="true"] {
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-areas:
-    "title"
-    "excerpt"
-    "when";
+/* The card is the grid item, so it has to fill the row's stretched height or a
+   short card leaves its neighbour standing alone. */
+.postcard-item {
+  display: flex;
 }
 
-@media (min-width: 52rem) {
-  .postrow[data-nomedia="true"] {
-    grid-template-columns: 8rem minmax(0, 1fr);
-    grid-template-areas:
-      "when title"
-      "when excerpt";
-  }
+.postcard-item .postcard {
+  width: 100%;
+  /* Panel on top, copy below, copy taking the slack. */
+  grid-template-rows: auto 1fr;
 }
 
-/* --- Hover and focus --------------------------------------------------- */
+/* --- The signup band ---------------------------------------------------- */
 
-/* One property on one element: the sitewide highlighter, fired from the row.
-   Firing .sweep from an ancestor is not a new primitive, since .sweep.is-current
-   and .sweep[data-marked="true"] are two shipped alternative triggers, and it
-   reuses .sweep's own transition so the prefers-reduced-motion block already
-   neutralises it. Keyboard focus lands on the <a> and takes the global focus
-   ring around the headline words rather than around the whole row. */
-.postrow:hover .postrow__link,
-.postrow:focus-within .postrow__link,
-.postnext:hover .postnext__link,
-.postnext:focus-within .postnext__link {
-  background-size: 100% var(--sweep-height);
+/* Points at the interest form, which IS the mailing list, rather than carrying
+   a second email field: the site has one conversion action and a competing
+   signup would need its own backend to mean anything. */
+.blog-signup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--space-8);
+  background: var(--ink);
+  border-radius: var(--radius-lg);
 }
 
-/* --- The reserved frame ------------------------------------------------ */
+.blog-signup__title {
+  max-width: none;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 600;
+  color: var(--paper);
+}
 
-/* Shared by a row's plate and a figure's box. Inset by 4px rather than drawn
-   on the boundary, where a dashed line reads as a rendering fault, and
-   --gray-mid because the hairline is invisible on the oat ground beneath.
-   (DESIGN.md bans Pale Clay as TEXT; this is a border.) */
+.blog-signup__sub {
+  margin-top: var(--space-1);
+  max-width: none;
+  font-size: var(--step-small);
+  /* Pale clay is banned as text on paper at 2.11:1. On ink it measures 8.3:1,
+     which is why it is the secondary colour on every inverted surface here. */
+  color: var(--gray-mid);
+}
+
+/* Paper on ink, filling to paper on hover: the same reversal .btn--coral makes,
+   pointed the other way because the ground is already dark. */
+.blog-signup__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  padding: var(--space-3) var(--space-6);
+  border: 1px solid var(--paper);
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-size: var(--step-small);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--paper);
+  text-decoration: none;
+  background-image: linear-gradient(var(--paper), var(--paper));
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: 0% 100%;
+  transition: background-size var(--sweep-duration) var(--sweep-ease),
+    color var(--sweep-duration) var(--sweep-ease);
+}
+
+.blog-signup__cta:hover,
+.blog-signup__cta:focus-visible {
+  background-size: 100% 100%;
+  color: var(--ink);
+}
+
+/* --- The empty state ---------------------------------------------------- */
+
+/* Cannot happen with a post published. It exists so the page can never render a
+   bare list, and so a filter that matches nothing says so. */
+.postindex__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 8rem;
+  margin-top: var(--space-8);
+  padding: var(--space-6);
+  border: 1px dashed var(--gray-mid);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+/* --- The reserved frame ------------------------------------------------- */
+
+/* Used inside a figure's box on a post page. Inset by 4px rather than drawn on
+   the boundary, where a dashed line reads as a rendering fault, and --gray-mid
+   because the hairline is invisible on the oat ground beneath. (DESIGN.md bans
+   Pale Clay as TEXT; this is a border.) */
 .postreserved {
   position: absolute;
   inset: var(--space-1);
@@ -3560,6 +3678,122 @@ textarea.pf-input {
   margin-inline: auto;
   width: 100%;
   max-width: calc(var(--measure) + var(--space-32));
+}
+
+/* --- The banner plate ---------------------------------------------------- */
+
+/* An ink plate at the shell width, the first thing in every article. It is the
+   photograph the day one exists, and until then the club's own mark cropped by
+   the plate's bottom-right corner.
+
+   NOTHING IS WRITTEN ON IT, and that is the whole design. The title, the
+   standfirst and the colophon sit on paper underneath, so the plate carries no
+   legibility debt: no scrim, no minimum darkness, no photograph ever rejected
+   for being too bright, and nothing to re-tune the day a picture lands. It is
+   also why title length cannot damage it. Measured, a ten-line title leaves the
+   plate at 272 x 153 on a 320px screen, exactly as a one-line title does.
+
+   It is a SIBLING of .postprose rather than a full-bleed band, so it inherits
+   .postarticle's width with no breakout arithmetic and can never drift from the
+   width a bleed figure takes. That is also why a post must not open with a
+   figure; see the note in lib/blog.js. */
+.postbanner {
+  /* The one invented value here. The spacing scale stops at --space-32 and
+     carries no height token to derive a masthead from, so it is scoped to this
+     component the way .ib scopes its own. 22rem puts the plate, the title and
+     the standfirst on the first screen at 1440x900. */
+  --banner-cap: 22rem;
+  position: relative;
+  /* LOAD BEARING, and it looks redundant on a block element. Without it the
+     capped max-height is resolved back through the aspect-ratio and the WIDTH
+     is derived from it, rendering the plate 626px inside an 846px shell.
+     Stating the width pins the box and lets the RATIO widen instead. */
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: var(--banner-cap);
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  /* The floor under a photograph that has not decoded, and the mat around one
+     that letterboxes. Never paper: a paper box would flash inside a paper page
+     for a frame and read as a hole. */
+  background: var(--ink);
+}
+
+/* One ratio and one cap, so this component needs NO breakpoint. The cap only
+   engages past 626px of plate, which is roughly a 706px viewport, so every
+   phone sits at a plain 16:9 and the plate then widens continuously to 2.4:1 as
+   the shell reaches its own maximum. */
+
+.postbanner picture {
+  display: block;
+  height: 100%;
+}
+
+/* Biased above centre. The uncropped derivative keeps the master's own shape, so
+   a 3:2 photograph shows about 62% of its height in a 2.4:1 plate. Centring
+   takes that evenly off the top and the bottom; 40% keeps the headroom, which is
+   where a subject usually sits. */
+.postbanner picture img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 40%;
+}
+
+/* The no-photograph state: the Claude Spark cropped by the plate's bottom-right
+   corner, at the mark's OWN colour. This is .hero-mark's device at masthead
+   scale rather than a placeholder box.
+
+   NO `color` DECLARATION, EVER. The asset is an <img> whose fill is #D97757, so
+   `color` is inert on it anyway, and recolouring the mark is forbidden by
+   assets/brand/README.md under the Claude Builder Club program rules. The INK
+   ground is what lets the mark ship unmodified: coral on ink measures 5.90:1,
+   where coral on the index card's coral plate is 1.00:1 and needs the paper tile
+   that card carries.
+
+   Percentages, not rem, so the crop is the same composition at every width. */
+.postbanner__mark {
+  position: absolute;
+  right: -14%;
+  bottom: -34%;
+  width: 52%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* --- The masthead -------------------------------------------------------- */
+
+/* Plate, title, standfirst, colophon. One rhythm declaration does all four
+   gaps, at the 32px the page already put between its title and its dateline. */
+.posthead > * + * {
+  margin-top: var(--space-8);
+}
+
+/* 20ch resolves in Poppins at the clamped h1 size, so the title wraps into a
+   shape against the plate rather than running as a stripe. It has no effect
+   below roughly 640px, where 20ch is already wider than the shell.
+
+   NEVER set font-family on .posthead, on .postarticle, or on any wrapper that
+   contains them: --measure is 68ch and ch re-resolves against the element's own
+   font. The .postprose comment below records what that cost the first time. */
+.posthead__title {
+  max-width: 20ch;
+}
+
+.posthead__lead {
+  max-width: var(--measure-tight);
+}
+
+/* The colophon opens the article on a hairline, which is where a byline block
+   sits in print. max-width: none is required, not cosmetic: the global p rule
+   would otherwise draw the hairline at the prose measure rather than the
+   shell's full width. */
+.posthead__meta {
+  max-width: none;
+  border-top: 1px solid var(--rule);
+  padding-top: var(--space-4);
 }
 
 /* --- Prose ------------------------------------------------------------- */
@@ -3604,6 +3838,30 @@ textarea.pf-input {
   margin-top: var(--space-12);
 }
 
+/* A hairline above every section heading except the first.
+
+   h2 is --step-3 Poppins against 17px Lora body and h3 is --step-body Poppins,
+   so section and subsection separate by FACE far more than by size. A rule at
+   the prose measure is what makes a six-section newsletter scannable, in the
+   same vocabulary .postquote, .postfoot and .postnext already use. h3
+   deliberately takes none: two ruled levels stripe the column.
+
+   :not(:first-child) is required rather than tidy. The launch post's very first
+   block IS an h2, so without the guard a hairline is drawn immediately under
+   the colophon, 32px below the one the colophon already carries. */
+.postprose > h2:not(:first-child) {
+  border-top: 1px solid var(--rule);
+  padding-top: var(--space-6);
+}
+
+/* .postquote already closes on a hairline at the same measure, and a second one
+   48px later is the "two hairlines look like a mistake" case .postnext records.
+   Equal specificity, so this MUST stay after the rule above. */
+.postprose > .postquote + h2 {
+  border-top: 0;
+  padding-top: 0;
+}
+
 .postprose :where(h2) + * {
   margin-top: var(--space-4);
 }
@@ -3622,6 +3880,18 @@ textarea.pf-input {
 
 .postprose :where(h3) + * {
   margin-top: var(--space-2);
+}
+
+/* The header is sticky and opaque, so anything reached by find-in-page or by a
+   #:~:text= fragment would otherwise land underneath it. --header-h is
+   published to the root by Layout.jsx and measures 72px live; the fallback
+   covers the prerendered HTML before hydration.
+
+   No heading carries an id today, so this serves find-in-page now and is
+   already correct the day ids exist. */
+.postprose h2,
+.postprose h3 {
+  scroll-margin-top: calc(var(--header-h, 72px) + var(--space-4));
 }
 
 /* Tailwind's preflight strips both, so they are restored here. The marker is
