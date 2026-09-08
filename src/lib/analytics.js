@@ -26,10 +26,22 @@ export function track(name, params = {}) {
   window.gtag("event", name, params);
 }
 
-/** Maps an outbound href to its event name. */
+/**
+ * Maps a tracked href to its event name.
+ *
+ * NOT PURELY OUTBOUND ANY MORE. Since the interest form came off Typeform,
+ * INTEREST_FORM is "/join", an internal route. react-router renders a <Link> as
+ * a real anchor, so the delegated listener below still sees the click and
+ * join_click still fires; it is now an intent signal on this site rather than a
+ * departure from it.
+ *
+ * The prefix test is safe only while no other route begins with "/join". If one
+ * is ever added, this silently starts counting it, so match it exactly here
+ * before adding "/joinus" or similar.
+ */
 function eventForHref(href) {
   if (!href) return null;
-  if (href.startsWith(INTEREST_FORM)) return "join_click";
+  if (href === INTEREST_FORM) return "join_click";
   if (href.startsWith(SLACK_WORKSPACE)) return "slack_click";
   if (href.startsWith(INSTAGRAM)) return "instagram_click";
   if (href.startsWith(LINKEDIN)) return "linkedin_click";
@@ -45,10 +57,15 @@ function wireOutboundClicks() {
       const name = eventForHref(link.getAttribute("href"));
       if (!name) return;
       // `location` is the surface the click came from, not a user identifier.
+      // email_signup deliberately does NOT fire here any more.
+      //
+      // It used to, because a join_click was a departure to Typeform and was
+      // therefore the last thing this site could observe. Now the form is on
+      // this domain and the signup either lands in the database or does not, so
+      // the event is fired from components/JoinForm.jsx on a CONFIRMED write.
+      // Counting the click as a signup would have overcounted every visitor who
+      // opened the form and abandoned it, which is the number worth knowing.
       track(name, { location: window.location.pathname });
-      if (name === "join_click") {
-        track("email_signup", { location: window.location.pathname });
-      }
     },
     { capture: true }
   );

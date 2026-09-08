@@ -138,15 +138,45 @@ description, so RSVP buttons on the cards, the tiles and the calendar popover
 all point at the right event. Nothing is configured in code. An entry with no
 link renders no button rather than one that goes nowhere.
 
-### 📝 Typeform — the interest form
+### 📝 The interest form — `/join`
 
 **What it does for the club:** it is the front door. Everything on the
 prospective-member surfaces funnels here, and a submission is what "success"
 means for this site. It collects the contact details the board uses to email
 people about what is coming up.
 
-It is linked, not embedded: no third-party script, no iframe, no performance or
-privacy cost to the site itself.
+**It used to be a Typeform** (`RH9sxEqE`) and is now a page on this site. The
+migration was asked for so the club owns its own front door: responses land in
+the club's Supabase project rather than a third-party account, there is no
+response cap, and the board queries the roster in SQL instead of downloading a
+CSV.
+
+It is the same six screens a Typeform would give you, one question at a time,
+built on the same `.pf-*` flow as `/events/pitch`. Two questions the Typeform
+never asked were added at the same time: **what year are you**, and **what
+Northeastern college are you in**.
+
+Specifics worth knowing:
+
+- **Answers are stored in `public.signups`.** `supabase/signups.sql` creates it
+  and must be run in the SQL editor before the form can work. Until it is, the
+  page loads and the final submit fails, because the function it calls does not
+  exist yet.
+- **One row per person per term.** Signing up again in January is a new fact,
+  not a duplicate; signing up twice in September rewrites your answers and
+  counts up a `submissions` column.
+- **The board reads it in SQL.** The foot of `signups.sql` carries the queries
+  the board actually needs, including which pair of days reaches the most
+  people, and a mailing-list export that **excludes anyone in
+  `public.unsubscribes`**.
+- **An email notification is sent as well**, best effort, through the same
+  Web3Forms key the pitch form uses. It is a nudge and is allowed to fail. The
+  database row is the record, for the reason `src/lib/unsubscribe.js` documents:
+  an inbox nobody reads loses submissions silently.
+- **`/fallfest`** is a phone-first landing page for the campus club fair: two
+  tiles, one to this form and one showing the next info session, sized so both
+  actions clear the fold on a 375px phone. It is `noindex` and reached by QR
+  code.
 
 ### ✉️ Web3Forms — the workshop pitch form
 
@@ -185,7 +215,7 @@ still standing in the room is a typo that costs nothing.
 The room code rotates every session and expires shortly after the start, so it
 cannot usefully be texted to somebody who did not come.
 
-Schema, policies and the two functions the browser may call are in
+Schema, policies and the six functions the browser may call are in
 `supabase/schema.sql`. The security model is worth reading before changing
 anything there: row-level security is on and **no policy grants the anon role
 anything**, so a leaked key reads nothing and writes nothing directly.

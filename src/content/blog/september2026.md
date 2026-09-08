@@ -103,8 +103,7 @@ minutes, straight to our inbox.
 ## Get involved
 
 - Visit our website: [claudeneu.com](/)
-- Interest form and email list:
-  [form.typeform.com](https://form.typeform.com/to/RH9sxEqE)
+- Interest form and email list: [claudeneu.com/join](/join)
 - Join our [Slack](https://claudebuildersclub.slack.com/signup)
 - Follow us on [Instagram](https://www.instagram.com/claudeclub.nu/)
 - Connect on

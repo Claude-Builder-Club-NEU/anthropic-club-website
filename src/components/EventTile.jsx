@@ -25,11 +25,30 @@ import { ArrowRightIcon } from "./Icons";
  * NOT BUILT: the supplied design has a third detail row, "Who: Open to all".
  * A Google Calendar entry has no such field, and inventing one would be making
  * up facts about a session. When/Where come from real fields; Who does not.
+ *
+ * `detailOnly` RENDERS THE DETAIL FACE AND NOTHING ELSE, and exists for
+ * /fallfest, where the card is the whole point of the page rather than one of
+ * three in a row. Two faces are correct on a calendar you are scanning; they
+ * are wrong on a page reached by scanning a QR code at a club fair, because
+ * there is no hover on a phone, so the card would land on the rest face and the
+ * RSVP link would be unreachable without a tap first. On that page the reader
+ * has five seconds and one thumb.
+ *
+ * It defaults to false, so /events renders exactly as it did.
+ *
+ * Three things go away when it is true, and all three are removals rather than
+ * overrides. The rest face is not rendered at all, because the detail face is
+ * self-sufficient: its eyebrow already carries the kind, the weekday and the
+ * date, and the When row carries the time. The .event-tile__hit toggle is not
+ * rendered, because a button carrying aria-expanded="true" that can collapse
+ * nothing lies to a screen reader, and it is an inset:0 overlay sitting exactly
+ * where a thumb is aiming for the RSVP link. And the hover handlers are not
+ * attached, since they would only set state that is immediately ORed away.
  */
-const EventTile = ({ event, lead = false }) => {
+const EventTile = ({ event, lead = false, detailOnly = false }) => {
   const [pinned, setPinned] = useState(false);
   const [peek, setPeek] = useState(false);
-  const open = pinned || peek;
+  const open = detailOnly || pinned || peek;
   const detailId = useId();
 
   const kind = kindOf(event);
@@ -59,52 +78,56 @@ const EventTile = ({ event, lead = false }) => {
       data-lead={lead ? "true" : undefined}
       /* On the tile, not the button, so the pointer can reach the RSVP link
          without the detail face closing under it. */
-      onMouseEnter={() => setPeek(true)}
-      onMouseLeave={() => setPeek(false)}
+      onMouseEnter={detailOnly ? undefined : () => setPeek(true)}
+      onMouseLeave={detailOnly ? undefined : () => setPeek(false)}
     >
       <div className="event-tile__box">
         {/* The toggle covers the whole card as an overlay rather than wrapping
             it, because the detail face contains a link and a link cannot live
             inside a button. First in the DOM so it comes before that link in
             tab order. */}
-        <button
-          type="button"
-          className="event-tile__hit"
-          aria-expanded={open}
-          aria-controls={detailId}
-          onClick={() => setPinned((p) => !p)}
-        >
-          <span className="sr-only">
-            {event.title}, {fullDate}. Show details
-          </span>
-        </button>
+        {!detailOnly && (
+          <button
+            type="button"
+            className="event-tile__hit"
+            aria-expanded={open}
+            aria-controls={detailId}
+            onClick={() => setPinned((p) => !p)}
+          >
+            <span className="sr-only">
+              {event.title}, {fullDate}. Show details
+            </span>
+          </button>
+        )}
 
         {/* Both faces are always rendered, stacked in one grid cell, so the box
             is as tall as the taller of them and swapping between them cannot
             change the card's height. The hidden one keeps its space but leaves
             the accessibility tree and stops taking pointer events. */}
         <div className="event-tile__faces">
-          <div className="event-tile__face" data-face="rest" aria-hidden={open}>
-            <div className="event-tile__top">
-              <span className="event-tile__eyebrow">
-                <span className="kind-swatch" aria-hidden="true" />
-                {KINDS[kind].label}
-              </span>
-              <span className="event-tile__day">{day}</span>
-              <span className="event-tile__dow">
-                {dow} · {mon}
-              </span>
-            </div>
+          {!detailOnly && (
+            <div className="event-tile__face" data-face="rest" aria-hidden={open}>
+              <div className="event-tile__top">
+                <span className="event-tile__eyebrow">
+                  <span className="kind-swatch" aria-hidden="true" />
+                  {KINDS[kind].label}
+                </span>
+                <span className="event-tile__day">{day}</span>
+                <span className="event-tile__dow">
+                  {dow} · {mon}
+                </span>
+              </div>
 
-            <div className="event-tile__bottom">
-              <span className="event-tile__title">{event.title}</span>
-              <span className="event-tile__meta">
-                {time}
-                {event.location ? ` · ${event.location}` : ""}
-              </span>
-              <span className="event-tile__hint">Details</span>
+              <div className="event-tile__bottom">
+                <span className="event-tile__title">{event.title}</span>
+                <span className="event-tile__meta">
+                  {time}
+                  {event.location ? ` · ${event.location}` : ""}
+                </span>
+                <span className="event-tile__hint">Details</span>
+              </div>
             </div>
-          </div>
+          )}
 
           <div
             className="event-tile__face"

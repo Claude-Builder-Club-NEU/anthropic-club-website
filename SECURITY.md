@@ -60,7 +60,7 @@ is that two routes talk to a database at run time.
 | Class | Status | Where it is handled |
 |---|---|---|
 | SQL injection | **In scope** | §3.2 — parameterised RPC only, no string-built SQL |
-| Broken access control | **In scope** | §3.1 — RLS deny-all, two functions as the whole API |
+| Broken access control | **In scope** | §3.1 — RLS deny-all, six SECURITY DEFINER functions as the whole API |
 | Personal data exposure | **In scope** | §3.3 — names and emails now stored |
 | Ballot integrity / stuffing | **In scope, PARTIALLY MITIGATED** | §3.4 — known residual risk |
 | Broken authentication / session | **N/A** | Still no accounts, no passwords, no sessions, no cookies set by this site |
@@ -100,11 +100,16 @@ RUN TIME (visitor's browser)
               ├─► POST <project>.supabase.co/rest/v1/rpc/current_session ◄── NEW
               ├─► POST <project>.supabase.co/rest/v1/rpc/cast_ballot     ◄── NEW
               ├─► POST <project>.supabase.co/rest/v1/rpc/poll_results    ◄── NEW
+              ├─► POST <project>.supabase.co/rest/v1/rpc/request_unsubscribe
+              ├─► POST <project>.supabase.co/rest/v1/rpc/submit_signup       ◄── NEW
               ├─► GET  googletagmanager.com / *.google-analytics.com  (only if VITE_GA_ID)
-              └─► outbound links only: Typeform, Luma, Instagram, LinkedIn, Slack, Google Calendar
+              └─► outbound links only: Luma, Instagram, LinkedIn, Slack, Google Calendar
+
+  The interest form is NO LONGER an outbound link. It was a Typeform; it is now
+  /join on this origin, writing through submit_signup above.
 ```
 
-The four RPC endpoints are the **entire** public API. No table is reachable
+The six RPC endpoints are the **entire** public API. No table is reachable
 directly. See §3.1 for why that is enforced rather than merely intended.
 
 ## 3. The database
@@ -128,6 +133,8 @@ owner and so bypasses RLS in one reviewable place:
 | `check_in(code, name, email)` | the caller's own card | one check-in row | Returns nobody else's row |
 | `cast_ballot(slug, answers)` | — | one ballot row | Returns only `{ ok }` |
 | `poll_results(slug)` | aggregate counts | — | Counts, never rows; drops write-in text |
+| `request_unsubscribe(email)` | — | one unsubscribe row | Returns only `{ ok }`; the same answer whether or not the address was on the list |
+| `submit_signup(...)` | — | one signup row, upserted per term | Returns only `{ ok }`; no id, no count, no report of insert versus update |
 
 **No function returns a roster.** There is deliberately no way to ask this
 schema who attended, because the anon key is public by construction (§5) and a
@@ -148,21 +155,37 @@ referenced object with one in a schema they control.
 
 ### 3.3 Personal data
 
-**This is new and it is the most consequential change in this document.** The
-`checkins` table stores a student's name and Northeastern email address.
+**Two tables now store personal data, and the second is the larger case.**
+
+`checkins` stores a student's name and Northeastern email address.
+
+`signups` stores a name, an email address, a year of study and a college for
+everyone who fills in `/join`. It is a **recruiting roster**, it is the largest
+collection of personal data this project holds, and unlike `checkins` it grows
+from strangers rather than from people already in the room.
 
 | Decision | Where | Rationale |
 |---|---|---|
-| Email normalised to lowercase and trimmed on write | `check_in()` and `src/lib/attendance.js` | One person is one card, not two half-cards |
+| Email normalised to lowercase and trimmed on write | `check_in()`, `submit_signup()`, `src/lib/attendance.js`, `src/lib/join.js` | One person is one row, not two half-rows |
 | `citext` column plus unique index on `(session_id, email)` | `schema.sql` | One stamp per session, enforced in the database rather than the browser |
-| Domain allowlist: `northeastern.edu`, `husky.neu.edu`, `neu.edu` | both layers | Matches what the pitch form already accepts |
+| `citext` column plus unique index on `(email, term)` | `signups.sql` | One person is one row per term; a resubmission rewrites the answers instead of adding a row |
+| Domain allowlist: `northeastern.edu`, `husky.neu.edu`, `neu.edu` | both layers, both tables | Matches what the pitch form already accepts |
+| No function returns a signup row, a count, or an existence check | `signups.sql` | The anon key is public, so "no reader" is what makes the roster safe |
+| Name refused if it begins with `=`, `+`, `-` or `@` | `submit_signup()` and `src/lib/join.js` | The roster is exported to CSV from the Supabase table editor, where a leading `=` is a formula |
 | No password, no account, no session | by design | Nothing to breach, nothing to reset, nothing to leave behind at handover |
 
 **Open and unresolved, for the club rather than for code:**
 
-- **Retention.** Nothing deletes old check-ins. A term's roster persists
-  indefinitely unless somebody removes it. A retention rule should be decided
-  and then implemented, not left to accumulate across graduating cohorts.
+- **Retention.** Nothing deletes old check-ins **or old signups**. Both
+  accumulate indefinitely unless somebody removes them, and `signups` grows
+  fastest because it takes a row from anyone who fills the form. A retention
+  rule should be decided and then implemented, not left to accumulate across
+  graduating cohorts.
+- **Unsubscribes are honoured only by convention.** Nothing stops an officer
+  exporting `signups` and mailing everyone in it. The export query at the foot
+  of `signups.sql` excludes anyone in `public.unsubscribes`, and that exclusion
+  is the only thing keeping the two tables consistent. Use those queries rather
+  than selecting the table.
 - **Who can read it.** Today: nobody through the website, and anyone with the
   Supabase dashboard login. That is a much smaller group than "the internet",
   but it is not zero, and it will change hands with the exec board.

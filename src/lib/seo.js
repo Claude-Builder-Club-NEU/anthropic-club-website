@@ -13,7 +13,7 @@
 import { BOARD } from "./board";
 import { POSTS, authorFor, findPost } from "./blog";
 import { faqJsonLd } from "./faq";
-import { SITE_ORIGIN, INSTAGRAM, LINKEDIN, INTEREST_FORM } from "./links";
+import { SITE_ORIGIN, INSTAGRAM, LINKEDIN, JOIN_PATH } from "./links";
 import { UNSUBSCRIBE_PATH, UNSUBSCRIBE_SLUG } from "./unsubscribe";
 
 const SITE_NAME = "Claude Builders Club @ Northeastern";
@@ -97,6 +97,46 @@ export const ROUTES = [
     ...(POSTS[0] ? { lastmod: POSTS[0].updated || POSTS[0].date } : {}),
   },
   ...POSTS.map(postRoute),
+  {
+    /**
+     * The site's primary conversion action, and the page every "Join the club"
+     * button on every other page now points at. Indexable, unlike the other two
+     * task surfaces: /attendance is noindex because a check-in form teaches a
+     * searcher nothing, but somebody googling this club and landing on the
+     * sign-up form has landed exactly where they meant to.
+     *
+     * Prerendered like everything else, so the welcome screen and its heading
+     * are in the HTML before any JavaScript runs. The six questions are not:
+     * they are a client-side flow, which is correct, because a crawler has
+     * nothing to gain from question four.
+     */
+    path: JOIN_PATH,
+    file: "join/index.html",
+    title: `Join the club | ${SITE_NAME}`,
+    description:
+      "Sign up for Northeastern's Claude Builders Club. Six questions, about thirty seconds, and we build the semester around your answers.",
+    priority: "0.9",
+  },
+  {
+    /**
+     * The club fair landing page, reached by scanning a QR code on a table
+     * sign. Prerendered, so the code, the printed URL and anyone typing it all
+     * work identically.
+     *
+     * noindex, and the reason is not that it is unimportant. It is that
+     * /fallfest is a page named after a date. The event it was printed for ends
+     * in a day, the tile beneath it moves on to whatever is next on the
+     * calendar, and a thin two-tile page competing with the homepage for
+     * searches of the club's own name is a bad trade in both directions.
+     * `noindex` also drops it from sitemap.xml, which is the same reason.
+     */
+    path: "/fallfest",
+    file: "fallfest/index.html",
+    title: `Fall Fest | ${SITE_NAME}`,
+    description:
+      "Join Northeastern's Claude Builders Club, and come to the next info session.",
+    noindex: true,
+  },
   {
     /**
      * The hub only. Individual ballots at /polls/:slug are NOT prerendered and
@@ -183,7 +223,12 @@ export const organizationJsonLd = () => ({
   sameAs: [INSTAGRAM, LINKEDIN],
   potentialAction: {
     "@type": "JoinAction",
-    target: INTEREST_FORM,
+    // ABSOLUTE, and it has to be. JOIN_PATH is "/join" since the form came off
+    // Typeform, and a relative URL in structured data has no base to resolve
+    // against once a crawler has lifted the JSON-LD out of the page. Built here
+    // rather than exported from links.js, where SITE_ORIGIN is declared below
+    // JOIN_PATH and referencing it from up there would throw at module load.
+    target: `${SITE_ORIGIN}${JOIN_PATH}`,
     name: "Join the club",
   },
 });
