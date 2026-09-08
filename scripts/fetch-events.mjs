@@ -189,6 +189,39 @@ const tidy = (s) =>
     .join("\n")
     .trim();
 
+/**
+ * A location, or null if what the calendar holds is a placeholder.
+ *
+ * FOUND IN PRODUCTION: the 17 September info session carried the literal string
+ * "[No Location Yet]" in its LOCATION field, typed in by whoever created the
+ * entry, and the site printed it verbatim. It reached the event tiles, the
+ * homepage list, the calendar popover, and schema.org structured data, where it
+ * published a Place whose name really was "[No Location Yet]".
+ *
+ * Every consumer already renders nothing when `location` is null, so nulling it
+ * once here fixes all of them and no component needs to know about placeholders.
+ * A missing Where row reads as "not announced". A row reading "[No Location
+ * Yet]" reads as a broken website, on the page a prospective member sees first.
+ *
+ * The match is deliberately narrow. Only a WHOLE value that is bracketed, or is
+ * exactly one of the standard placeholder tokens, is dropped. A real location
+ * that merely contains brackets, like "Snell 108 (Zoom link in the invite)",
+ * has to survive, so this cannot be a substring test.
+ *
+ * This does not invent a location. Fixing the calendar entry is the real fix
+ * and it belongs to whoever owns the calendar; the site has no write path to it
+ * on purpose.
+ */
+export function placeOrNull(raw) {
+  const clean = (raw || "").trim();
+  if (!clean) return null;
+  if (/^[[(<].*[\])>]$/.test(clean)) return null;
+  if (/^(tba|tbd|tbc|n\/a|na|none|no location( yet)?|unknown)$/i.test(clean)) {
+    return null;
+  }
+  return clean;
+}
+
 export function parseDescription(raw) {
   if (!raw) return { description: null, rsvpUrl: null };
 
@@ -264,7 +297,7 @@ function parseIcs(ics) {
       title: decode(summary.value),
       start,
       end: dtend ? toIso(dtend.value.trim(), allDay) : null,
-      location: loc ? decode(loc.value) || null : null,
+      location: placeOrNull(loc ? decode(loc.value) : null),
       description,
       // The RSVP link parsed out of the description. Falls back to the entry's
       // own URL property, which Google sets for events created with one.
