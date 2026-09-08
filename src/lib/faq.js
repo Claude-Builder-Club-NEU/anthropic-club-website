@@ -22,7 +22,11 @@ export const FAQ = [
   {
     q: "Is there a fee or an application?",
     a: "Neither. Fill out the interest form and we will send you an email.",
-    links: [{ text: "interest form", href: INTEREST_FORM, external: true }],
+    // `to`, not `href`. The interest form is a route on this site since the
+    // Typeform migration, and Faq.jsx branches on exactly this: `to` renders a
+    // react-router <Link>, `href` renders an <a target="_blank">. Left as an
+    // href it would open our own page in a new tab.
+    links: [{ text: "interest form", to: INTEREST_FORM }],
   },
   {
     q: "What do members get access to?",

@@ -1,8 +1,48 @@
 // Single source of truth for external destinations.
 // Anything the site links off-site lives here so it is changed in one place.
 
-/** Primary conversion action. Verified live: "Claude Club Interest Form". */
-export const INTEREST_FORM = "https://form.typeform.com/to/RH9sxEqE";
+/**
+ * Primary conversion action. AN INTERNAL ROUTE since the Typeform migration.
+ *
+ * It used to be "https://form.typeform.com/to/RH9sxEqE". The club moved off
+ * that platform: the form now lives at /join, is rendered by this site, and
+ * writes to the club's own Supabase project (see supabase/signups.sql). The
+ * Typeform is retained below only so its historical responses can be found.
+ *
+ * THIS CHANGED FROM AN ABSOLUTE URL TO A PATH, and that is not a string swap.
+ * Every consumer had to change with it, because the old value implied three
+ * things a path does not:
+ *
+ *   - It was rendered as <a href target="_blank" rel="noopener noreferrer">.
+ *     Left alone, every "Join the club" button would open the site's own page
+ *     in a second browser tab and cold-boot the whole application into it.
+ *     They are react-router <Link>s now.
+ *   - lib/analytics.js matched it with href.startsWith() to fire an outbound
+ *     "join_click". An internal navigation is not an outbound click and never
+ *     reaches that handler.
+ *   - lib/seo.js used it as a schema.org `target`, which must be absolute.
+ *     That one builds SITE_ORIGIN + JOIN_PATH at the point of use, deliberately
+ *     NOT here: SITE_ORIGIN is declared further down this file, so referencing
+ *     it from up here hits the temporal dead zone and throws at module
+ *     evaluation. The first thing to break would not even be the site. It would
+ *     be `npm run build`, in the prebuild step, because scripts/fetch-events.mjs
+ *     imports CALENDAR_ID from this file and runs before Vite does.
+ *
+ * JOIN_PATH is the same value under the name a router consumer wants. Both are
+ * exported so nothing has to remember which spelling a given call site used.
+ */
+export const JOIN_PATH = "/join";
+export const INTEREST_FORM = JOIN_PATH;
+
+/**
+ * The retired Typeform. NOT linked from anywhere on the site, and must not be.
+ *
+ * Kept as a constant so the id is written down somewhere other than a chat
+ * message: the responses collected during the club's first term still live in
+ * that account, and supabase/signups.sql reserves `source = 'typeform'` for
+ * importing them. Delete this line once that import has happened.
+ */
+export const TYPEFORM_ARCHIVE = "https://form.typeform.com/to/RH9sxEqE";
 
 export const INSTAGRAM = "https://www.instagram.com/claudeclub.nu/";
 export const LINKEDIN =

@@ -87,14 +87,9 @@ const Hero = () => {
         </p>
 
         <div className="mt-9 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:gap-4">
-          <a
-            className="btn btn--coral"
-            href={INTEREST_FORM}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <Link className="btn btn--coral" to={INTEREST_FORM}>
             Join the club
-          </a>
+          </Link>
           <Link className="btn btn--secondary" to="/events">
             See upcoming events
           </Link>

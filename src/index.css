@@ -84,6 +84,20 @@
 
   --rule: #ded9cc; /* hairline dividers — non-text, decorative only */
 
+  /* Secondary text on an INK ground, which is the inverse of --gray-text and
+     needs its own value: --gray-text is 5.51:1 on paper and only 1.7:1 on ink,
+     so reusing it on a dark surface would be unreadable. Used by the board
+     cards, the board link, and the inverted event tile, which is also the card
+     /fallfest leads with. Was repeated as a bare #d8d4cc in four places before
+     it had a name. */
+  --ink-text-muted: #d8d4cc; /* 12.47:1 on ink */
+
+  /* The selected ground for a .choice row. Coral itself is a fill at 2.96:1 and
+     cannot carry the label, so the selected state is this tint plus a coral
+     border plus the mark, never colour alone. Named because two surfaces now
+     depend on it: the poll ballot and the join form. */
+  --coral-tint: #f6e7e0; /* ink 15.30:1 · gray-text 4.81:1 · coral-text 4.88:1 */
+
   /* --- Type ------------------------------------------------------------ */
   --font-display: "Poppins", Arial, system-ui, sans-serif;
   --font-body: "Lora", Georgia, "Times New Roman", serif;
@@ -251,6 +265,13 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  /* Icon buttons: flex strips the whitespace between a label and a trailing
+     <svg>, so "RSVP on Luma →" set the arrow hard against the m. The site's
+     other two icon buttons, .event-tile__rsvp and .blog-signup__cta, each
+     solved this locally with their own gap; this puts it on the shared class
+     so the next one does not have to. A text-only button has a single child,
+     where gap does nothing. */
+  gap: var(--space-2);
   font-family: var(--font-display);
   font-weight: 500;
   font-size: var(--step-small);
@@ -341,7 +362,12 @@ a {
 @media (prefers-reduced-motion: reduce) {
   .sweep,
   .btn--primary,
-  .btn--secondary {
+  .btn--secondary,
+  /* --coral was missing here while being the site's most-used CTA: the header,
+     the hero, the sticky bar and the Fall Fest tile all use it. The global
+     rule below already clamps it, but this list is the one that says
+     "instant change, not a fast fade", so it belongs in both. */
+  .btn--coral {
     transition: none;
   }
   *,
@@ -947,7 +973,7 @@ a {
   width: 34px;
   height: 34px;
   border-radius: var(--radius);
-  color: #d8d4cc;
+  color: var(--ink-text-muted);
   transition: color var(--sweep-duration) var(--sweep-ease);
 }
 
@@ -1013,7 +1039,7 @@ a {
   font-size: var(--step-meta);
   font-weight: 500;
   line-height: 1.5;
-  color: #d8d4cc;
+  color: var(--ink-text-muted);
   max-width: 30ch;
   margin-inline: auto;
 }
@@ -1030,7 +1056,7 @@ a {
 }
 
 .board-link {
-  color: #d8d4cc;
+  color: var(--ink-text-muted);
 }
 
 .board-link:hover,
@@ -1277,6 +1303,47 @@ textarea.pf-input {
   font-weight: 500;
   color: var(--coral-text);
   max-width: 52ch;
+}
+
+/* --- Choice questions, /join only ---------------------------------------
+   The controls themselves are the .choice / .choices block further down this
+   file, which BallotQuestion.jsx established and which this flow reuses whole:
+   real radio and checkbox inputs, a selected state carried by a tint AND a
+   border AND the mark, never by colour alone. Nothing about them is redefined
+   here. What follows is only the fieldset reset and the two places the ballot's
+   sizing is wrong at this flow's scale.
+   ------------------------------------------------------------------------ */
+
+/* A fieldset carries a UA border, padding, and `min-width: min-content`. The
+   last one is not cosmetic: without it the longest option ("Speaker talks from
+   industry leaders") refuses to wrap and pushes the whole flow sideways on a
+   phone. The grid lives on the inner .choices div rather than here, because
+   `display: grid` on a fieldset is the same family of ancient rendering bug as
+   laying out a legend. */
+.pf-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Matches .pf-input's margin-top, so a choice screen and a text screen put
+   their answer in the same place and the question does not appear to move
+   between steps. */
+.pf-fieldset .choices {
+  margin-top: var(--space-8);
+  gap: var(--space-2);
+}
+
+/* The colleges question offers twelve options. At the ballot's --space-4 that
+   is a very tall screen on a phone, so the rows tighten. Still 48px tall at the
+   default font size, which clears the 44px target floor. */
+.pf-fieldset .choice {
+  padding: var(--space-3) var(--space-4);
+}
+
+.pf-fieldset .choice__label {
+  font-size: var(--step-body);
 }
 
 .pf-actions {
@@ -1797,7 +1864,7 @@ textarea.pf-input {
 .event-tile[data-lead="true"] .event-tile__meta,
 .event-tile[data-lead="true"] .event-tile__blurb,
 .event-tile[data-lead="true"] .event-rows {
-  color: #d8d4cc;
+  color: var(--ink-text-muted);
 }
 
 .event-tile[data-lead="true"] .event-tile__hint {
@@ -1819,6 +1886,206 @@ textarea.pf-input {
   background-color: var(--paper);
   border-color: var(--paper);
   color: var(--ink);
+}
+
+/* ==========================================================================
+   Fall Fest — /fallfest
+   A QR-code landing page for the campus club fair. Phone first, and that is a
+   constraint rather than a preference: the page is reached by scanning a code
+   on a table sign, so the reader is standing up, on a phone, with one thumb.
+
+   The page adds NO new card. Both tiles are .event-tile__box, so the shell
+   geometry is shared by construction and there is no second list of values to
+   drift out of step. What follows is the page frame, five releases on the
+   existing grid, and the join tile's own contents.
+   ========================================================================== */
+
+.ff {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--paper);
+}
+
+.ff__main {
+  max-width: 58rem;
+  margin-inline: auto;
+  padding: var(--space-8) var(--space-6)
+    calc(var(--space-12) + env(safe-area-inset-bottom, 0px));
+}
+
+.ff__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-meta);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+/* --step-2 rather than the h1 default. The club's name above it is the
+   identification; this line is the pitch, and at display size it would push the
+   first tile off the fold, which is the one thing this page cannot spend. */
+.ff__title {
+  margin-top: var(--space-4);
+  font-size: var(--step-2);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  max-width: 20ch;
+}
+
+.ff__lead {
+  margin-top: var(--space-3);
+  font-size: var(--step-small);
+  color: var(--gray-text);
+  max-width: 42ch;
+}
+
+/* The five releases on the shared grid, and nothing else.
+
+   --tile-min: 0 is the important one. The 21rem floor exists on .event-tiles so
+   a tile does not change height when its two faces swap. Neither tile here
+   swaps: the join card has one face and the event card is detailOnly. The
+   constraint has nothing left to hold up, and paying it would push the RSVP
+   button below the fold.
+
+   Both classes on every selector, the trick .event-fill--full already uses, so
+   these win wherever this block sits relative to the base rules. */
+.event-tiles.event-tiles--pair {
+  --tile-min: 0;
+  margin-top: var(--space-6);
+  gap: var(--space-4);
+}
+
+/* Two columns from 640px, and never three: there are only ever two tiles. */
+@media (min-width: 640px) {
+  .event-tiles.event-tiles--pair {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+}
+
+@media (min-width: 900px) {
+  .event-tiles.event-tiles--pair {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Nothing on the calendar: the join tile takes the whole row rather than
+   sitting beside a gap. No conditional class in the JSX, and no dashed "more
+   soon" panel, because this page never promised a calendar. */
+.event-tiles.event-tiles--pair > :only-child {
+  grid-column: 1 / -1;
+}
+
+/* The RSVP link computes to about 42px tall, since the 16px arrow rather than
+   the 15px label sets the line box. That is under the 44px in WCAG 2.5.5, which
+   is survivable in a row of three on a desktop calendar and is not on the one
+   surface built for thumbs. Scoped to this grid, so /events does not move.
+
+   No width override: .event-tile__face is a stretch flex column, so the link is
+   already full width. */
+.event-tiles.event-tiles--pair .event-tile__rsvp {
+  padding-block: 14px;
+}
+
+/* --- The join tile ------------------------------------------------------ */
+
+/* .event-tile__box supplies every shell value. This adds only the column
+   layout that the event card's detail face gets from .event-tile__face. */
+.ff-join {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  color: var(--ink);
+}
+
+/* The stretched link: the anchor wraps the title only, so its accessible name
+   is "Join the club", and this pseudo-element makes the whole card the target.
+   .event-tile__box is already position: relative, so it is the containing
+   block. z-index keeps it above the sibling content but it is the only overlay
+   on this card, unlike the event card, which has a real button. */
+.ff-join__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* The card carries the states, because the thing being hovered and focused is
+   the card even though the focusable element is a few words of title.
+   :focus-within is what makes the keyboard ring appear on the card rather than
+   tightly around three words in the middle of it. */
+.ff-join:hover,
+.ff-join:focus-within {
+  border-color: var(--coral);
+}
+
+.ff-join:focus-within {
+  outline: 2px solid var(--coral-text);
+  outline-offset: 2px;
+}
+
+/* The title link takes the card's ink and never its own underline or colour:
+   the whole card already reads as one control. */
+.ff-join__link {
+  color: inherit;
+}
+
+/* The swatch is the kind colour on an event card. This card is not an event, so
+   it takes coral, which is the site's colour for its own primary action. */
+.ff-join .kind-swatch {
+  --kind: var(--coral);
+}
+
+/* Pushed to the bottom so the two cards' actions line up when they sit side by
+   side, the same way the RSVP link sits at the foot of the detail face. */
+.ff-join__cta {
+  margin-top: auto;
+  width: 100%;
+  text-align: center;
+}
+
+/* The CTA is a span, never a nested anchor, so it fills from the CARD's hover
+   and focus rather than needing its own. Same two declarations
+   .btn--coral:hover already sets, so no new motion primitive. */
+.ff-join:hover .ff-join__cta,
+.ff-join:focus-within .ff-join__cta {
+  background-size: 100% 100%;
+  color: var(--paper);
+}
+
+.ff__more {
+  margin-top: var(--space-8);
+}
+
+.ff__morelink {
+  font-family: var(--font-display);
+  font-size: var(--step-small);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.ff__morelink:hover,
+.ff__morelink:focus-visible {
+  color: var(--coral-text);
+}
+
+.ff__fine {
+  margin-top: var(--space-6);
+  font-size: var(--step-meta);
+  line-height: 1.5;
+  color: var(--gray-text);
+  max-width: none;
+}
+
+@media (max-width: 380px) {
+  .ff__main {
+    padding-inline: var(--space-4);
+  }
 }
 
 /* --- Calendar header --------------------------------------------------- */
@@ -3018,7 +3285,7 @@ textarea.pf-input {
 /* Selected state is a tint AND a border, never colour alone. Coral at this
    size is a fill, and the label has to stay readable sitting on it. */
 .choice--on {
-  background: #f6e7e0;
+  background: var(--coral-tint);
   border-color: var(--coral);
 }
 

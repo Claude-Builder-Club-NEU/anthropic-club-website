@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { INTEREST_FORM } from "../lib/links";
 
 /**
@@ -43,14 +43,9 @@ const StickyCta = () => {
 
   return (
     <div className="sticky-cta md:hidden" role="complementary" aria-label="Join the club">
-      <a
-        className="btn btn--primary flex-1"
-        href={INTEREST_FORM}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <Link className="btn btn--primary flex-1" to={INTEREST_FORM}>
         Join the club
-      </a>
+      </Link>
       <button
         type="button"
         onClick={() => setDismissed(true)}

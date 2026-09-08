@@ -483,7 +483,8 @@ lockup for the same reason.
 ### Pitch flow (`/events/pitch`)
 
 A full-viewport, one-question-at-a-time form in the manner of a Typeform,
-supplied as a direct instruction. It is the only chromeless route: no site
+supplied as a direct instruction. It is one of three chromeless routes,
+alongside /join and /fallfest, which are chromeless for the same reason: no site
 header, no footer, no sticky CTA, just a hairline bar carrying the club lockup
 and a close control back to `/events`.
 

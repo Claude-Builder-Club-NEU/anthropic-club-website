@@ -12,8 +12,11 @@ import Attendance from "./pages/Attendance";
 import Polls from "./pages/Polls";
 import Poll from "./pages/Poll";
 import Pitch from "./pages/Pitch";
+import Join from "./pages/Join";
+import FallFest from "./pages/FallFest";
 import NotFound from "./pages/NotFound";
 import { UNSUBSCRIBE_PATH } from "./lib/unsubscribe";
+import { JOIN_PATH } from "./lib/links";
 import "./App.css";
 
 /**
@@ -62,6 +65,20 @@ function App() {
             its own bar and its own <main>. Ranked above the catch-all by
             specificity, so the static segments win. */}
         <Route path="/events/pitch" element={<Pitch />} />
+
+        {/* Chromeless for the same reason, and more so: this flow's own last
+            button IS "Join the club", so a sticky CTA offering to join would be
+            a second button for the thing already in progress. */}
+        <Route path={JOIN_PATH} element={<Join />} />
+
+        {/* Chromeless, and the argument is arithmetic rather than taste. The
+            page is reached by scanning a QR code on a table sign at the club
+            fair, so it is read on a phone in about five seconds. The site
+            header is position:sticky, so it would cost 65px of every viewport
+            for as long as the page is open, and that is very nearly the whole
+            margin between the second tile's RSVP button being on screen and
+            below the fold. See the header comment in pages/FallFest.jsx. */}
+        <Route path="/fallfest" element={<FallFest />} />
 
         <Route element={<SiteChrome />}>
           <Route path="/" element={<Home />} />

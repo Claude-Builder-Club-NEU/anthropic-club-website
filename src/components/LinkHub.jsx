@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import {
   INSTAGRAM,
   LINKEDIN,
@@ -10,6 +11,7 @@ import {
   SlackIcon,
   MailIcon,
   ExternalIcon,
+  ArrowRightIcon,
 } from "./Icons";
 
 /**
@@ -32,7 +34,10 @@ import {
 
 const LINKS = [
   {
-    href: INTEREST_FORM,
+    // `to`, not `href`: the interest form is a route on this site now. The row
+    // renders as a react-router <Link> and drops the external-link glyph, which
+    // would otherwise promise a new tab it does not open.
+    to: INTEREST_FORM,
     label: "Get updates",
     hint: "Interest form",
     Icon: MailIcon,
@@ -67,12 +72,15 @@ const LinkHub = () => (
         Find us
       </h2>
       <ul className="mt-5 grid list-none grid-cols-1 gap-3 p-0 sm:grid-cols-2 lg:grid-cols-4">
-        {LINKS.map(({ href, label, hint, Icon }) => (
+        {LINKS.map(({ href, to, label, hint, Icon }) => {
+          const Tag = to ? Link : "a";
+          const props = to
+            ? { to }
+            : { href, target: "_blank", rel: "noopener noreferrer" };
+          return (
           <li key={label}>
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Tag
+              {...props}
               className="link-card flex items-center gap-3 rounded border border-rule bg-paper px-4 py-3.5 no-underline"
             >
               <span className="text-coral-text">
@@ -85,11 +93,12 @@ const LinkHub = () => (
                 <span className="block text-meta text-gray-text">{hint}</span>
               </span>
               <span className="ml-auto text-gray-text">
-                <ExternalIcon />
+                {to ? <ArrowRightIcon width={14} height={14} /> : <ExternalIcon />}
               </span>
-            </a>
+            </Tag>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </div>
   </section>

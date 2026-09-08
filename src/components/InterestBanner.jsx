@@ -39,14 +39,9 @@ const InterestBanner = () => (
         hackathons before they fill up.
       </p>
       <div className="ib__actions">
-        <a
-          className="ib__cta"
-          href={INTEREST_FORM}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <Link className="ib__cta" to={INTEREST_FORM}>
           Fill out interest form
-        </a>
+        </Link>
         {/* Always the site's own calendar, never the Google embed. This used
             to send people off-site once CALENDAR_URL was set, which is the
             same reason "Open the full calendar" came off the events page. The

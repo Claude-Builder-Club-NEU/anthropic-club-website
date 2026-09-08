@@ -43,14 +43,9 @@ const NotFound = () => (
         </Link>
       </li>
       <li>
-        <a
-          className="font-display no-underline sweep"
-          href={INTEREST_FORM}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <Link className="font-display no-underline sweep" to={INTEREST_FORM}>
           Join the club
-        </a>
+        </Link>
       </li>
     </ul>
   </section>

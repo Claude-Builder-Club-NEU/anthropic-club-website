@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { INTEREST_FORM } from "../lib/links";
 
 /**
  * Workshop pitch flow, posted to Web3Forms. Lives on /events/pitch.
@@ -260,19 +259,15 @@ const WorkshopForm = () => {
       <div className="pf-step">
         <h1 className="pf-title">Pitches are open by email for now.</h1>
         <p className="pf-lead">
-          Tell us what you want to run through the interest form and one of the
-          board will get back to you about scheduling it.
+          Email the board at{" "}
+          <a href="mailto:claudebuildersclubneu@gmail.com">
+            claudebuildersclubneu@gmail.com
+          </a>{" "}
+          with the topic and roughly when, and one of us will get back to you
+          about scheduling it.
         </p>
         <div className="pf-actions">
-          <a
-            className="btn btn--primary"
-            href={INTEREST_FORM}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Pitch a workshop
-          </a>
-          <Link className="btn btn--secondary" to="/events">
+          <Link className="btn btn--primary" to="/events">
             Back to workshops
           </Link>
         </div>

@@ -141,14 +141,9 @@ const Layout = ({ children }) => {
                 {item.label}
               </NavLink>
             ))}
-            <a
-              className="btn btn--coral btn--sm"
-              href={INTEREST_FORM}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Link className="btn btn--coral btn--sm" to={INTEREST_FORM}>
               Join the club
-            </a>
+            </Link>
           </nav>
 
           <button
@@ -208,14 +203,9 @@ const Layout = ({ children }) => {
             ))}
           </ul>
 
-          <a
-            className="btn btn--coral mt-8 w-full"
-            href={INTEREST_FORM}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <Link className="btn btn--coral mt-8 w-full" to={INTEREST_FORM}>
             Join the club
-          </a>
+          </Link>
 
           <ul className="mt-auto flex list-none gap-6 p-0 pt-10">
             <li>
@@ -325,14 +315,9 @@ const Layout = ({ children }) => {
                 Tell us you&apos;re interested and we&apos;ll be in touch about
                 what&apos;s coming up.
               </p>
-              <a
-                className="btn btn--coral mt-5"
-                href={INTEREST_FORM}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <Link className="btn btn--coral mt-5" to={INTEREST_FORM}>
                 Join the club
-              </a>
+              </Link>
             </div>
           </div>
 

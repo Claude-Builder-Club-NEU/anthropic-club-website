@@ -98,14 +98,9 @@ const About = () => {
               workshop
             </Link>{" "}
             first, then{" "}
-            <a
-              href={INTEREST_FORM}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="sweep"
-            >
+            <Link to={INTEREST_FORM} className="sweep">
               tell us you&apos;re interested
-            </a>{" "}
+            </Link>{" "}
             and we&apos;ll let you know when the next one is.
           </p>
 

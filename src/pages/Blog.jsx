@@ -138,14 +138,9 @@ const Blog = () => {
             <p className="blog-signup__title">Get every issue by email</p>
             <p className="blog-signup__sub">One a month. Nothing else.</p>
           </div>
-          <a
-            className="blog-signup__cta"
-            href={INTEREST_FORM}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <Link className="blog-signup__cta" to={INTEREST_FORM}>
             Join the list <ArrowRightIcon width={16} height={16} />
-          </a>
+          </Link>
         </aside>
       </section>
     </>
