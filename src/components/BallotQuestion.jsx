@@ -108,7 +108,38 @@ const Slots = ({ question, value = [], onChange }) => {
   );
 };
 
-/* --- Single choice, yes/no, multi ---------------------------------------- */
+/* --- Single choice, yes/no, multi ---------------------------------------- *
+ * OPTIONAL DESCRIPTION LINE: option.note.
+ *
+ * Ballot two's theme question wants a sentence under each option name,
+ * "Money Moves" over "Budgeting, split-the-check, subscription audits.", and
+ * every question already on the site has to keep rendering exactly as it does
+ * today. So the note is ADDITIVE MARKUP rather than a restyle of .choice: an
+ * option with no note emits the same three nodes and the same class string it
+ * emitted before, and none of the CSS written for notes can reach it, because
+ * all of it hangs off .choice--noted.
+ *
+ * That is why the branch below repeats the plain .choice__label span instead
+ * of always wrapping it and leaving the note container empty. Always wrapping
+ * would be less code and would put an extra element inside every choice on
+ * every poll, which is the one thing this change is not allowed to do: .choice
+ * is display:flex, so a wrapper changes what the mark is aligned against even
+ * when the wrapper holds nothing.
+ *
+ * The note sits INSIDE the <label>. Two things follow from that and both are
+ * the point. Clicking the description selects the option the same as clicking
+ * the name, since it is label content and not a control of its own. And label
+ * content is already the accessible name, so a screen reader announces "Money
+ * Moves, Budgeting, split-the-check, subscription audits, radio button, 1 of
+ * 4" as one option. No aria-describedby: that would detach the sentence into a
+ * second announcement after the control, which is how the description reads as
+ * loose text rather than as part of the choice.
+ *
+ * The shape copies .poolitem, which has carried a label plus a muted secondary
+ * line since the slots question shipped: fixed-size mark, then one wrapper
+ * holding the name and the quiet line under it. Two markup patterns for the
+ * same visual object would be two things to keep in sync.
+ * ------------------------------------------------------------------------- */
 
 const Choice = ({ question, name, options, value, onChange, multi }) => {
   const selected = multi ? (Array.isArray(value) ? value : []) : value;
@@ -137,7 +168,9 @@ const Choice = ({ question, name, options, value, onChange, multi }) => {
         return (
           <label
             key={option.key}
-            className={`choice${isOn ? " choice--on" : ""}`}
+            className={`choice${isOn ? " choice--on" : ""}${
+              option.note ? " choice--noted" : ""
+            }`}
           >
             <input
               type={multi ? "checkbox" : "radio"}
@@ -148,7 +181,14 @@ const Choice = ({ question, name, options, value, onChange, multi }) => {
               className="choice__input"
             />
             <span className="choice__mark" aria-hidden="true" />
-            <span className="choice__label">{option.label}</span>
+            {option.note ? (
+              <span className="choice__text">
+                <span className="choice__label">{option.label}</span>
+                <span className="choice__note">{option.note}</span>
+              </span>
+            ) : (
+              <span className="choice__label">{option.label}</span>
+            )}
           </label>
         );
       })}

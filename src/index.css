@@ -3329,6 +3329,70 @@ textarea.pf-input {
   color: var(--ink);
 }
 
+/* --- Choice with a description line, option.note ------------------------- *
+   Ballot two's theme question puts a sentence under each option name. Every
+   rule for it is scoped to .choice--noted, and that scoping is the feature,
+   not tidiness: the timing question, the socials question and every poll
+   written after them must render exactly as they did before notes existed,
+   and the only airtight way to promise that is for none of these selectors to
+   be able to match an option that has no note. Do not fold any of it back
+   into .choice, and do not "simplify" the modifier away with :has().
+
+   THE ALIGNMENT. .choice is align-items:center, which is correct for a
+   one-line row and wrong the moment a note wraps: the mark drifts to the
+   vertical middle of a two-line card and stops reading as the control for the
+   line beside it. A noted row therefore aligns to the top and the mark is
+   pushed back down onto the first line of the label.
+
+   The 4px is arithmetic, not taste. .choice__label sets no line-height, so it
+   inherits the body's 1.65 at --step-body (17px), giving a first line box of
+   28.05px. The mark is 1.25rem, 20px, and border-box under Tailwind preflight,
+   so the 5px selected border does not change that. Half the difference is
+   4.02px, which is --space-1 to inside a rounding error. If the mark size or
+   the body line-height ever moves, recompute this rather than eyeballing it. */
+.choice--noted {
+  align-items: flex-start;
+}
+
+.choice--noted .choice__mark {
+  margin-top: var(--space-1);
+}
+
+/* The name and the note stack as ONE flex item, so the mark is a sibling of
+   the pair rather than of the name alone. This is the .poolitem shape, which
+   has carried a label plus a secondary line since the slots question shipped.
+
+   A flex column rather than two display:block spans, because it blockifies
+   both children without redefining .choice__label, which is shared with the
+   no-note rows and with /join and must not be touched.
+
+   No gap on purpose. Both lines carry the body's 1.65 leading already, which
+   puts about 10px of air between the name and the note. Adding a gap on top of
+   that separates them into two stacked rows instead of one option.
+
+   min-width:0 because a flex item defaults to min-width:auto: without it a
+   long unbroken word in a note widens the row past its rounded card on a phone
+   instead of wrapping inside it. */
+.choice__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Secondary text, the same role and the same treatment as .ballot__hint: the
+   reading voice rather than the display face, one step down, Stone Gray. No
+   font-family here, so it inherits --font-body while the name above it stays
+   --font-display, which is the Two-Voice Rule doing the hierarchy instead of
+   size alone.
+
+   --gray-text is the token because the note has to stay readable on both
+   grounds this row takes: 5.51:1 on --paper and 4.81:1 on --coral-tint when
+   the option is selected. --gray-mid is 2.11:1 and is never text. */
+.choice__note {
+  font-size: var(--step-small);
+  color: var(--gray-text);
+}
+
 /* --- Ranked slots -------------------------------------------------------- */
 
 .slots__row {

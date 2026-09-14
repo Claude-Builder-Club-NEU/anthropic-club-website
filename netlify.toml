@@ -64,6 +64,35 @@
   to = "https://claudebuildersclub.slack.com/signup"
   status = 302
 
+# The second short link to print on a slide: claudeneu.com/vote.
+#
+# It points at whichever ballot is currently being run in the room. A ballot
+# lives at /polls/<slug>, and that slug carries the term in it, so the printed
+# URL and the live ballot cannot be the same string. This rule is the join
+# between them, and it is ONE LINE TO RE-POINT each time a new poll opens.
+#
+# 302, NOT 301, and here the argument is stronger than it is for /slack above.
+# That one is a 302 because a third party might move. This one is a 302 because
+# WE move it, every term, by design. A 301 is cached by the browser more or less
+# forever, so every student who scanned the code at one info session would be
+# sent to that term's dead ballot at the next one, and there is no way to reach
+# a cache we cannot see. The failure would also be silent: the site keeps
+# working, the short link quietly delivers a closed poll.
+#
+# There is deliberately no /vote PAGE. A page would have to decide which poll is
+# open, and src/pages/Poll.jsx already documents why that decision is made from
+# the clock in the browser rather than at build time. A redirect needs no
+# JavaScript, renders nothing, and is resolved by Netlify before a single byte
+# of the app is fetched, which matters when eighty phones hit it at once.
+#
+# WHEN THE NEXT POLL OPENS: change the slug below and nothing else. If no poll
+# is open, point this at /polls rather than deleting it, so a printed slide from
+# a previous term lands on the hub instead of on the 404 page.
+[[redirects]]
+  from = "/vote"
+  to = "/polls/info-session-2026-09"
+  status = 302
+
 # Long-cache the fingerprinted build output.
 [[headers]]
   for = "/assets/*"

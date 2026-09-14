@@ -10,7 +10,7 @@
     "requireAllAnswers": true
   },
   "castTitle": "Your ballot is in.",
-  "castBody": "The three winning workshops land on the events calendar the same night.",
+  "castBody": "The winning workshops and the mini hackathon theme land on the events calendar the same night. What you said about build teams decides what we open applications for next term.",
   "sections": [
     {
       "key": "ballot",
@@ -39,59 +39,105 @@
       ]
     },
     {
-      "key": "timing",
-      "label": "Timing",
-      "title": "When we meet",
-      "lead": "Same three workshops, but they only work if you can show up.",
+      "key": "hackathon",
+      "label": "Hackathon",
+      "title": "Pick the mini hackathon theme.",
+      "lead": "Two hours, one theme, teams assigned in the room.",
       "questions": [
         {
-          "key": "night",
+          "key": "theme",
           "type": "single",
-          "prompt": "Best night for a biweekly 90-minute session",
-          "layout": "inline",
+          "prompt": "Which theme do you want to build on?",
           "options": [
-            { "key": "mon", "label": "Monday" },
-            { "key": "tue", "label": "Tuesday" },
-            { "key": "wed", "label": "Wednesday" },
-            { "key": "thu", "label": "Thursday" }
+            {
+              "key": "money-moves",
+              "label": "Money Moves",
+              "note": "Budgeting, split-the-check, subscription audits."
+            },
+            {
+              "key": "fix-northeastern",
+              "label": "Fix Northeastern",
+              "note": "One thing on campus that drives you insane, rebuilt."
+            },
+            {
+              "key": "beat-the-spread",
+              "label": "Beat the Spread",
+              "note": "Sports analytics, prediction, fantasy tools."
+            },
+            {
+              "key": "steal-this-site",
+              "label": "Steal This Site",
+              "note": "Rebuild a site you use, cleaner or faster."
+            }
           ]
-        },
-        {
-          "key": "experience",
-          "type": "single",
-          "prompt": "How much have you built with Claude so far?",
-          "options": [
-            { "key": "none", "label": "Haven't opened it yet" },
-            { "key": "few", "label": "Tried it a few times" },
-            { "key": "weekly", "label": "I use it most weeks" },
-            { "key": "shipping", "label": "I'm shipping with it" }
-          ]
-        },
-        {
-          "key": "saturday",
-          "type": "yesno",
-          "prompt": "Would you come to a Saturday three-hour build session?"
         }
       ]
     },
     {
-      "key": "socials",
-      "label": "Socials",
-      "title": "The rest of the semester",
-      "lead": "Workshops are half of it. This part decides the other half.",
+      "key": "rest",
+      "label": "The rest",
+      "title": "What else we run.",
+      "lead": "Workshops and the hackathon are one half of the term. This is everything else, plus one thing that starts after it.",
       "questions": [
         {
-          "key": "socials",
-          "type": "multi",
-          "prompt": "Which socials would you actually show up to?",
-          "hint": "Pick as many as apply.",
+          "key": "cowork",
+          "type": "single",
+          "layout": "inline",
+          "prompt": "Coworking sessions",
           "options": [
-            { "key": "cowork", "label": "Coffee and cowork, weekday mornings" },
-            { "key": "boba", "label": "Boba night" },
-            { "key": "demo", "label": "Demo night with pizza" },
-            { "key": "coop", "label": "Co-op and internship panel" },
-            { "key": "games", "label": "Game night" },
-            { "key": "showcase", "label": "End-of-semester showcase" }
+            { "key": "no", "label": "Not for me" },
+            { "key": "maybe", "label": "Might come" },
+            { "key": "yes", "label": "Definitely" }
+          ]
+        },
+        {
+          "key": "demo",
+          "type": "single",
+          "layout": "inline",
+          "prompt": "Demo night, showcase what you built",
+          "options": [
+            { "key": "no", "label": "Not for me" },
+            { "key": "maybe", "label": "Might come" },
+            { "key": "yes", "label": "Definitely" }
+          ]
+        },
+        {
+          "key": "partners",
+          "type": "single",
+          "layout": "inline",
+          "prompt": "Socials with our partner clubs",
+          "options": [
+            { "key": "no", "label": "Not for me" },
+            { "key": "maybe", "label": "Might come" },
+            { "key": "yes", "label": "Definitely" }
+          ]
+        },
+        {
+          "key": "buildteams",
+          "type": "single",
+          "prompt": "Would you apply to a build team next semester?",
+          "hint": "Teams of four, one track for the whole semester, and at least $1000 to fund the work. Applications open next term.",
+          "options": [
+            { "key": "yes", "label": "Yes, I would apply" },
+            { "key": "maybe", "label": "Maybe, I want to hear more" },
+            { "key": "no", "label": "Not for me" }
+          ]
+        },
+        {
+          "key": "track",
+          "type": "single",
+          "prompt": "Which track interests you most?",
+          "options": [
+            { "key": "investment", "label": "Investment" },
+            { "key": "engineering", "label": "Engineering" },
+            { "key": "biology", "label": "Biology" },
+            { "key": "machine-learning", "label": "Machine learning" },
+            {
+              "key": "rotating",
+              "label": "The rotating track",
+              "note": "A different field every semester."
+            },
+            { "key": "none", "label": "None of these" }
           ]
         },
         {
@@ -104,13 +150,6 @@
             { "key": "understanding", "label": "A better handle on how Claude works" },
             { "key": "people", "label": "People to build with" }
           ]
-        },
-        {
-          "key": "writein",
-          "type": "text",
-          "prompt": "Anything we should run that isn't on this list?",
-          "optional": true,
-          "maxLength": 400
         }
       ]
     }
