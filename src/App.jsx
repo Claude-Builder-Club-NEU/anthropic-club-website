@@ -14,8 +14,11 @@ import Poll from "./pages/Poll";
 import Pitch from "./pages/Pitch";
 import Join from "./pages/Join";
 import FallFest from "./pages/FallFest";
+import FeatureMe from "./pages/FeatureMe";
+import Hackathon from "./pages/Hackathon";
 import NotFound from "./pages/NotFound";
 import { UNSUBSCRIBE_PATH } from "./lib/unsubscribe";
+import { FEATURE_PATH } from "./lib/feature";
 import { JOIN_PATH } from "./lib/links";
 import "./App.css";
 
@@ -80,10 +83,28 @@ function App() {
             below the fold. See the header comment in pages/FallFest.jsx. */}
         <Route path="/fallfest" element={<FallFest />} />
 
+        {/* Chromeless, and the third route to make that call. The full argument
+            is in the header of pages/FeatureMe.jsx; the short version is two
+            things. The flow's nav chevrons and its progress rail are fixed to
+            the viewport, so inside Layout they land on top of the footer and in
+            the same corner as the sticky CTA. And a sticky "Join the club"
+            floating over a form written for people who have already joined is
+            the /join problem reached from the other side. Its own bar closes to
+            /blog rather than to /, since that is where most readers arrive from
+            and what the page is about. */}
+        <Route path={FEATURE_PATH} element={<FeatureMe />} />
+
         <Route element={<SiteChrome />}>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/events" element={<Events />} />
+          {/* Chromed, unlike /fallfest above, even though this URL is also
+              printed on something. Nothing on it competes for the fold: it is
+              an ordinary content page that happens to be one line long today
+              and will be a full one later, so stripping the chrome now would
+              only mean re-deciding the question when the real copy lands. See
+              pages/Hackathon.jsx. */}
+          <Route path="/hackathon" element={<Hackathon />} />
           <Route path="/blog" element={<Blog />} />
           {/* Every published post is prerendered to its own HTML file, so an
               unknown slug is a genuine 404 from Netlify and never reaches this

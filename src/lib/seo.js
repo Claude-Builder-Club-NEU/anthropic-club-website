@@ -15,6 +15,7 @@ import { POSTS, authorFor, findPost } from "./blog";
 import { faqJsonLd } from "./faq";
 import { SITE_ORIGIN, INSTAGRAM, LINKEDIN, JOIN_PATH } from "./links";
 import { UNSUBSCRIBE_PATH, UNSUBSCRIBE_SLUG } from "./unsubscribe";
+import { FEATURE_PATH } from "./feature";
 
 const SITE_NAME = "Claude Builders Club @ Northeastern";
 const OG_IMAGE = `${SITE_ORIGIN}/og.png`;
@@ -119,6 +120,90 @@ export const ROUTES = [
   },
   {
     /**
+     * Get featured on the blog: the standing invitation to be interviewed, or
+     * to have a project written up.
+     *
+     * INDEXED, and the comparison that settles it is /attendance below rather
+     * than /join above. /attendance is noindex because a check-in form is
+     * useless to anyone who is not already standing in the room with a code on
+     * the screen in front of them. This page is the opposite of that: it is a
+     * public call to action that is equally true on any day of the year, a
+     * searcher who lands on it learns something real about the club (its blog
+     * interviews members and writes up what they build), and they can act on it
+     * from wherever they are. That is the same test /join passes.
+     *
+     * It is not /fallfest either. That one is noindex because it is a page
+     * named after a date: the event ends, the page goes stale, and a thin
+     * landing page competes with the homepage for searches of the club's own
+     * name. Nothing here expires.
+     *
+     * PRIORITY 0.5, below /blog's 0.7, deliberately. This page feeds the blog
+     * and must not outrank it: somebody searching for the club's writing wants
+     * the writing, and this is the side door for the smaller number of people
+     * who want to be in it. changefreq is yearly for the reason a published
+     * post is yearly, which is that six questions are not going to move.
+     *
+     * Prerendered like every other route, so the invitation and its heading are
+     * in the HTML before any JavaScript runs. The six questions are not, and
+     * should not be: a crawler has nothing to gain from question four.
+     *
+     * FEATURE_PATH rather than a literal, matching JOIN_PATH and
+     * UNSUBSCRIBE_PATH, so this entry, the <Route> in App.jsx and any link to
+     * the page cannot drift apart.
+     */
+    path: FEATURE_PATH,
+    file: "featureme/index.html",
+    title: `Get featured on the blog | ${SITE_NAME}`,
+    description:
+      "Ask to be interviewed for the Claude Builders Club blog at Northeastern, or to have something you built written up. Six questions, and a board member reads every one.",
+    changefreq: "yearly",
+    priority: "0.5",
+  },
+  {
+    /**
+     * The hackathon page, and a SCAFFOLD for as long as it says so. The route
+     * exists now so the URL can go on a slide and inside a QR code weeks before
+     * a date, a theme or a sign-up link is agreed. See the header comment in
+     * pages/Hackathon.jsx for what is deliberately not on it.
+     *
+     * noindex, and this is the one call on this entry worth arguing, because
+     * the obvious move is the wrong one.
+     *
+     * The temptation is to index it. /hackathon is a query people actually
+     * type, hackathons are the centre of what this club does, and letting an
+     * early URL start collecting authority sounds free. It is not free. Index
+     * it today and the result Google shows for "northeastern claude club
+     * hackathon" is a page whose entire content is the sentence "the details
+     * are not up yet". That is a worse answer than the one a searcher already
+     * gets, because /about is indexed, says the club runs the biggest
+     * hackathons on campus alongside ACM, AINU and REV, and will still be true
+     * next month. Letting a thin page outrank a substantive one for this club's
+     * own subject is a loss, and it lands at exactly the moment somebody is
+     * deciding whether the club is real.
+     *
+     * Nothing is given up by waiting, because search is not how anyone reaches
+     * this page right now. They reach it by scanning a printed code or typing
+     * what a board member read off a slide, and noindex touches neither. The
+     * same flag drops it from sitemap.xml, which is right for the same reason:
+     * a sitemap line is an invitation to come back, and there is nothing here
+     * to come back for yet.
+     *
+     * It is emitted as `noindex, follow`, so the link out to /events still
+     * passes and the crawler leaves with somewhere to go.
+     *
+     * DELETE THIS FLAG, and write a real description, the day the real content
+     * lands. That one line is what turns this from a placeholder into a page
+     * worth finding, and it is easy to forget because nothing breaks if you do.
+     */
+    path: "/hackathon",
+    file: "hackathon/index.html",
+    title: `Hackathon | ${SITE_NAME}`,
+    description:
+      "Details for the next Claude Builders Club hackathon at Northeastern are not up yet. Date, theme and sign-ups land on this page once they are settled.",
+    noindex: true,
+  },
+  {
+    /**
      * The club fair landing page, reached by scanning a QR code on a table
      * sign. Prerendered, so the code, the printed URL and anyone typing it all
      * work identically.
@@ -149,7 +234,7 @@ export const ROUTES = [
     file: "polls/index.html",
     title: `Polls | ${SITE_NAME}`,
     description:
-      "Vote on what Claude Builders Club runs this term: which workshops, which night, and which socials. Anonymous, and nothing asks for your name.",
+      "Vote on what Claude Builders Club runs this term: which workshops, the mini hackathon theme, and everything else. Anonymous, and nothing asks for your name.",
   },
   {
     /**
