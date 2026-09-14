@@ -50,6 +50,7 @@ const BoardCard = ({ member }) => {
     name,
     role,
     affiliation,
+    secondAffiliation,
     major,
     photo,
     linkedin,
@@ -59,6 +60,23 @@ const BoardCard = ({ member }) => {
   } = member;
 
   const [firstName, surname] = splitName(name);
+
+  /**
+   * The detail block, one entry per line: affiliation, an optional second
+   * affiliation, then the major. An entry too long for the card wraps within
+   * its own line rather than running into the next one, and `text-wrap:
+   * balance` on .board-detail__line splits it into even halves.
+   *
+   * Filtering a list here rather than testing each line in the JSX is what
+   * keeps the third line data instead of a special case for one person.
+   * Whoever the club sends next carries whichever of the three they have, the
+   * card renders exactly that many rows, and nothing in this component knows
+   * any member by name.
+   *
+   * Order is fixed and not a member's to set. The degree closes every card in
+   * the set, so an extra credential goes above it, never after it.
+   */
+  const detailLines = [affiliation, secondAffiliation, major].filter(Boolean);
 
   const socials = [
     linkedin && { href: linkedin, label: "LinkedIn", Icon: LinkedInIcon },
@@ -106,14 +124,19 @@ const BoardCard = ({ member }) => {
             {firstName}
             {surname && <span className="board-name__surname">{surname}</span>}
           </h3>
-          {/* Affiliation then major, one per line. Members without an
-              affiliation simply omit the line rather than leaving a gap. */}
-          <p className="board-detail mt-3">
-            {affiliation && (
-              <span className="board-detail__line">{affiliation}</span>
-            )}
-            <span className="board-detail__line">{major}</span>
-          </p>
+          {/* The whole block is conditional, not just the lines inside it. An
+              empty <p> would still spend its 12px top margin, which on a
+              member with no details yet would push the social row down for no
+              visible reason. */}
+          {detailLines.length > 0 && (
+            <p className="board-detail mt-3">
+              {detailLines.map((line) => (
+                <span key={line} className="board-detail__line">
+                  {line}
+                </span>
+              ))}
+            </p>
+          )}
 
           {socials.length > 0 && (
             <ul className="board-socials mt-5 list-none p-0">
