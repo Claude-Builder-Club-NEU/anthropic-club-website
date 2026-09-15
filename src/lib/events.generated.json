@@ -1,12 +1,23 @@
 [
   {
     "id": "7v2mcscc9je37siu2ksp2v8dqt@google.com",
-    "title": "Info Session",
+    "title": "Info Session (6:00pm Slot)",
     "start": "2026-09-17T22:00:00.000Z",
     "end": "2026-09-17T23:00:00.000Z",
     "location": "Egan Research Center Room 440",
     "description": "What the club is, what we build, and how to get involved. Open to all",
     "rsvpUrl": "https://luma.com/scu6pa6l",
+    "url": null,
+    "allDay": false
+  },
+  {
+    "id": "6mcm9p81ti28hpd2142cgb3g0b@google.com",
+    "title": "Info Session (7:00pm Slot)",
+    "start": "2026-09-17T23:00:00.000Z",
+    "end": "2026-09-18T00:00:00.000Z",
+    "location": "Egan Research Center Room 440",
+    "description": "What the club is, what we build, and how to get involved. Open to all\nJoin with Google Meet: https://meet.google.com/jxc-eivs-ubc\nLearn more about Meet at: https://support.google.com/a/users/answer/9282720",
+    "rsvpUrl": "https://luma.com/je2ajnyl",
     "url": null,
     "allDay": false
   },
