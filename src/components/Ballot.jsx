@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import {
   answerKey,
   castBallot,
+  clearProgress,
   hasBackend,
   KNOWN_TYPES,
   loadProgress,
@@ -50,7 +51,56 @@ const Ballot = ({ poll }) => {
   // Resume. Runs once on mount, after the prerendered HTML has hydrated, so
   // the server-rendered markup and the first client render agree.
   useEffect(() => {
-    const saved = loadProgress(poll.slug);
+    /**
+     * ?reset reopens the ballot for somebody who has already cast one.
+     *
+     * An officer has to take this thing several times before a session, and
+     * the cast screen deliberately offers no way back in: see the comment above
+     * that screen, which argues that nothing there should restart something
+     * that cannot be restarted. That argument is about the STUDENT in the room
+     * and it still holds, which is why this is a URL and not a button. Nothing
+     * on screen invites a second ballot.
+     *
+     * IT GRANTS NOTHING THAT WAS NOT ALREADY AVAILABLE. There is no dedupe and
+     * cannot be, for the reasons in the header of lib/polls.js: the poll stores
+     * nothing that identifies a voter, so clearing site data has always reopened
+     * the ballot, and a second browser was always a second vote. This only saves
+     * an officer a trip through devtools. If one ballot per person ever has to
+     * be real, the fix is a door-issued code, not deleting this.
+     *
+     * CLEARING LOCALSTORAGE BY HAND IS NOT ENOUGH ON ITS OWN, which is the whole
+     * reason this exists. The persist effect below re-saves { cast: true } on
+     * the next render, so deleting the key from the devtools Application tab
+     * without also reloading puts it straight back and looks like the reset
+     * silently failed.
+     *
+     * The parameter is stripped immediately. Left in the address bar it would
+     * turn every later refresh into a wipe of real answers, which is the exact
+     * data loss the resume behaviour exists to prevent.
+     */
+    let wasReset = false;
+    if (typeof window !== "undefined") {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has("reset")) {
+          clearProgress(poll.slug);
+          wasReset = true;
+          params.delete("reset");
+          const query = params.toString();
+          window.history.replaceState(
+            null,
+            "",
+            window.location.pathname + (query ? `?${query}` : "")
+          );
+        }
+      } catch {
+        // A blocked history API or an exotic URL is not a reason to fail to
+        // render the ballot. Worst case the reset does not happen and the
+        // person sees the screen they saw before.
+      }
+    }
+
+    const saved = wasReset ? null : loadProgress(poll.slug);
     if (saved && !saved.cast) {
       setAnswers(saved.answers || {});
       setIndex(Math.min(saved.index || 0, Math.max(sections.length - 1, 0)));
