@@ -1,5 +1,11 @@
 import { useId, useState } from "react";
-import { KINDS, kindOf, formatEventTimeRange, rsvpLabel } from "../lib/events";
+import {
+  KINDS,
+  kindOf,
+  formatEventTimeRange,
+  rsvpLabel,
+  statusOf,
+} from "../lib/events";
 import { LUMA_URL } from "../lib/links";
 import { ArrowRightIcon } from "./Icons";
 
@@ -68,7 +74,15 @@ const EventTile = ({ event, lead = false, detailOnly = false }) => {
   });
 
   const time = formatEventTimeRange(event);
-  const rsvp = event.rsvpUrl || LUMA_URL;
+  const status = statusOf(event);
+  /**
+   * A full session keeps NO signup link, rather than keeping a disabled-looking
+   * one. The Luma page for a closed session still loads and still shows a
+   * button, so sending somebody there is worse than sending them nowhere: they
+   * would arrive, try to register, and find out on someone else's page. The
+   * note replaces it in the same slot and says the thing outright.
+   */
+  const rsvp = status.full ? null : event.rsvpUrl || LUMA_URL;
   const label = rsvpLabel(rsvp);
 
   return (
@@ -76,6 +90,7 @@ const EventTile = ({ event, lead = false, detailOnly = false }) => {
       className="event-tile"
       data-kind={kind}
       data-lead={lead ? "true" : undefined}
+      data-full={status.full ? "true" : undefined}
       /* On the tile, not the button, so the pointer can reach the RSVP link
          without the detail face closing under it. */
       onMouseEnter={detailOnly ? undefined : () => setPeek(true)}
@@ -124,7 +139,17 @@ const EventTile = ({ event, lead = false, detailOnly = false }) => {
                   {time}
                   {event.location ? ` · ${event.location}` : ""}
                 </span>
-                <span className="event-tile__hint">Details</span>
+                {/* ON THE REST FACE, which is the whole point. The detail face
+                    is behind a hover or a tap, and somebody scanning the row
+                    deciding which session to go to must not have to open a
+                    tile to find out that one of them has no seats. It replaces
+                    the "Details" hint rather than sitting beside it: the tile
+                    still opens, but the more useful word is this one. */}
+                {status.full ? (
+                  <span className="event-tile__full">{status.note}</span>
+                ) : (
+                  <span className="event-tile__hint">Details</span>
+                )}
               </div>
             </div>
           )}
@@ -173,6 +198,15 @@ const EventTile = ({ event, lead = false, detailOnly = false }) => {
               >
                 {label.full} <ArrowRightIcon width={16} height={16} />
               </a>
+            )}
+
+            {/* Not a disabled <button>. There is no action to offer, so the
+                honest control is no control: a disabled button is a thing a
+                reader keeps trying to press. Plain text in the slot the button
+                would have taken, which also keeps the two tiles the same
+                height as each other. */}
+            {status.full && (
+              <p className="event-tile__fullnote">{status.note}</p>
             )}
           </div>
         </div>

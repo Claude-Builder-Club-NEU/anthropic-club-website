@@ -78,6 +78,76 @@ export function kindOf(event) {
   return "workshop";
 }
 
+/* ------------------------------------------------------------------------ *
+ * Capacity and emphasis
+ *
+ * THE ONE THING THE CALENDAR CANNOT TELL US, and therefore the exception to
+ * this file's rule that the site works everything out from what the board
+ * already typed. kindOf() and rsvpLabel() can derive what they need because
+ * the answer is in the title or the link. "This room is full" is in neither:
+ * Google Calendar has no capacity field, and Luma's headcount is behind a
+ * login and is not readable at build time even if it were not.
+ *
+ * So it is written down. The alternative was inferring it from the Luma page
+ * at build time, which would put a scrape of a third party between the club
+ * and its own events page, and would fail closed in the wrong direction: a
+ * scrape that breaks would quietly stop saying a full session is full.
+ *
+ * MATCHED ON THE TITLE, NOT THE GOOGLE EVENT ID. Deleting and recreating a
+ * calendar entry issues a new id, which would silently drop the rule and put
+ * an RSVP button back on a session with no seats. A title survives that, and
+ * it is also the thing a board member can read and check.
+ *
+ * First match wins, so the specific entries sit above the general one.
+ *
+ *   full     no seats left. The tile recedes and its RSVP button is replaced
+ *            by `note`, because a button pointing at a closed Luma page is a
+ *            promise the page cannot keep.
+ *   feature  the one the room should take instead. Reversed to ink, which is
+ *            the existing `lead` treatment, so the eye lands on it first.
+ * ------------------------------------------------------------------------ */
+
+const EVENT_STATUS = [
+  /**
+   * 17 September 2026. Demand outgrew one room, a second session was opened at
+   * 7pm, and the 6pm Luma filled. Both lines go when that day passes; nothing
+   * breaks if they are forgotten, since a rule that matches no upcoming event
+   * does nothing at all.
+   */
+  { match: /\(6:00pm Slot\)/i, full: true, note: "No more space" },
+  { match: /\(7:00pm Slot\)/i, feature: true },
+
+  /**
+   * The general form, so the NEXT one needs no deploy. A board member puts
+   * "(Full)" in the calendar title and the tile greys out within the hour, on
+   * the same refresh job that carries any other calendar edit.
+   *
+   * Parenthesised deliberately. A bare /\bfull\b/ would also match a perfectly
+   * ordinary "Full Stack Workshop" and strike its signup button off the page.
+   */
+  { match: /\(\s*full\s*\)/i, full: true, note: "No more space" },
+];
+
+/**
+ * Capacity and emphasis for one event.
+ *
+ * Always returns the same shape, so a caller never has to test for null before
+ * reading `.full`. An event matching no rule is the ordinary case and gets the
+ * tile everything had before any of this existed.
+ *
+ * @param {ClubEvent} event
+ * @returns {{full: boolean, feature: boolean, note: string}}
+ */
+export function statusOf(event) {
+  const title = event?.title || "";
+  const rule = EVENT_STATUS.find((r) => r.match.test(title));
+  return {
+    full: Boolean(rule?.full),
+    feature: Boolean(rule?.feature),
+    note: rule?.note || "",
+  };
+}
+
 /** "6:00pm" — the compact form used on calendar chips. */
 export function formatEventTimeShort(event) {
   if (event.allDay) return "All day";

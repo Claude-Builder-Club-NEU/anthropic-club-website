@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import MonthGrid from "../components/MonthGrid";
 import EventTile from "../components/EventTile";
-import { upcoming, kindOf, KINDS, KIND_ORDER } from "../lib/events";
+import { upcoming, kindOf, KINDS, KIND_ORDER, statusOf } from "../lib/events";
 import { CALENDAR_ICS, hasCalendar } from "../lib/links";
 import { ArrowRightIcon, CalendarIcon } from "../components/Icons";
 
@@ -41,6 +41,21 @@ const Events = () => {
 
   const hasAny = all.length > 0;
   const featured = events.slice(0, 3);
+
+  /**
+   * Which tile wears the inverted, ink treatment.
+   *
+   * A featured event wins it. Otherwise it stays on the first tile, which is
+   * what this did before capacity existed. A full session can never take it:
+   * reversing the one with no seats to the most prominent thing on the page is
+   * exactly the mistake this is here to stop.
+   */
+  const leadIndex = (() => {
+    const claimed = featured.findIndex((e) => statusOf(e).feature);
+    if (claimed !== -1) return claimed;
+    const firstOpen = featured.findIndex((e) => !statusOf(e).full);
+    return firstOpen === -1 ? -1 : firstOpen;
+  })();
 
   /* The Upcoming row is three columns. `fillSpan` is what is left over, and 0
      when three events already fill it. */
@@ -111,7 +126,20 @@ const Events = () => {
             gives a single card across the whole row. */}
         <ul className="event-tiles">
           {featured.map((event, i) => (
-            <EventTile key={event.id} event={event} lead={i === 0} />
+            <EventTile
+              key={event.id}
+              event={event}
+              /* The inverted tile used to be whichever event came first, which
+                 is right exactly while "soonest" and "the one to take" are the
+                 same event. They stopped being the same the day the 6pm info
+                 session filled and a 7pm was opened beside it: the soonest tile
+                 was the one nobody could get into, and it was the one wearing
+                 the emphasis. So the treatment follows the event that is
+                 actually open, and falls back to the old behaviour whenever no
+                 event claims it, which is almost always. leadIndex is computed
+                 once above rather than per tile. */
+              lead={i === leadIndex}
+            />
           ))}
 
           {fillSpan > 0 && (

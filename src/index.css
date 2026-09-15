@@ -1783,6 +1783,67 @@ textarea.pf-input {
   color: var(--coral-text);
 }
 
+/* --- A session with no seats left ---------------------------------------- *
+   The tile RECEDES, it does not dim. Those are different things and only one
+   of them is allowed here.
+
+   The obvious implementation is opacity, and it is wrong twice over. It would
+   take every piece of text on the card down with it, including the date and
+   the room, which are the facts somebody reads to work out that they want the
+   OTHER session. And opacity below about 0.7 puts --gray-text under 4.5:1 on
+   this ground, so the card would stop meeting AA on a page where the club is
+   telling students where to turn up.
+
+   So nothing here touches opacity or invents a paler token. The card keeps its
+   paper ground and its ink title, and the emphasis is moved instead: the panel
+   drops to the recessive fill, the kind swatch loses its colour, and the word
+   that used to be a coral call to action becomes a flat statement in
+   --gray-text, 5.51:1 here. What changes is prominence, not legibility.
+
+   Measured on --gray-light, which is what these tiles sit on: --ink 15.60:1,
+   --gray-text 4.64:1, both clear of AA at this size. */
+.event-tile[data-full="true"] .event-tile__box {
+  background: var(--paper);
+  border-color: var(--rule);
+}
+
+/* The categorical accent is an invitation to look. A full session is not one,
+   so the swatch goes neutral while the tile keeps naming its kind in text
+   beside it, exactly as the colour-blindness note on KINDS requires. */
+.event-tile[data-full="true"] {
+  --kind: var(--gray-mid);
+}
+
+/* Coral is reserved for things you can act on. There is nothing to act on. */
+.event-tile[data-full="true"] .event-tile__box:hover,
+.event-tile[data-full="true"] .event-tile__box:focus-within {
+  border-color: var(--gray-mid);
+}
+
+/* Sits where "Details" sits on an open tile, in the same metrics, so the row
+   of tiles keeps one baseline grid. Not coral, and not a button. */
+.event-tile__full {
+  margin-top: var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--step-meta);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray-text);
+}
+
+/* The detail face's replacement for the RSVP button. Padded to roughly the
+   button's own height so opening a full tile does not make the row jump. */
+.event-tile__fullnote {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-display);
+  font-size: var(--step-small);
+  font-weight: 500;
+  color: var(--gray-text);
+}
+
 /* Clamped, because the box cannot grow to fit a long calendar description. */
 .event-tile__blurb {
   display: -webkit-box;
