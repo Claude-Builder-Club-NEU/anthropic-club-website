@@ -3,6 +3,7 @@ import {
   formatEventDate,
   formatEventTimeRange,
   rsvpLabel,
+  statusOf,
 } from "../lib/events";
 import { LUMA_URL } from "../lib/links";
 import InterestBanner from "./InterestBanner";
@@ -36,10 +37,23 @@ const EventsPanel = ({ limit }) => {
       {shown.length > 0 && (
         <ul className="home-events">
           {shown.map((event) => {
-            const rsvp = event.rsvpUrl || LUMA_URL;
+            const status = statusOf(event);
+            /**
+             * Same rule the events page tile follows, for the same reason: a
+             * full session keeps no signup link at all. Luma still serves the
+             * page of a closed session and still draws a button on it, so a
+             * live RSVP here would send somebody off to find out on a third
+             * party's page what this row already knows. The note takes the
+             * button's slot and says it outright.
+             */
+            const rsvp = status.full ? null : event.rsvpUrl || LUMA_URL;
             const label = rsvpLabel(rsvp);
             return (
-              <li key={event.id} className="home-event">
+              <li
+                key={event.id}
+                className="home-event"
+                data-full={status.full ? "true" : undefined}
+              >
                 {/* Detail first, action second: it reads in that order and it
                     puts the RSVP last in the tab order, where an action
                     belongs. The button is pushed to the row's right edge, which
@@ -82,8 +96,21 @@ const EventsPanel = ({ limit }) => {
                     </span>
                   </a>
                 ) : (
-                  <span className="home-event__rsvp home-event__rsvp--none">
-                    Details soon
+                  /* Two inert states, worded apart. "No more space" is a fact
+                     about the room; "Details soon" is a gap in the calendar
+                     entry. Both read as not-a-button, so neither is mistaken
+                     for something to click. */
+                  <span
+                    className={`home-event__rsvp ${
+                      status.full
+                        ? "home-event__rsvp--full"
+                        : "home-event__rsvp--none"
+                    }`}
+                  >
+                    {status.full ? status.note : "Details soon"}
+                    {status.full && (
+                      <span className="sr-only"> for {event.title}</span>
+                    )}
                   </span>
                 )}
               </li>

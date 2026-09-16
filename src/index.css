@@ -2631,6 +2631,24 @@ textarea.pf-input {
   cursor: default;
 }
 
+/* No seats left. Solid rather than dashed, because this is a decided state and
+   not a pending one, and grey rather than coral, which this page reserves for
+   things you can act on. Nothing here drops opacity: the row still has to tell
+   a student the day and the room, so what changes is prominence, not
+   legibility. --gray-text on --paper is 5.51:1, clear of AA. */
+.home-event__rsvp--full {
+  border-color: var(--gray-mid);
+  color: var(--gray-text);
+  background-image: none;
+  cursor: default;
+}
+
+/* The row recedes with it, so a full session reads as settled at a glance
+   instead of only on the button. The title keeps its ink. */
+.home-event[data-full="true"] .home-event__meta {
+  color: var(--gray-mid);
+}
+
 .home-event__body {
   min-width: 0;
 }
