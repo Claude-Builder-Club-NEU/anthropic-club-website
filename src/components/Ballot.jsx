@@ -252,11 +252,9 @@ const Ballot = ({ poll }) => {
   }
 
   /* --- Cast -------------------------------------------------------------
-     The ballot is closed, so this screen carries no progress bars, no eyebrow
-     and no way back into it. Section bars would invite a reader to look for a
-     step still to do; there is none, and the copy already said this closes the
-     ballot. Two ways out, both real buttons, and nothing that restarts a thing
-     that cannot be restarted. */
+     The ballot is closed, so this screen offers no way back into it. Two ways
+     out, both real buttons, and nothing that restarts a thing that cannot be
+     restarted. */
   if (phase === PHASE.cast) {
     return (
       <div className="ballot">
@@ -280,19 +278,11 @@ const Ballot = ({ poll }) => {
   if (!section) return null;
   const missing = missingIn(section, answers);
 
+  /* No breadcrumb, no section bars, no "Section 1 of 3" eyebrow. The section
+     opens on its own heading, the same way the cast screen does, and the
+     submit button still names which section it closes. */
   return (
     <div className="ballot">
-      <p className="ballot__crumbs">
-        <Link to="/polls">Polls</Link>
-        <span aria-hidden="true"> / </span>
-        <span>{poll.title}</span>
-      </p>
-
-      <Progress sections={sections} index={index} />
-
-      <p className="ballot__eyebrow">
-        Section {index + 1} of {sections.length} · {section.label}
-      </p>
       <h1 className="ballot__title" tabIndex={-1} ref={headingRef}>
         {section.title}
       </h1>
@@ -356,24 +346,5 @@ const Ballot = ({ poll }) => {
     </div>
   );
 };
-
-/** The three bars across the top. Filled behind you, coral on the current one. */
-const Progress = ({ sections, index }) => (
-  <ol className="ballotprog">
-    {sections.map((section, i) => (
-      <li
-        key={section.key}
-        className={`ballotprog__step${
-          i < index ? " is-done" : i === index ? " is-current" : ""
-        }`}
-      >
-        <span className="ballotprog__bar" aria-hidden="true" />
-        <span className="ballotprog__label">
-          0{i + 1} {section.label}
-        </span>
-      </li>
-    ))}
-  </ol>
-);
 
 export default Ballot;

@@ -3208,53 +3208,6 @@ textarea.pf-input {
   max-width: 46rem;
 }
 
-.ballot__crumbs {
-  font-size: var(--step-small);
-  color: var(--gray-text);
-}
-
-.ballot__crumbs a {
-  color: var(--coral-text);
-}
-
-.ballotprog {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  gap: var(--space-4);
-  list-style: none;
-  margin: var(--space-6) 0 var(--space-12);
-  padding: 0;
-}
-
-.ballotprog__bar {
-  display: block;
-  height: 2px;
-  background: var(--rule);
-}
-
-.ballotprog__step.is-done .ballotprog__bar {
-  background: var(--ink);
-}
-
-.ballotprog__step.is-current .ballotprog__bar {
-  background: var(--coral);
-}
-
-.ballotprog__label {
-  display: block;
-  margin-top: var(--space-2);
-  font-family: var(--font-mono);
-  font-size: var(--step-meta);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--gray-text);
-}
-
-.ballotprog__step.is-current .ballotprog__label {
-  color: var(--coral-text);
-}
-
 .ballot__eyebrow {
   font-family: var(--font-mono);
   font-size: var(--step-meta);

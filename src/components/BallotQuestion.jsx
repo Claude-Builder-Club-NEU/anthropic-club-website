@@ -19,9 +19,9 @@ import { TYPES } from "../lib/polls";
  * tapping a filled slot clears it, so PICK ORDER IS THE RANKING.
  *
  * The array is POSITIONAL and keeps its holes: clearing the middle slot leaves
- * that slot empty rather than promoting the one after it. The slots carry real
- * dates, so a student reads this as "which workshop lands on Oct 29", and
- * having their third pick jump onto the second date because they cleared the
+ * that slot empty rather than promoting the one after it. Each slot is a real
+ * session in order, so a student reads this as "which workshop goes in slot
+ * 3", and having their third pick jump into slot 2 because they cleared the
  * one between is a change they did not ask for. It also matches the spec
  * literally: a pick fills the next OPEN slot, which presumes holes exist.
  *
@@ -59,7 +59,11 @@ const Slots = ({ question, value = [], onChange }) => {
             <li key={slot.label} className="slotcard">
               <p className="slotcard__head">
                 <span className="slotcard__label">{slot.label}</span>
-                <span className="slotcard__date">{slot.date}</span>
+                {/* Optional. The info session ballot leaves it off because
+                    the dates are not fixed yet. */}
+                {slot.date && (
+                  <span className="slotcard__date">{slot.date}</span>
+                )}
               </p>
               {item ? (
                 <button

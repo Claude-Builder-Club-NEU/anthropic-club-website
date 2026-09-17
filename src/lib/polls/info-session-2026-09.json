@@ -3,14 +3,14 @@
   "title": "Info Session Poll",
   "subtitle": "Make your voice heard at Claude Builders Club",
   "opensAt": "2026-08-18T00:00:00-04:00",
-  "closesAt": "2026-09-17T21:00:00-04:00",
+  "closesAt": "2026-09-17T22:00:00-04:00",
   "settings": {
-    "breakSeconds": 120,
+    "breakSeconds": 60,
     "autoOpen": false,
     "requireAllAnswers": true
   },
   "castTitle": "Your ballot is in.",
-  "castBody": "The winning workshops and the mini hackathon theme land on the events calendar the same night. What you said about build teams decides what we open applications for next term.",
+  "castBody": "What you said about build teams decides what we open applications for next term.",
   "sections": [
     {
       "key": "ballot",
@@ -23,17 +23,21 @@
           "type": "slots",
           "prompt": "Pick three workshops in the order you want them",
           "slots": [
-            { "label": "Slot 2", "date": "Oct 15" },
-            { "label": "Slot 3", "date": "Oct 29" },
-            { "label": "Slot 4", "date": "Nov 12" }
+            { "label": "Slot 2" },
+            { "label": "Slot 3" },
+            { "label": "Slot 4" }
           ],
           "pool": [
             { "key": "tools", "label": "Building tools with Claude", "level": "Beginner / Intermediate" },
-            { "key": "claude-code", "label": "Claude Code and how it actually works", "level": "Intermediate" },
-            { "key": "agents", "label": "Student agent builds: schedule, job tracker, co-op search", "level": "Intermediate" },
-            { "key": "school", "label": "Claude for school: assignments, notes, studying", "level": "Beginner" },
-            { "key": "side-projects", "label": "Claude Code for building side projects", "level": "Intermediate" },
-            { "key": "prompting", "label": "Prompting deep dive: getting better answers", "level": "Beginner" }
+            { "key": "financial-modeling", "label": "Financial modeling with Claude", "level": "Advanced" },
+            { "key": "school", "label": "Claude for school: assignments, notes, studying", "level": "All levels" },
+            { "key": "agents", "label": "Student agents: schedule, job tracker, co-op search", "level": "Intermediate" },
+            { "key": "first-app", "label": "Building your first app with Claude Code", "level": "All levels" },
+            { "key": "business", "label": "Building a business with Claude Code (Collab)", "level": "Intermediate" },
+            { "key": "marketing", "label": "Marketing and content creation (Collab)", "level": "Beginner" },
+            { "key": "portfolio", "label": "Portfolio websites with Claude Code", "level": "Beginner" },
+            { "key": "major", "label": "Claude Code for your major", "level": "All levels" },
+            { "key": "guest-speaker", "label": "Guest speaker: how professionals use Claude", "level": "All levels" }
           ]
         }
       ]
@@ -116,7 +120,7 @@
           "key": "buildteams",
           "type": "single",
           "prompt": "Would you apply to a build team next semester?",
-          "hint": "Teams of four, one track for the whole semester, and at least $1000 to fund the work. Applications open next term.",
+          "hint": "Five tracks to choose from, and you work on one of them for the whole semester. Teams of four, at least $1000 to fund the work. Applications open next term.",
           "options": [
             { "key": "yes", "label": "Yes, I would apply" },
             { "key": "maybe", "label": "Maybe, I want to hear more" },
