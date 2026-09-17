@@ -34,8 +34,8 @@
  * Headshots: masters live in `board-src/<slug>.jpg` and are never deployed.
  * scripts/build-headshots.mjs turns them into AVIF/WebP/JPEG derivatives in
  * `public/board/`. `photo: true` switches a member from the initials
- * placeholder to the real image. Mehr has no master yet, so he is the one
- * member on `photo: false` and the only card showing an initials tile.
+ * placeholder to the real image. Every member now has a master, so no card
+ * shows an initials tile; the fallback stays for the next person to join.
  *
  * TYPO CORRECTED: Lucas's address was supplied as "salzgeber.l@northesatern.edu".
  * The domain is misspelt ("northesatern"), which would bounce, so it is stored
@@ -98,7 +98,7 @@ export const BOARD = [
     slug: "kristine-min",
     name: "Kristine Min",
     role: "Head of Social Media",
-    affiliation: "UGC Creator, 20k on TikTok",
+    affiliation: "Content Creator, 20k on TikTok",
     major: "IB + Finance",
     photo: true,
     linkedin: "https://www.linkedin.com/in/kristine-min/",
@@ -127,12 +127,9 @@ export const BOARD = [
     // width it reads as two short rows rather than one long one.
     secondAffiliation: "Founder @ BitsDime, Prev. ML @ Brewster",
     major: "BS, Computer Science",
-    // No master in board-src/, so the card falls back to the "MA" initials
-    // tile. Do not flip this to true before board-src/mehr-anand.jpg exists:
-    // build-headshots.mjs only converts the files it finds and BoardCard
-    // trusts `photo` rather than probing, so the card would render an <img>
-    // against a 404.
-    photo: false,
+    // Cropped square from the club's 6000x4000 original, head and shoulders
+    // at the same scale as the other masters so the row reads as one set.
+    photo: true,
     // linkedin, email and github are absent rather than empty, because the
     // club has not sent them. BoardCard filters falsy socials, so an absent
     // key costs a row of icons and nothing else, where a placeholder would
