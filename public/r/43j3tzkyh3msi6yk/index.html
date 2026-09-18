@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Unlisted board report. Not linked from the site, not in the sitemap, and
+     kept out of search results here and by the X-Robots-Tag rule for /r/* in
+     netlify.toml. -->
+<meta name="robots" content="noindex, nofollow">
+<title>Info Session Poll Results</title>
+<meta name="description" content="Results of the September 17 info session poll: workshop lineup, hackathon theme, build-team demand and event interest.">
+<meta property="og:title" content="Info Session Poll Results">
+<meta property="og:description" content="Results of the September 17 info session poll: workshop lineup, hackathon theme, build-team demand and event interest.">
+<link rel="icon" href="/favicon.png" type="image/png">
+<style>
+  @font-face { font-family: Poppins; font-style: normal; font-weight: 500; font-display: swap; src: url("/fonts/poppins-latin-500.woff2") format("woff2"); }
+  @font-face { font-family: Poppins; font-style: normal; font-weight: 600; font-display: swap; src: url("/fonts/poppins-latin-600.woff2") format("woff2"); }
+  @font-face { font-family: Lora; font-style: normal; font-weight: 400 700; font-display: swap; src: url("/fonts/lora-latin-var.woff2") format("woff2"); }
+  @font-face { font-family: Lora; font-style: italic; font-weight: 400 700; font-display: swap; src: url("/fonts/lora-latin-var-italic.woff2") format("woff2"); }
+
+  :root {
+    color-scheme: light;
+    --paper: #faf9f5;
+    --ink: #141413;
+    --coral: #d97757;
+    --coral-text: #a34a2a;
+    --coral-tint: #f6e7e0;
+    --gray-light: #e8e6dc;
+    --gray-mid: #b0aea5;
+    --gray-text: #686560;
+    --rule: #ded9cc;
+    --grid: #e8e6dc;
+    /* ordinal ramp, validated against --paper: strongest → weakest */
+    --ord-1: #a34a2a;
+    --ord-2: #d97757;
+    --ord-3: #e49a7d;
+
+    --font-display: "Poppins", Arial, system-ui, sans-serif;
+    --font-body: "Lora", Georgia, "Times New Roman", serif;
+    --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+    --step-display: clamp(2.25rem, 1.5rem + 3.4vw, 3.75rem);
+    --step-2: clamp(1.5rem, 1.2rem + 1.4vw, 2.125rem);
+    --step-3: clamp(1.125rem, 1.05rem + .5vw, 1.3125rem);
+    --step-lead: clamp(1.125rem, 1.05rem + .4vw, 1.3125rem);
+    --step-body: 1.0625rem;
+    --step-small: .9375rem;
+    --step-meta: .8125rem;
+
+    --radius: 4px;
+    --gutter: clamp(16px, 5vw, 64px);
+    --measure: 68ch;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  [hidden] { display: none !important; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: var(--step-body);
+    line-height: 1.65;
+    padding-inline: var(--gutter);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin-inline: auto; }
+
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 600; text-wrap: balance; margin: 0; }
+  h1 { font-size: var(--step-display); line-height: 1.06; letter-spacing: -0.02em; max-width: 18ch; }
+  h2 { font-size: var(--step-2); line-height: 1.15; letter-spacing: -0.01em; }
+  h3 { font-size: var(--step-3); line-height: 1.3; }
+  p { margin: 0; }
+  a { color: var(--coral-text); }
+  :focus-visible { outline: 2px solid var(--coral-text); outline-offset: 3px; border-radius: 2px; }
+
+  .meta {
+    font-family: var(--font-mono);
+    font-size: var(--step-meta);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--gray-text);
+  }
+
+  /* top band, same ground as the site header */
+  .band {
+    background: var(--gray-light);
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+  }
+  .band__inner {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 6px 24px; padding-block: 16px;
+  }
+  .band__club { font-family: var(--font-display); font-weight: 500; font-size: .9375rem; }
+
+  /* hero */
+  .hero { display: grid; gap: 22px; padding-block: clamp(48px, 7vw, 96px) clamp(40px, 5vw, 64px); }
+  .lead { font-size: var(--step-lead); color: var(--gray-text); max-width: 46ch; line-height: 1.6; }
+  .facts { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+  .facts span + span::before { content: "·"; margin-right: 20px; color: var(--gray-mid); }
+
+  /* sections: heading left, content right, like the About page */
+  .sec {
+    display: grid; gap: 28px 64px;
+    padding-block: clamp(40px, 5vw, 64px);
+    border-top: 1px solid var(--rule);
+  }
+  .sec__head { display: grid; gap: 14px; align-content: start; }
+  .takeaway { color: var(--gray-text); font-size: var(--step-small); max-width: 42ch; }
+  .sec__body { display: grid; gap: 28px; min-width: 0; }
+  .sec__body > *, .sec__head > * { min-width: 0; }
+  @media (min-width: 900px) {
+    .sec { grid-template-columns: minmax(0, 1fr) minmax(0, 1.85fr); }
+    .sec__head { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 28px); align-self: start; }
+  }
+
+  .prose { display: grid; gap: 14px; max-width: var(--measure); }
+  .prose p, .notes li { font-size: var(--step-small); }
+  .notes { margin: 0; padding-left: 1.1em; display: grid; gap: 10px; max-width: var(--measure); }
+  .notes li::marker { color: var(--coral); }
+  strong { font-weight: 600; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* the short version: modeled on the site's poll-results list */
+  .calls { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--rule); }
+  .call {
+    display: grid; gap: 4px 24px;
+    padding-block: 20px;
+    border-top: 1px solid var(--rule);
+  }
+  .call:first-child { border-top: 0; padding-top: 0; }
+  .call__title { font-family: var(--font-display); font-weight: 600; font-size: 1.0625rem; line-height: 1.4; }
+  .call__note { color: var(--gray-text); font-size: var(--step-small); margin-top: 4px; max-width: 60ch; }
+  .call--flag .call__what { color: var(--coral-text); }
+  @media (min-width: 640px) {
+    .call { grid-template-columns: 8.5rem minmax(0, 1fr); }
+    .call__what { padding-top: 2px; }
+  }
+
+  /* charts */
+  .figure { display: grid; gap: 14px; min-width: 0; }
+  .figure__title { font-family: var(--font-display); font-weight: 500; font-size: var(--step-small); }
+  .figure__sub { color: var(--gray-text); font-size: .875rem; margin-top: -8px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--font-display); font-weight: 500; font-size: .8125rem; color: var(--gray-text); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .legend i { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+  .chart { display: grid; gap: 14px; }
+
+  .crow {
+    display: grid; gap: 6px 18px; align-items: center;
+    border-radius: var(--radius);
+  }
+  .crow__label { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; min-width: 0; }
+  .crow__name { font-family: var(--font-display); font-weight: 500; font-size: .9375rem; line-height: 1.35; }
+  .crow__sub { flex-basis: 100%; font-size: .8125rem; color: var(--gray-text); line-height: 1.4; }
+  .crow__fig { font-family: var(--font-display); font-weight: 500; font-size: .8125rem; color: var(--gray-text); font-variant-numeric: tabular-nums; }
+  @media (min-width: 640px) {
+    .crow { grid-template-columns: minmax(0, 13.5rem) minmax(0, 1fr); }
+  }
+
+  .pick {
+    font-family: var(--font-mono); font-size: .6875rem; letter-spacing: .06em; text-transform: uppercase;
+    background: var(--ink); color: var(--paper);
+    padding: 1px 6px; border-radius: 3px; line-height: 1.6; white-space: nowrap;
+  }
+
+  .plot { position: relative; height: 20px; margin-right: 3.75rem; }
+  .plot--full { margin-right: 0; }
+  .bar { display: flex; gap: 2px; height: 100%; }
+  .seg {
+    flex: 1 1 0; min-width: 0; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 500; font-size: .75rem; line-height: 1;
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .bar > .seg:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+  .s1 { background: var(--ord-1); color: var(--paper); }
+  .s2 { background: var(--ord-2); color: var(--ink); }
+  .s3 { background: var(--ord-3); color: var(--ink); }
+  .val {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    font-family: var(--font-display); font-weight: 500; font-size: .8125rem;
+    font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink);
+  }
+
+  /* hackathon: bars on a gridded 0–40% scale with 95% ranges */
+  .plot--grid {
+    margin-right: 0;
+    background-image: linear-gradient(to right, var(--grid) 1px, transparent 1px);
+    background-size: 25% 100%;
+    border-right: 1px solid var(--grid);
+  }
+  .whisker { position: absolute; top: 50%; height: 1.5px; background: var(--ink); transform: translateY(-50%); pointer-events: none; }
+  .whisker::before, .whisker::after { content: ""; position: absolute; top: -5px; width: 1.5px; height: 11px; background: var(--ink); }
+  .whisker::before { left: 0; }
+  .whisker::after { right: 0; }
+  .axis { position: relative; height: 18px; font-family: var(--font-display); font-weight: 500; font-size: .75rem; color: var(--gray-text); font-variant-numeric: tabular-nums; }
+  .axis span { position: absolute; top: 0; transform: translateX(-50%); }
+  .axis span:first-child { transform: none; }
+  .axis span:last-child { transform: translateX(-100%); }
+  @media (min-width: 640px) { .axis-row { display: grid; grid-template-columns: minmax(0, 13.5rem) minmax(0, 1fr); gap: 18px; } }
+
+  /* table twins */
+  details.tbl summary {
+    list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-display); font-weight: 500; font-size: .8125rem; color: var(--gray-text);
+    border: 1px solid var(--rule); border-radius: var(--radius); padding: 7px 13px; background: var(--paper);
+  }
+  details.tbl summary::-webkit-details-marker { display: none; }
+  details.tbl summary:hover { border-color: var(--gray-mid); color: var(--ink); }
+  details.tbl[open] summary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .tscroll { overflow-x: auto; margin-top: 14px; }
+  table { border-collapse: collapse; width: 100%; font-size: .875rem; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-family: var(--font-display); font-weight: 500; font-size: .75rem; color: var(--gray-text); text-transform: uppercase; letter-spacing: .06em; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; padding-right: 0; padding-left: 12px; }
+  tr.hl td { font-weight: 600; }
+
+  /* callout for the public-page problem */
+  .callout {
+    background: var(--coral-tint); border-radius: var(--radius-lg, 8px);
+    padding: 18px 20px; display: grid; gap: 8px; max-width: var(--measure);
+  }
+  .callout .meta { color: var(--coral-text); }
+  .callout p { font-size: var(--step-small); }
+  .quote { font-style: italic; }
+
+  pre {
+    margin: 12px 0 0; padding: 14px 16px; background: var(--gray-light); border-radius: var(--radius);
+    overflow-x: auto; font-family: var(--font-mono); font-size: .8125rem; line-height: 1.6; color: var(--ink);
+  }
+
+  .recs { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-bottom: 1px solid var(--rule); }
+  .recs li { padding-block: 16px; border-top: 1px solid var(--rule); display: grid; gap: 4px; }
+  .recs li:first-child { border-top: 0; padding-top: 0; }
+  .recs b { font-family: var(--font-display); font-weight: 600; font-size: 1rem; }
+  .recs span { color: var(--gray-text); font-size: var(--step-small); max-width: 62ch; }
+
+  footer { border-top: 1px solid var(--rule); padding-block: 28px 56px; display: grid; gap: 6px; }
+  footer p { font-size: .875rem; color: var(--gray-text); max-width: var(--measure); }
+
+  #tip {
+    position: fixed; z-index: 10; pointer-events: none;
+    background: var(--ink); color: var(--paper);
+    font-family: var(--font-display); font-weight: 500; font-size: .75rem; line-height: 1.5;
+    padding: 7px 10px; border-radius: var(--radius); max-width: 280px; white-space: pre-line;
+    font-variant-numeric: tabular-nums;
+  }
+  [data-tip] { cursor: default; }
+  .crow:focus-visible { outline-offset: 4px; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    details.tbl summary { transition: background .15s cubic-bezier(.22,.61,.36,1), color .15s, border-color .15s; }
+  }
+  @media print {
+    .sec__head { position: static; }
+    details.tbl > summary { display: none; }
+    #tip { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="band">
+  <div class="wrap band__inner">
+    <span class="band__club">Claude Builders Club</span>
+    <span class="meta">Board report · Sep 18, 2026</span>
+  </div>
+</header>
+
+<main>
+  <section class="wrap hero">
+    <p class="meta">Info Session Poll · closed Sep 17, 10 PM ET</p>
+    <h1>What 91 members asked us to run this semester</h1>
+    <p class="lead">The ballot from the September 17 info session, read for the decisions it feeds: the workshop lineup, the mini hackathon theme, next term’s build teams, and which events go on the calendar.</p>
+    <p class="facts meta"><span>91 valid ballots</span><span>8 questions</span><span>Cast 6–8 PM ET</span></p>
+  </section>
+
+  <section class="wrap sec" id="summary">
+    <div class="sec__head">
+      <p class="meta">Summary</p>
+      <h2>The short version</h2>
+      <p class="takeaway">Five calls the board can make from this ballot, plus one thing to fix before anyone announces results.</p>
+    </div>
+    <div class="sec__body">
+      <ul class="calls">
+        <li class="call">
+          <span class="call__what meta">Workshops</span>
+          <div>
+            <p class="call__title">Financial Modeling, then Business, then Student Agents</p>
+            <p class="call__note">Filled slot by slot, as the ballot promised. 11 people picked exactly these three. First App is the backup.</p>
+          </div>
+        </li>
+        <li class="call">
+          <span class="call__what meta">Hackathon</span>
+          <div>
+            <p class="call__title">Money Moves, by two votes</p>
+            <p class="call__note">All four themes finished within four votes of each other. It’s a lean, not a mandate.</p>
+          </div>
+        </li>
+        <li class="call">
+          <span class="call__what meta">Build teams</span>
+          <div>
+            <p class="call__title">Open ML, Investment, Engineering and Rotating</p>
+            <p class="call__note">58 people say they would apply, 28 of them for machine learning. Biology drew one vote out of 91.</p>
+          </div>
+        </li>
+        <li class="call">
+          <span class="call__what meta">Events</span>
+          <div>
+            <p class="call__title">Partner-club socials are the safe bet</p>
+            <p class="call__note">62% said definitely and nobody said no. Coworking interest is wide but soft.</p>
+          </div>
+        </li>
+        <li class="call call--flag">
+          <span class="call__what meta">Fix first</span>
+          <div>
+            <p class="call__title">The public results page counts test ballots</p>
+            <p class="call__note">It reports 95 ballots, 4 of which are tests, and calls Money Moves the winner of what is then a 25–25 tie. The right line is 27% of 91.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap sec" id="workshops">
+    <div class="sec__head">
+      <p class="meta">The ballot · Workshops</p>
+      <h2>Three empty dates, ten workshops</h2>
+      <p class="takeaway">Voters filled Slots 2, 3 and 4 in the order they wanted them, on the promise that the most votes get the room. Financial Modeling owns the first date. Agents is the most-picked overall.</p>
+    </div>
+    <div class="sec__body">
+      <div class="figure">
+        <p class="figure__title">Times each workshop was picked, split by the slot it was placed in</p>
+        <div class="legend" aria-hidden="true">
+          <span><i style="background:var(--ord-1)"></i>Slot 2 (first date)</span>
+          <span><i style="background:var(--ord-2)"></i>Slot 3</span>
+          <span><i style="background:var(--ord-3)"></i>Slot 4</span>
+        </div>
+        <div class="chart" id="chart-workshops" role="img" aria-label="Workshop picks by slot. Full numbers in the table below."></div>
+        <details class="tbl">
+          <summary>Show as table</summary>
+          <div class="tscroll">
+            <table>
+              <thead><tr><th>Workshop</th><th>Level</th><th class="n">Slot 2</th><th class="n">Slot 3</th><th class="n">Slot 4</th><th class="n">Total</th><th class="n">3-2-1 score</th></tr></thead>
+              <tbody id="table-workshops"></tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+      <ul class="notes">
+        <li><strong>How the lineup falls out.</strong> Slot 2 goes to Financial Modeling (26 votes, 29% of ballots). Slot 3 goes to Business (20). Business also leads Slot 4 with 17, but it can’t run twice, so Student Agents (16) takes that date.</li>
+        <li><strong>The third spot is the only close call.</strong> Financial Modeling and Agents lead however you count. Business beats First App on total picks (41 to 35), but if you score slots 3-2-1, First App edges ahead 71 to 69. Keep First App as the alternate.</li>
+        <li><strong>This room wants harder material.</strong> The two Beginner-only workshops finished last, and the most common first choice was the one marked Advanced. Expect mixed skill levels in Financial Modeling.</li>
+        <li><strong>Financial Modeling is an Investment-track draw.</strong> 15 of the 20 people who chose the Investment build track picked it, compared with 45% of everyone else.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap sec" id="hackathon">
+    <div class="sec__head">
+      <p class="meta">The ballot · Hackathon</p>
+      <h2>A four-way near tie</h2>
+      <p class="takeaway">Money Moves wins under the ballot’s rule, but first and last place are four votes apart. With 91 ballots, every theme’s plausible range overlaps every other’s.</p>
+    </div>
+    <div class="sec__body">
+      <div class="figure">
+        <p class="figure__title">Share of ballots for each mini hackathon theme</p>
+        <p class="figure__sub">Bar is the result; the black line spans the 95% range of plausible values.</p>
+        <div class="chart" id="chart-hack" role="img" aria-label="Hackathon theme shares with 95 percent ranges. Full numbers in the table below."></div>
+        <div class="axis-row" aria-hidden="true"><span></span><div class="axis"><span>0%</span><span style="left:25%">10%</span><span style="left:50%">20%</span><span style="left:75%">30%</span><span style="left:100%">40%</span></div></div>
+        <details class="tbl">
+          <summary>Show as table</summary>
+          <div class="tscroll">
+            <table>
+              <thead><tr><th>Theme</th><th class="n">Votes</th><th class="n">Share</th><th class="n">95% range</th></tr></thead>
+              <tbody id="table-hack"></tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+      <ul class="notes">
+        <li><strong>Different tracks want different themes.</strong> Machine-learning voters leaned Fix Northeastern (14 of 38), Investment voters leaned Money Moves (9 of 20), and rotating-track voters leaned Steal This Site (7 of 15).</li>
+        <li><strong>Any theme is defensible.</strong> Run Money Moves, but switching wouldn’t let down a majority. No theme reached 30%.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap sec" id="buildteams">
+    <div class="sec__head">
+      <p class="meta">The rest · Build teams</p>
+      <h2>Demand is real, and mostly for ML</h2>
+      <p class="takeaway">The ballot told voters their answers here decide which build-team applications open next term. Nearly two in three said they would apply.</p>
+    </div>
+    <div class="sec__body">
+      <div class="figure">
+        <p class="figure__title">Would you apply to a build team next semester?</p>
+        <div class="legend" aria-hidden="true">
+          <span><i style="background:var(--ord-1)"></i>Yes, I would apply</span>
+          <span><i style="background:var(--ord-2)"></i>Maybe, want to hear more</span>
+          <span><i style="background:var(--ord-3)"></i>Not for me</span>
+        </div>
+        <div class="chart" id="chart-apply" role="img" aria-label="58 yes, 29 maybe, 4 not for me."></div>
+      </div>
+
+      <div class="figure">
+        <p class="figure__title">Which track interests you most?</p>
+        <div class="legend" aria-hidden="true">
+          <span><i style="background:var(--ord-1)"></i>Would apply</span>
+          <span><i style="background:var(--ord-3)"></i>Maybe or not for me</span>
+        </div>
+        <div class="chart" id="chart-tracks" role="img" aria-label="Track interest split by willingness to apply. Full numbers in the table below."></div>
+        <details class="tbl">
+          <summary>Show as table</summary>
+          <div class="tscroll">
+            <table>
+              <thead><tr><th>Track</th><th class="n">All voters</th><th class="n">Would apply</th><th class="n">Maybe</th><th class="n">Not for me</th></tr></thead>
+              <tbody id="table-tracks"></tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+      <ul class="notes">
+        <li><strong>About 14 teams’ worth of interest.</strong> Teams are four people with at least $1,000 each, and 58 said yes. Info-session enthusiasm runs ahead of real applications, but even half of that is 7 teams.</li>
+        <li><strong>ML could fill about 7 teams on its own.</strong> Plan for more than one ML team, or a cap.</li>
+        <li><strong>Biology has no committed applicants.</strong> One person picked it and said maybe. Reconsider the track or fold it into the rotating one.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap sec" id="events">
+    <div class="sec__head">
+      <p class="meta">The rest · Events and goals</p>
+      <h2>Socials yes, coworking maybe</h2>
+      <p class="takeaway">Partner-club socials drew no “not for me” answers. Demo night splits the room. 24 people (26%) said definitely to all three events, a fair size for the core active group.</p>
+    </div>
+    <div class="sec__body">
+      <div class="figure">
+        <p class="figure__title">Interest in each recurring event</p>
+        <div class="legend" aria-hidden="true">
+          <span><i style="background:var(--ord-1)"></i>Definitely</span>
+          <span><i style="background:var(--ord-2)"></i>Might come</span>
+          <span><i style="background:var(--ord-3)"></i>Not for me</span>
+        </div>
+        <div class="chart" id="chart-events" role="img" aria-label="Event interest. Full numbers in the table below."></div>
+        <details class="tbl">
+          <summary>Show as table</summary>
+          <div class="tscroll">
+            <table>
+              <thead><tr><th>Event</th><th class="n">Definitely</th><th class="n">Might come</th><th class="n">Not for me</th></tr></thead>
+              <tbody id="table-events"></tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <div class="figure">
+        <p class="figure__title">What do you most want to walk out with?</p>
+        <p class="figure__sub">Under each answer: the share of those voters who would apply to a build team.</p>
+        <div class="chart" id="chart-outcome" role="img" aria-label="Most-wanted outcome. Full numbers in the table below."></div>
+        <details class="tbl">
+          <summary>Show as table</summary>
+          <div class="tscroll">
+            <table>
+              <thead><tr><th>Answer</th><th class="n">Voters</th><th class="n">Share</th><th class="n">Would apply to a build team</th></tr></thead>
+              <tbody id="table-outcome"></tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+      <ul class="notes">
+        <li><strong>The audience is career-minded.</strong> Nearly half want something for their resume, and only 10% want a tool for school. That matches “Claude for school” finishing eighth among workshops.</li>
+        <li><strong>People who come for other people commit hardest.</strong> 84% of those who want people to build with would apply to a build team, against 45% of those who mostly want to understand Claude better.</li>
+        <li><strong>Pilot coworking before committing to a series.</strong> 54% said they might come, the softest answer of any event.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap sec" id="data">
+    <div class="sec__head">
+      <p class="meta">Method</p>
+      <h2>Only 91 of 1,746 rows are real votes</h2>
+      <p class="takeaway">The Supabase ballots table holds load tests, a smoke test and four pre-launch test ballots alongside the real ones. Everything above counts only the 91.</p>
+    </div>
+    <div class="sec__body">
+      <div class="tscroll" style="margin-top:0">
+        <table>
+          <thead><tr><th class="n" style="text-align:left;padding-left:0;padding-right:12px">Rows</th><th>Poll</th><th>What it is</th><th>Counted</th></tr></thead>
+          <tbody>
+            <tr><td class="num">1,000</td><td>loadtest-2026-09-17</td><td>Load test</td><td>No</td></tr>
+            <tr><td class="num">650</td><td>loadtest-delete-me</td><td>Load test</td><td>No</td></tr>
+            <tr><td class="num">1</td><td>smoke-test-2026-09-17</td><td>Smoke test</td><td>No</td></tr>
+            <tr><td class="num">4</td><td>info-session-2026-09, cast Sep 14–16</td><td>Test ballots from before launch</td><td>No</td></tr>
+            <tr class="hl"><td class="num">91</td><td>info-session-2026-09, cast Sep 17, 6–8 PM ET</td><td>Info session ballots</td><td>Yes</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="prose">
+        <p><strong>Why the four early ballots are tests.</strong> Each one uses a workshop option that isn’t in the live poll (claude-code, side-projects or prompting), and none of the 91 session ballots does. One also shares its timestamp with a batch of load-test rows. Leaving them out changes no ranking on this page. It only affects the hackathon, where it breaks a tie.</p>
+        <p>58 ballots came in between 6 and 7 PM ET and 33 between 7 and 8 PM. Timestamps are stored rounded to the hour.</p>
+      </div>
+      <div class="callout">
+        <p class="meta">Public page</p>
+        <p>claudeneu.com/polls currently reads <span class="quote">“Money Moves won with 26% of 95 ballots.”</span> Those 95 include the four test ballots, and with them Money Moves and Fix Northeastern are tied 25–25. The page names Money Moves only because of how it breaks ties. Once the test ballots are removed it will read 27% of 91, which is correct.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap sec" id="next">
+    <div class="sec__head">
+      <p class="meta">Next steps</p>
+      <h2>What we recommend</h2>
+    </div>
+    <div class="sec__body">
+      <ul class="recs">
+        <li><b>Clean the ballots table before announcing anything.</b><span>Delete the four test ballots so the public page shows 91 ballots, then clear the 1,651 load and smoke-test rows.</span></li>
+        <li><b>Book Financial Modeling, Business, then Student Agents.</b><span>Hold First App as the alternate if a date or presenter falls through.</span></li>
+        <li><b>Run Money Moves as the hackathon theme, loosely.</b><span>The result is too close to treat as a mandate, so the theme can flex if a partner club or sponsor needs something else.</span></li>
+        <li><b>Open four build-team tracks and plan for ML overflow.</b><span>Machine learning, Investment, Engineering and Rotating. Reconsider Biology or fold it into the rotating track.</span></li>
+        <li><b>Lead the calendar with partner-club socials.</b><span>Run one coworking session as a pilot before committing to a weekly slot.</span></li>
+        <li><b>Test future polls under their own poll name.</b><span>That keeps pre-launch votes out of the public results.</span></li>
+      </ul>
+      <div class="prose">
+        <h3>Read these results with care</h3>
+        <ul class="notes">
+          <li>Voters are the people who came to the info session, not the whole membership.</li>
+          <li>With 91 ballots, any single-answer share could be off by about 10 points either way.</li>
+          <li>“I would apply” at an info session is a statement of intent. Expect fewer real applications.</li>
+          <li>Ballots are anonymous, and only the browser remembering a vote prevents voting twice. No two ballots are identical, but that doesn’t rule it out.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="wrap">
+    <p class="meta">Source</p>
+    <p>Supabase <code>ballots</code> table export, 1,746 rows, pulled Sep 18, 2026. Question and option wording from the live poll at claudeneu.com/polls. Percentages are of the 91 valid ballots.</p>
+  </footer>
+</main>
+
+<div id="tip" hidden></div>
+
+<script src="/r/43j3tzkyh3msi6yk/report.js" defer></script>
+</body>
+</html>

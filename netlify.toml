@@ -119,6 +119,15 @@
   [headers.values]
     Cache-Control = "public, max-age=604800, must-revalidate"
 
+# Unlisted pages shared by link only, such as board reports. Nothing links to
+# them and they are not ROUTES, so they never reach the sitemap; this keeps them
+# out of search results even if a link gets posted somewhere public. The path is
+# unguessable, but this repo is public, so treat /r/ as unlisted, not private.
+[[headers]]
+  for = "/r/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 [[headers]]
   for = "/*"
   [headers.values]
