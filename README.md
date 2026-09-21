@@ -57,6 +57,7 @@ Two rules follow from that and are worth knowing before you change anything:
 | `/polls/<slug>` | One poll's ballot. Dynamic, so it is not prerendered; `netlify.toml` rewrites `/polls/*` to the hub |
 | `/attendance` | Session check-in and the term stamp card. `noindex`, and kept out of the sitemap |
 | `/404` | A real HTTP 404 with links back to everything, not a soft 200 |
+| `/hackathon/` | **HACK1984**, the club's 36-hour hackathon. A separate app in `hackathon/` — see [The hackathon page](#the-hackathon-page) |
 
 Neither `/polls` nor `/attendance` is in the top nav. Both are surfaces for a
 room already in a session, reached from a URL on a slide or a code on a
@@ -328,6 +329,42 @@ sized box, so adding a picture later shifts nothing on the page.
 someone shares a link. It is generated manually and committed rather than built
 every deploy, because the display font is embedded into it and that work does
 not need repeating.
+
+### The hackathon page
+
+`/hackathon/` is **HACK1984**, and it is a **separate Vite app** living in
+`hackathon/` with its own `package.json`, design system and prerender. It is
+not a route in this site's router, on purpose: its global CSS (a black body,
+its own tokens and resets) would fight this site's, and kept apart neither can
+break the other. It replaced the one-line scaffold that reserved the URL, and
+that scaffold's route, page and `seo.js` entry are gone.
+
+How it gets onto the domain:
+
+1. `npm run build` builds this site exactly as before.
+2. `postbuild` runs `build:hackathon`, which installs and builds
+   `hackathon/` with `base: "/hackathon/"`.
+3. `scripts/copy-hackathon.mjs` copies `hackathon/dist/` into
+   `dist/hackathon/`, where Netlify serves it as plain files. It exits non-zero
+   if the hackathon build is missing, so a broken hackathon build fails the
+   deploy rather than shipping the site with the page gone.
+
+It is in `sitemap.xml` through `STATIC_PAGES` in `scripts/prerender.mjs`,
+since it is not a `ROUTES` entry. `npm run dev` on this site will 404 at
+`/hackathon`: the dev server only serves this app. Run it from its own folder.
+
+**It needs no CSP change.** Every request it makes is same-origin: its fonts
+are self-hosted in `hackathon/public/fonts/`, which is required rather than a
+preference — `font-src 'self'` would refuse a font CDN, and the page's ASCII
+layouts are sized off Geist Mono's advance, so a fallback face breaks the art.
+
+```bash
+cd hackathon && npm install && npm run dev
+```
+
+`hackathon/README.md` has the rest — the launch placeholders, the design
+decisions and the reasoning behind them. It is linted from inside its own
+folder; the root `eslint.config.js` ignores it.
 
 ---
 

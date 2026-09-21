@@ -61,7 +61,16 @@ async function main() {
   }
 
   // sitemap.xml — indexable routes only.
-  const indexable = ROUTES.filter((r) => !r.noindex);
+  //
+  // Plus the pages this app does not render. /hackathon/ is HACK1984, a
+  // separate app built in hackathon/ and copied into dist/hackathon/ after
+  // this script runs (scripts/copy-hackathon.mjs), so it is not a ROUTES entry
+  // and would otherwise never reach the sitemap. Trailing slash, because that
+  // is its canonical URL and Netlify 301s the bare path to it.
+  const STATIC_PAGES = [
+    { path: "/hackathon/", changefreq: "weekly", priority: "0.9" },
+  ];
+  const indexable = [...ROUTES.filter((r) => !r.noindex), ...STATIC_PAGES];
 
   // Per-route overrides, with the previous behaviour as the default, so every
   // page that existed before the blog emits exactly the line it emitted then.

@@ -1,27 +1,22 @@
 {
-  "name": "anthropic-club-website",
+  "name": "hack1984-website",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "prebuild": "node scripts/fetch-events.mjs && node scripts/build-headshots.mjs && node scripts/build-blog-images.mjs",
+    "tokens": "node scripts/build-tokens.mjs",
+    "ics": "node scripts/build-ics.mjs",
+    "dev": "npm run tokens && npm run ics && vite",
+    "prebuild": "node scripts/build-tokens.mjs && node scripts/build-ics.mjs",
     "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.mjs",
-    "postbuild": "npm run build:hackathon",
-    "build:hackathon": "npm --prefix hackathon ci --no-audit --no-fund && npm --prefix hackathon run build && node scripts/copy-hackathon.mjs",
-    "og": "node scripts/build-og-image.mjs",
-    "images": "node scripts/build-blog-images.mjs",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "test:db": "node supabase/signups.test.mjs"
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "react-router-dom": "^7.18.2"
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "^0.5.8",
     "@eslint/js": "^9.33.0",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
@@ -32,7 +27,6 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
     "postcss": "^8.5.6",
-    "sharp": "^0.35.3",
     "tailwindcss": "^3.4.17",
     "vite": "^7.1.2"
   }

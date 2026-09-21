@@ -15,7 +15,6 @@ import Pitch from "./pages/Pitch";
 import Join from "./pages/Join";
 import FallFest from "./pages/FallFest";
 import FeatureMe from "./pages/FeatureMe";
-import Hackathon from "./pages/Hackathon";
 import NotFound from "./pages/NotFound";
 import { UNSUBSCRIBE_PATH } from "./lib/unsubscribe";
 import { FEATURE_PATH } from "./lib/feature";
@@ -98,13 +97,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/events" element={<Events />} />
-          {/* Chromed, unlike /fallfest above, even though this URL is also
-              printed on something. Nothing on it competes for the fold: it is
-              an ordinary content page that happens to be one line long today
-              and will be a full one later, so stripping the chrome now would
-              only mean re-deciding the question when the real copy lands. See
-              pages/Hackathon.jsx. */}
-          <Route path="/hackathon" element={<Hackathon />} />
+          {/* No /hackathon route. That URL is HACK1984, a separate app in
+              hackathon/ that the build copies to dist/hackathon/ as static
+              files; see "The hackathon page" in the README. It replaced the
+              scaffold that reserved the URL here. */}
           <Route path="/blog" element={<Blog />} />
           {/* Every published post is prerendered to its own HTML file, so an
               unknown slug is a genuine 404 from Netlify and never reaches this

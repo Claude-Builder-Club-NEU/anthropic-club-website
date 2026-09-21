@@ -105,6 +105,20 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# The HACK1984 page at /hackathon/ is its own build — see "The hackathon page"
+# in the README and scripts/copy-hackathon.mjs. Its assets are fingerprinted
+# and its fonts self-hosted, exactly like this site's, so they take the same
+# headers. It needs no CSP change: every request it makes is same-origin.
+[[headers]]
+  for = "/hackathon/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/hackathon/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
 # Blog image derivatives, written by scripts/build-blog-images.mjs.
 #
 # NOT `immutable`, unlike /assets/*. These filenames carry a width but no

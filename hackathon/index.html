@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Title, description, canonical and OG tags are injected here at build
+         time by scripts/prerender.mjs from src/lib/head.js. The title below is
+         only what a dev-server visit sees. -->
+    <!--app-head-->
+    <title>HACK1984</title>
+
+    <meta name="theme-color" content="#000000" />
+
+    <!--
+      No font CDN. The fonts are self-hosted from public/fonts/, declared with
+      @font-face at the top of src/index.css, under the file names tokens.json
+      already gave them.
+
+      This is required, not a preference: the club site this page is served
+      from sets font-src 'self' and a style-src with no third-party host, so a
+      Google Fonts stylesheet would be refused and the page would fall back to
+      system faces. Geist Mono is load-bearing — every ASCII layout here sizes
+      itself off its 0.6em advance — so a fallback would break the art, not
+      just change its look.
+    -->
+  </head>
+  <body>
+    <div id="root"><!--app-html--></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

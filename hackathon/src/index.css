@@ -1,0 +1,2092 @@
+/* ==========================================================================
+   HACK1984 — the design system.
+
+   Most numbers here come from the handoff's SPEC.md and reference/index.html,
+   and are exact rather than rounded: -0.035em is -0.035em. Where the design
+   has since moved on — the page fills the screen, the type scales with vw —
+   the rule says so at the point it occurs. See the README for the full list.
+
+   Colours come from src/styles/tokens.css, which is GENERATED from tokens.json
+   by scripts/build-tokens.mjs. Never write a hex literal here that a token
+   already names. The few that appear below are the ones stated as literals for
+   a specific job (pure white on the highlighted schedule row) and are
+   commented where they occur.
+   ========================================================================== */
+
+@import "./styles/tokens.css";
+
+/* --------------------------------------------------------------------------
+   Fonts, self-hosted.
+
+   Latin subsets of the three variable families, under the file names
+   tokens.json gives them. Vite rewrites these /fonts/ paths against `base`,
+   so they resolve to /hackathon/fonts/ in the build. See index.html for why
+   there is no font CDN. All three are SIL Open Font License 1.1.
+
+   Below the @import, not above it: postcss refuses an @import that follows
+   any other rule, and a refused tokens import is a page with no colours.
+   -------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: "Funnel Display";
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url("/fonts/FunnelDisplay-300-800.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Funnel Sans";
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url("/fonts/FunnelSans-300-800.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/GeistMono-100-900.woff2") format("woff2");
+}
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --------------------------------------------------------------------------
+   Page-level constants that are not design tokens.
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* The page fills the screen. It was capped at 1440px, the width the design
+     was drawn at; the cap is gone so the layout takes whatever it is given and
+     the grids stretch into it. Everything that used to be a fixed size and now
+     has to survive a 2560px monitor is a clamp() against vw.
+
+     The gutter grows with the window rather than staying at the handoff's
+     32px. Without a max-width holding the content in, a fixed gutter meant
+     text running to within an inch of the bezel on a large monitor; this is
+     the breathing room the 1440px cap used to provide, without capping.
+     The phone breakpoint takes it back down — 9vw is generous on a desktop
+     and 34px of dead margin either side of a 375px screen. */
+  --hk-gutter: clamp(40px, 9vw, 260px);
+
+  /*
+   * The hero mark's width, and the cell that falls out of it: 47 columns
+   * across. The hero's scanlines are drawn on this same cell, so the lines
+   * land exactly in the gaps between the mark's rows — one variable, so the
+   * two cannot drift apart at any width.
+   */
+  --hk-mark-w: clamp(260px, 48vw, 760px);
+  --hk-cell: calc(var(--hk-mark-w) / 47);
+
+
+  /* SPEC §1: section bottom padding, and heading to content. */
+  --hk-section-pad: 160px;
+  --hk-heading-gap: 56px;
+
+  /* The track banners are 160 columns of Geist Mono on rows 1.03x the type
+     size, which is the ratio that keeps their 5.2:1 aspect. These are the
+     fallback values for a browser without container queries; see .hk-ascii. */
+  --hk-ascii-size: 7px;
+  --hk-ascii-row: 7.21px;
+}
+
+/* --------------------------------------------------------------------------
+   Base.
+   -------------------------------------------------------------------------- */
+
+html {
+  /* SPEC §4: the header nav scrolls to section ids. */
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  font-family: var(--font-sans);
+  color: var(--ink);
+}
+
+/* Reference: a{color:#a3a3a3} a:hover{color:#ff3b2f}. Every link on the page
+   is ink-body and turns accent, including the nav. */
+a {
+  color: var(--ink-body);
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+/* SPEC §1. Note this is offset 4px, matching SPEC §1 and the reference
+   render; tokens.json's `rule-focus` usage note says 2px and is the odd one
+   out. :focus-visible, not :focus, so a mouse click on a button does not
+   leave a red ring behind it. */
+a:focus-visible,
+button:focus-visible,
+.hk-btn:focus-visible {
+  outline: var(--rule-focus) solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* Selection is the browser's one uninvited blue on a page with no blue in it.
+   Black on accent is 5.9:1, the same pairing the red buttons use. */
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* The only thing on the page that moves of its own accord is the countdown
+   tick. Smooth scrolling is motion too, so it goes here. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Page shell.
+
+   The reference is a fixed `width: 1440px`. Here it is full width with a
+   gutter that grows, so the page fills whatever screen it is on. The gutter is
+   a variable so the full-bleed elements — the hero and the footer — stay
+   in step with it.
+   -------------------------------------------------------------------------- */
+
+.hk-page {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100vh;
+  padding: 0 var(--hk-gutter);
+  background: var(--ground);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cancels the gutter. Used by the hero and the footer. */
+.hk-bleed {
+  margin-left: calc(var(--hk-gutter) * -1);
+  margin-right: calc(var(--hk-gutter) * -1);
+}
+
+/* SPEC §3: every section below the hero. */
+.hk-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hk-heading-gap);
+  padding-bottom: var(--hk-section-pad);
+}
+
+/* --------------------------------------------------------------------------
+   Shared: bracket button (SPEC §2).
+   -------------------------------------------------------------------------- */
+
+.hk-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  /* White at rest. The accent is now the hover state, which inverts what it
+     was: red buttons on a page whose logo, seconds digit and meter fill are
+     all red made every control look like part of the artwork. White reads as
+     the thing you press. */
+  color: #ffffff;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  /* A label split across two lines is never right for a 44px control, and
+     `[ SIGN UP ]` in the phone header is one character from doing it. */
+  white-space: nowrap;
+}
+
+/* SPEC §2: small variant, used in the header. */
+.hk-btn.hk-sm {
+  font-size: 12px;
+  min-height: 44px;
+}
+
+/* The brackets sit 10px off the label and stay there. They used to widen to
+   18px on hover with a stepped transition; the button now answers a pointer
+   by turning white instead, so nothing on it moves and the row of controls
+   holds still while you read across it. */
+.hk-btn::before {
+  content: "[";
+  margin-right: 10px;
+}
+
+.hk-btn::after {
+  content: "]";
+  margin-left: 10px;
+}
+
+/* Nothing moves; the colour does the work. This also has to out-specify the
+   generic `a:hover` above, which is a pseudo-class and would otherwise win
+   against `.hk-btn`. */
+.hk-btn:hover,
+.hk-btn:focus-visible {
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   Shared: gray label chip (SPEC §2).
+   -------------------------------------------------------------------------- */
+
+.hk-chip {
+  display: inline-block;
+  margin: 0;
+  padding: 6px 10px;
+  background: var(--chip-bg);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   Shared: section heading block (SPEC §2).
+   -------------------------------------------------------------------------- */
+
+.hk-heading {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 48px;
+  align-items: end;
+}
+
+.hk-heading__left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.hk-heading__title {
+  margin: 0;
+  font-family: var(--font-display);
+  /* 3.6vw is 52px at 1440, the width this was drawn at. Clamped so it does
+     not run away on a wide monitor or crowd a phone, and unitless leading so
+     the 52/56 relationship survives every size in between. */
+  font-size: clamp(30px, 3.6vw, 58px);
+  line-height: 1.077;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.hk-heading__lede {
+  margin: 0;
+  max-width: 26em;
+  font-size: 17px;
+  line-height: 27px;
+  color: var(--ink-body);
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------------------------
+   Shared: wordmark (SPEC §2).
+   -------------------------------------------------------------------------- */
+
+/*
+ * SQUARES, NOT DOTS. Workbench had this for a round, and its units are round
+ * by construction — BLED and SCAN change how much they bleed and merge, not
+ * their shape, so there is no setting of that face that is square. The blocks
+ * have to come from a filter over ordinary type instead: Funnel Display 800
+ * through #px, which samples the glyphs on a 7px grid and dilates each
+ * survivor back out into an 8px square. Nothing is rounded anywhere in it.
+ *
+ * The 20px header and footer copies are unfiltered — at that size an 8px grid
+ * leaves two and a half blocks of cap height and the word stops being a word.
+ */
+.hk-wordmark {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* Not `accent`: see the note beside `wordmark-accent` in
+   scripts/build-tokens.mjs for why the logo does not share the interface red. */
+.hk-wordmark__year {
+  color: var(--wordmark-accent);
+}
+
+/* --------------------------------------------------------------------------
+   3.1 Header.
+   -------------------------------------------------------------------------- */
+
+.hk-header {
+  /* position: relative is for the phone menu panel, which hangs off the bar. */
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+  border-bottom: 1px dashed var(--chip-bg);
+}
+
+.hk-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+
+/* The right-hand group. At desktop it holds only [ SIGN UP ], because the
+   menu toggle beside it is display:none until the nav collapses. */
+.hk-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hk-nav {
+  display: flex;
+  gap: 36px;
+}
+
+.hk-nav a {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  /* SPEC §4: touch targets at least 44px. */
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+/* The phone menu's toggle. Hidden until the nav collapses; see SPEC §6. */
+.hk-menu-toggle {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   3.2 Hero.
+   -------------------------------------------------------------------------- */
+
+/*
+ * Pure black, scanlines, and one red haze off the bottom. Nothing in this
+ * section animates.
+ *
+ * THE SCANLINES ARE THE MARK'S GRID. One tile exactly --hk-cell tall, lit
+ * across the 13% at each end and dark through the middle 74% — which is the
+ * mark's own cell, so a line falls in every gap between its rows and the
+ * wordmark reads as cells lifted out of the field rather than as a graphic
+ * sitting on top of one.
+ *
+ * Phase comes from background-position: the tile is one period tall, so
+ * offsetting it by the hero's top padding puts a boundary exactly at the top
+ * of the mark. --hk-pad-top feeds both that and the padding itself, so they
+ * cannot be changed apart.
+ *
+ * #161616 and not brighter: a quarter of the frame is line, where the 22px
+ * dot grid this replaced covered about a two-hundredth. At the dots' #2e2e2e
+ * the hero read as grey with black stripes rather than black with a texture.
+ */
+.hk-hero {
+  --hk-pad-top: 170px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  position: relative;
+  overflow: hidden;
+  padding: var(--hk-pad-top) var(--hk-gutter) 220px;
+  text-align: center;
+  background-color: #000000;
+  background-image: linear-gradient(
+    180deg,
+    #161616 0 13%,
+    transparent 13% 87%,
+    #161616 87% 100%
+  );
+  background-size: 100% var(--hk-cell);
+  background-position: 0 var(--hk-pad-top);
+  background-repeat: repeat;
+}
+
+/*
+ * The haze. A 1600 x 760 ellipse hung 420px below the hero's bottom edge, so
+ * the hero clips it just short of its own centre: what shows is the top of a
+ * glow, brightest at the cut. That is what makes it rise from the bottom edge
+ * instead of sitting in the frame as a spotlight.
+ */
+.hk-hero::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -420px;
+  width: 1600px;
+  height: 760px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 59, 47, 0.3),
+    rgba(160, 20, 12, 0.14) 55%,
+    transparent
+  );
+}
+
+/* Everything the hero holds sits above the haze. */
+.hk-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* The hero's own focus ring. Tighter than the page's 4px, per the hero spec. */
+.hk-hero a:focus-visible,
+.hk-hero .hk-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* The hero's copy of the wordmark. Everything about the face itself is on
+   .hk-wordmark; this only sets the size. */
+/*
+ * The mark is an <svg>, so the <h1> only has to size it. No type properties
+ * here at all — see WordmarkBlocks.jsx.
+ */
+.hk-hero__title {
+  margin: 0;
+  line-height: 0;
+}
+
+/*
+ * 48vw is 691px at 1440, where the type it replaced was 949px of ink. The
+ * clamp floor is what matters on a phone: 47 columns across 260px is a 5.5px
+ * cell, which is the smallest the gaps survive at. Declared once on :root as
+ * --hk-mark-w, because the hero's scanline pitch is derived from it.
+ */
+.hk-blocks {
+  display: block;
+  width: var(--hk-mark-w);
+  height: auto;
+}
+
+.hk-blocks__word {
+  fill: var(--ink);
+}
+
+/* Not `accent`: see the note beside `wordmark-accent` in
+   scripts/build-tokens.mjs for why the logo does not share the interface red. */
+.hk-blocks__year {
+  fill: var(--wordmark-accent);
+}
+
+/* The filter's <svg> is a definition, not a picture. */
+.hk-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/*
+ * When and where. The proof row's construction — a flex row of facts on the
+ * page's dashed hairline — a step up in size and in mixed case, because these
+ * two are read rather than scanned and 0.12em of tracking on a street address
+ * is hostile.
+ */
+.hk-hero__where {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hk-hero__where li {
+  padding: 0 20px;
+  border-left: 1px dashed var(--dash);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+.hk-hero__where li:first-child {
+  border-left: 0;
+}
+
+.hk-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+}
+
+/* Secondary: same control, quieter, so the primary is unambiguous. */
+.hk-hero__secondary {
+  color: var(--ink-body);
+}
+
+/* --------------------------------------------------------------------------
+   Find us.
+
+   claudeneu.com's link hub: a ruled band holding a heading and four bordered
+   cards, each an icon, a two-line stack and an arrow at the right edge. The
+   anatomy is theirs; the dashed borders, square corners, mono caps and black
+   ground are this site's.
+
+   Left-aligned, like theirs — and because the sponsors and the organizers are
+   both already centred rows of tiles, and a third would be one too many.
+   -------------------------------------------------------------------------- */
+
+.hk-find {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* 48px at the bottom, not 72: with the sponsors' own top padding under it,
+     the band and the banner were 212px apart and read as two unrelated
+     things. */
+  padding: 64px var(--hk-gutter) 48px;
+  border-top: 1px dashed var(--chip-bg);
+}
+
+.hk-find__label {
+  margin-bottom: 20px;
+}
+
+/*
+ * One column, two from 560, four from 1024 — claudeneu's own breaks. Cards
+ * are separated by a gap rather than sharing dividers, which is the thing
+ * that makes them read as cards.
+ */
+.hk-find__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 560px) {
+  .hk-find__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .hk-find__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.hk-find__card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px dashed var(--dash);
+  text-decoration: none;
+  transition: background-color 120ms linear, border-color 120ms linear;
+}
+
+.hk-find__card:hover,
+.hk-find__card:focus-visible {
+  background: var(--surface-2);
+  border-color: var(--line);
+}
+
+/* The icon is the one accent on the card at rest, the way claudeneu's is. */
+.hk-find__mark {
+  display: flex;
+  flex: none;
+  color: var(--accent);
+}
+
+.hk-find__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hk-find__name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+  text-transform: uppercase;
+}
+
+/* The line claudeneu puts under each platform: what you actually get there. */
+.hk-find__note {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Pushed to the right edge, as theirs is. */
+.hk-find__go {
+  display: flex;
+  flex: none;
+  margin-left: auto;
+  color: var(--ink-faint);
+  transition: color 120ms linear;
+}
+
+.hk-find__card:hover .hk-find__go,
+.hk-find__card:focus-visible .hk-find__go {
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   Sponsors.
+   -------------------------------------------------------------------------- */
+
+.hk-sponsors {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* No rule above this one. The Find us band already closes the hero off with
+     its own, and a second one 130px later split the socials from the banner
+     into two things when they read better as one run down to the tracks.
+     64px of top padding rather than 140 for the same reason. */
+  padding: 64px 0 180px;
+}
+
+/* Edge to edge. The section is a centred column, so the banner cancels the
+   page gutter with .hk-bleed and then has to be told to fill the line box. */
+.hk-sponsors__banner {
+  align-self: stretch;
+  margin-bottom: 72px;
+}
+
+.hk-sponsors__banner .hk-ascii {
+  /* The track banners are inset in a frame; this one is the full width, so
+     the vertical padding that separated art from frame is not wanted. */
+  padding: 0;
+  background: none;
+}
+
+.hk-sponsors__label {
+  margin-bottom: 40px;
+}
+
+/* SPEC §3.3: 72px between the first tier's cells and the second tier's chip. */
+.hk-sponsors__label--second {
+  margin-top: 72px;
+}
+
+.hk-sponsors__tier {
+  display: flex;
+}
+
+.hk-sponsors__cell {
+  width: 220px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px dashed var(--dash);
+}
+
+/* The row is closed off on the right by its last cell only. */
+.hk-sponsors__cell:last-child {
+  border-right: 1px dashed var(--dash);
+}
+
+.hk-sponsors__placeholder {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--ink-faint);
+}
+
+/* SPEC §3.3: real logos are monochrome white, about 28–32px tall. Clamped so
+   one oversized file cannot push the 68px row out of shape. */
+.hk-sponsors__logo {
+  max-height: 32px;
+  max-width: 180px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* --------------------------------------------------------------------------
+   3.4 Tracks.
+   -------------------------------------------------------------------------- */
+
+.hk-tracks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+}
+
+/* Every panel carries its left and top edge; the grid's right and bottom
+   edges are closed by the rules below. Written as nth-child because the
+   2 x 2 shape is fixed by SPEC §3.4 — four tracks, two columns. The phone
+   breakpoint restates both rules for a single column. */
+.hk-track {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 32px 24px 40px;
+  border-left: 1px solid var(--line-soft);
+  border-top: 1px solid var(--line-soft);
+}
+
+.hk-track:nth-child(2n) {
+  border-right: 1px solid var(--line-soft);
+}
+
+.hk-track:nth-child(n + 3) {
+  border-bottom: 1px solid var(--line-soft);
+}
+
+/* The frame takes the darkest step of the ASCII ramp rather than the neutral
+   chip grey. Grey read as a UI border around a picture; this belongs to the
+   picture's own palette and stops the frame announcing itself. */
+.hk-ascii-frame {
+  padding: 7px;
+  border: 1px solid var(--ascii-0);
+}
+
+/*
+ * The ASCII box.
+ *
+ * `container-type: inline-size` makes the box a query container so the art is
+ * sized from the box's own width rather than from the viewport — which is the
+ * only thing that works now that the page has no maximum width and a panel
+ * can be any size at all.
+ *
+ * Geist Mono advances 0.6em per character, so a 160-column banner occupies
+ * 96em and the size that fits it exactly is the box's width over 96. The art
+ * therefore always fills its box edge to edge, at any window size, and is
+ * never cropped. Rows are 1.03x the type size, the ratio that holds the
+ * picture at the aspect the generator drew it at.
+ *
+ * `--hk-ascii-em` is that divisor, so a banner on a different grid only has to
+ * override one number. Keep it in step with GRID in src/lib/ascii.js.
+ */
+.hk-ascii {
+  --hk-ascii-em: 96;
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  background: var(--ascii-bg);
+  font-family: var(--font-mono);
+  letter-spacing: 0;
+  overflow: hidden;
+}
+
+.hk-ascii__row {
+  white-space: pre;
+  font-size: var(--hk-ascii-size);
+  line-height: var(--hk-ascii-row);
+  height: var(--hk-ascii-row);
+}
+
+/* 240 columns at 0.6em. Runs the full width of the page with no frame. */
+.hk-ascii--masthead {
+  --hk-ascii-em: 144;
+}
+
+@supports (container-type: inline-size) {
+  .hk-ascii {
+    --hk-ascii-size: calc(100cqi / var(--hk-ascii-em));
+    --hk-ascii-row: calc(100cqi / var(--hk-ascii-em) * 1.03);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Track facts.
+
+   The spec list under each description: what to build, what the judges look
+   at, what it pays. Two columns so the keys line up down the card; it stacks
+   on a phone, where 96px of key column is a third of the screen.
+   -------------------------------------------------------------------------- */
+
+.hk-track__facts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding-top: 20px;
+  border-top: 1px dashed var(--chip-bg);
+}
+
+.hk-track__fact {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 16px;
+  align-items: baseline;
+}
+
+.hk-track__fact-key {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 20px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+}
+
+.hk-track__fact-value {
+  margin: 0;
+  font-size: 15px;
+  line-height: 23px;
+  color: var(--ink-body);
+}
+
+.hk-track__tags {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hk-track__tag {
+  padding: 5px 7px;
+  border: 1px solid var(--chip-bg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+}
+
+.hk-track__text {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hk-track__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 36px;
+  line-height: 42px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+.hk-track__desc {
+  margin: 0;
+  font-size: 17px;
+  line-height: 27px;
+  color: var(--ink-body);
+}
+
+.hk-track__sponsor {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* The 36px square with a 6px accent square centred in it. Its border is the
+   darkest step of the ASCII ramp, which is how the panel and the art below it
+   stay in the same family. */
+.hk-track__swatch {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-soft);
+  border: 1px solid var(--ascii-0);
+}
+
+.hk-track__swatch span {
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+}
+
+.hk-track__sponsor-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   Seats.
+
+   The meter is a 100-character line, one column per seat. See Seats.jsx.
+   -------------------------------------------------------------------------- */
+
+.hk-seats {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.hk-seats__stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  /* The query container the meter line measures itself against. */
+  container-type: inline-size;
+}
+
+/*
+ * Half the bar's height, plus a little clearance. Everything in this block is
+ * derived from it, so the channel through the figure and the ribbon that runs
+ * in it can never drift apart:
+ *
+ *   ribbon type size  = 100cqi / 60   (100 columns at 0.6em advance)
+ *   row height        = 1.04 x that   = 1.7333cqi
+ *   two rows          = 3.4667cqi
+ *   half, + 0.35cqi   = 2.0833cqi
+ */
+.hk-seats {
+  --hk-meter-half: 2.09cqi;
+  /* The ribbon's own centre line, as a share of the stage. Not 50%: with
+     line-height 0.82 the digits' ink centre sits at 54.57% of the box. */
+  --hk-meter-mid: 54.6%;
+}
+
+.hk-seats__figure {
+  /* The display face, not Workbench. Workbench's numerals are rounded slabs
+     and at 300px they read as bubbles, which is the one thing this figure
+     must not do. */
+  font-family: var(--font-display);
+  /* Bigger than the wordmark's 13.9vw on purpose: this is the one number on
+     the page someone is looking for, and the bar takes a slice out of the
+     middle of it, so the halves that survive have to be big enough to read. */
+  font-size: clamp(150px, 23vw, 420px);
+  font-weight: 800;
+  /* +5px for the filter's dilation, exactly as on .hk-hero__title. */
+  letter-spacing: calc(-0.04em + 5px);
+  line-height: 0.82;
+  color: #a8150a;
+  /* The same stepped edges as the hero wordmark, so the two big numerals on
+     the page are the same object. Defined in App.jsx. */
+  filter: url(#hk-pixel);
+  /*
+   * THE CUT. A channel knocked straight through the numerals where the ribbon
+   * runs, so the bar is inside the figure rather than lying across it. The
+   * mask applies after the filter, so the channel's edges are clean while the
+   * letterforms stay stepped — which is the right way round.
+   */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 calc(var(--hk-meter-mid) - var(--hk-meter-half)),
+    transparent calc(var(--hk-meter-mid) - var(--hk-meter-half)),
+    transparent calc(var(--hk-meter-mid) + var(--hk-meter-half)),
+    #000 calc(var(--hk-meter-mid) + var(--hk-meter-half))
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 calc(var(--hk-meter-mid) - var(--hk-meter-half)),
+    transparent calc(var(--hk-meter-mid) - var(--hk-meter-half)),
+    transparent calc(var(--hk-meter-mid) + var(--hk-meter-half)),
+    #000 calc(var(--hk-meter-mid) + var(--hk-meter-half))
+  );
+}
+
+/*
+ * The ribbon. No background, no border — the figure behind shows through the
+ * gaps between the glyphs, which is what makes the bar run THROUGH the number
+ * rather than sit on top of it in a black box.
+ */
+/*
+ * The bar fills the channel cut through the figure exactly — same centre line,
+ * same height — so it reads as something set into the number rather than laid
+ * over it.
+ */
+.hk-seats__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--hk-meter-mid);
+  height: calc(var(--hk-meter-half) * 2);
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /*
+   * A black rule around the bar, so it is set into the numerals rather than
+   * touching them. An outline and not a border: a border would shrink this
+   * element's content box, and the ribbon inside it is sized off the stage —
+   * a hundred columns have to stay exactly the stage's width.
+   */
+  outline: 3px solid var(--ground);
+}
+
+/*
+ * All hundred seats, as a slot. Near-black on purpose: it is here to give the
+ * bar a rectangle and an edge, not to be looked at. The unlit half still has
+ * to be a visible object — otherwise there is nothing for the lit half to be
+ * a proportion of — but a lit slab was the opposite failure.
+ */
+.hk-seats__track {
+  position: absolute;
+  inset: 0;
+  background: #120302;
+}
+
+/* The taken ones, exactly pct% of the track: a wash, not a fill. What reads as
+   "taken" is the character tone above it; this only keeps the filled region
+   off the same ground as the empty one. */
+.hk-seats__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(192, 29, 19, 0.09) 0%,
+    rgba(255, 59, 47, 0.2) 100%
+  );
+  /* The level, as a hairline. Inset rather than a border so it cannot change
+     the width — the width is the number, and it has to stay exact. */
+  box-shadow: inset -2px 0 0 #ffd8d2;
+}
+
+/*
+ * 100 characters at 0.6em is 60em, so the type size that makes the ribbon span
+ * the stage exactly is its width over 60. One column is one seat.
+ */
+.hk-seats__lines {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-mono);
+  font-size: calc(100cqi / 60);
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+
+.hk-seats__line {
+  white-space: pre;
+}
+
+/*
+ * The characters ARE the bar. The travel from dark to light is a gradient
+ * clipped to the text rather than painted behind it, which is what keeps this
+ * reading as ASCII rather than as a coloured box with a caption on it.
+ *
+ * The flat colour is the fallback and is not decoration: without
+ * background-clip the text would be transparent and the fill would vanish.
+ */
+.hk-seats__on {
+  color: var(--accent);
+}
+
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .hk-seats__on {
+    background-image: linear-gradient(
+      90deg,
+      #a8150a 0%,
+      #e02419 46%,
+      #ff7a70 78%,
+      #ffe8e4 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* Over the dark slab: a dot per empty seat, and the tick every tenth is what
+   makes the remainder countable rather than just absent. */
+.hk-seats__off {
+  color: #7e130c;
+}
+
+/*
+ * At the right-hand end, inside the track. It needs no pad now — the track is
+ * a dark slab, so the label has a ground of its own.
+ */
+.hk-seats__pct {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0 8px 0 12px;
+  background: #120302;
+  font-family: var(--font-mono);
+  font-size: clamp(11px, 1vw, 13px);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.hk-seats__cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+/* Legible, finally: sentence case at reading size instead of 12px of tracked
+   mono caps in ink-faint, which is what could not be read. */
+.hk-seats__legend {
+  margin: 0;
+  font-size: clamp(17px, 1.7vw, 22px);
+  line-height: 1.4;
+  color: var(--ink-body);
+}
+
+.hk-seats__legend strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   Organized by.
+   -------------------------------------------------------------------------- */
+
+/*
+ * No rule above this one, and no padding either. It sat between the timeline
+ * and the credit and separated two things that read better as one breath —
+ * and with the schedule's own 160px of section padding above it, a further
+ * 96px here was a hole rather than a gap.
+ */
+.hk-organizers {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0;
+  padding-bottom: var(--hk-section-pad);
+}
+
+.hk-organizers__label {
+  margin-bottom: 40px;
+}
+
+.hk-organizers__row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hk-organizers__item {
+  border-left: 1px dashed var(--dash);
+}
+
+.hk-organizers__item:last-child {
+  border-right: 1px dashed var(--dash);
+}
+
+/*
+ * Same 220px dashed cell as a sponsor tier, so the two blocks read as the same
+ * kind of object — taller here because the name sits under the mark.
+ *
+ * The whole cell is the link. A 44px logo over an 11px caption is two mean
+ * targets; one 220 x 124 target is a generous one.
+ */
+.hk-organizers__cell {
+  width: 220px;
+  height: 124px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-decoration: none;
+  transition: background-color 120ms linear;
+}
+
+.hk-organizers__cell:hover,
+.hk-organizers__cell:focus-visible {
+  background: var(--chip-bg);
+}
+
+/* The logo is white already; the name is the part that has to say "this is a
+   link", and it does it the way the rest of the page's links do. */
+.hk-organizers__cell:hover .hk-organizers__name,
+.hk-organizers__cell:focus-visible .hk-organizers__name {
+  color: var(--accent);
+}
+
+/*
+ * The logos are already pure white with the shape in the alpha channel, so
+ * nothing has to be filtered here. Height, not width, is what matches them to
+ * each other: a wide starburst and a tall lightbulb set to the same width
+ * would read as two different weights.
+ */
+.hk-organizers__logo {
+  max-height: 44px;
+  max-width: 150px;
+  width: auto;
+  object-fit: contain;
+}
+
+.hk-organizers__name {
+  padding: 0 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 15px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--ink-body);
+  text-align: center;
+  text-wrap: balance;
+  transition: color 120ms linear;
+}
+
+.hk-organizers__note {
+  margin: 28px 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ink-faint);
+}
+
+/* --------------------------------------------------------------------------
+   Utilities.
+   -------------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------------
+   3.6 Schedule, as an interactive timeline.
+
+   The rail is to scale: a marker's --x is its real position between the first
+   event and the last, so eleven overnight hours occupy eleven hours of rail.
+   Horizontal from 720px up, a plain vertical timeline below that — the same
+   markup either way, so none of this depends on measuring the viewport in JS.
+   -------------------------------------------------------------------------- */
+
+.hk-time {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* The margin is not decoration: the first and last markers sit at 0% and
+   100%, and their stamps are centred on them, so the rail needs half a stamp
+   of room at each end or the labels run out of the content box. */
+.hk-time__rail {
+  position: relative;
+  height: 150px;
+  margin: 0 40px;
+}
+
+.hk-time__track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--dash);
+  transform: translateY(-50%);
+}
+
+/* The 36 hours, as a lit segment between its two ends. */
+.hk-time__window {
+  position: absolute;
+  top: 50%;
+  height: 3px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, #7e130c 0%, #ff3b2f 50%, #7e130c 100%);
+}
+
+/* Its own lane, between the rail and the stamps above it — 15 to 28px clear
+   of the centre line, where the stamps start at 38. */
+.hk-time__windowLabel {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--ascii-5);
+  white-space: nowrap;
+}
+
+/*
+ * A marker. The button is a tall thin column centred on its position, so the
+ * hit area covers the stamp and the dot together rather than being a 9px
+ * square someone has to aim at.
+ */
+.hk-time__mark {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--x);
+  width: 76px;
+  transform: translateX(-50%);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--ink-faint);
+  font: inherit;
+}
+
+.hk-time__dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  transform: translate(-50%, -50%);
+  background: var(--ascii-2);
+  transition: background-color 120ms linear, width 120ms linear, height 120ms linear;
+}
+
+/* Ties the dot to its stamp. Above the rail on odd markers, below on even —
+   alternating is what keeps three Friday evening events from colliding. */
+.hk-time__stem {
+  position: absolute;
+  left: 50%;
+  width: 1px;
+  background: var(--ascii-1);
+  transform: translateX(-50%);
+}
+
+.hk-time__stamp {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 15px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  transition: color 120ms linear;
+}
+
+/* The day, on its own line. Dimmer than the time it introduces. */
+.hk-time__day {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--ascii-2);
+}
+
+/*
+ * Alternating sides. Three Friday-evening events fall inside seven per cent
+ * of the rail, and two Sunday-morning ones inside two — putting every other
+ * stamp on the far side is what keeps any of them readable.
+ */
+.hk-time__mark:nth-of-type(odd) .hk-time__stem {
+  bottom: calc(50% + 6px);
+  height: 32px;
+}
+
+.hk-time__mark:nth-of-type(odd) .hk-time__stamp {
+  bottom: calc(50% + 38px);
+}
+
+.hk-time__mark:nth-of-type(even) .hk-time__stem {
+  top: calc(50% + 6px);
+  height: 24px;
+}
+
+.hk-time__mark:nth-of-type(even) .hk-time__stamp {
+  top: calc(50% + 30px);
+}
+
+/*
+ * The title is in the button so the marker has a real accessible name — "FRI
+ * 21:00" on its own is not one. It is clipped rather than display:none
+ * because a display:none name is no name at all.
+ */
+.hk-time__name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.hk-time__mark:hover .hk-time__stamp,
+.hk-time__mark:focus-visible .hk-time__stamp {
+  color: var(--ink);
+}
+
+.hk-time__mark:hover .hk-time__dot {
+  background: var(--ascii-4);
+}
+
+.hk-time__mark.is-active .hk-time__dot {
+  width: 15px;
+  height: 15px;
+  background: var(--accent);
+}
+
+.hk-time__mark.is-active .hk-time__stamp {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.hk-time__mark.is-active .hk-time__day,
+.hk-time__mark:hover .hk-time__day {
+  color: var(--ascii-5);
+}
+
+.hk-time__mark.is-active .hk-time__stem {
+  background: var(--accent);
+}
+
+/*
+ * The panel. It is the row the list used to be: the same red time chip, the
+ * same display-face title, the same tag or the same white button. One of them
+ * at a time instead of nine at once.
+ */
+.hk-time__panel {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-height: 104px;
+  padding: 0 28px;
+  border: 1px dashed var(--dash);
+  background: var(--highlight-gradient);
+}
+
+.hk-time__chip {
+  padding: 6px 10px;
+  background: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #000000;
+  /* The chip reads "FRI · 18:00" and the spacing around the dot is part of
+     the type, so it must not be collapsed. */
+  white-space: pre;
+}
+
+.hk-time__title {
+  flex-grow: 1;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.hk-time__tag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  height: 48px;
+  padding: 0 12px;
+  background: rgba(0, 0, 0, 0.45);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+}
+
+.hk-cal {
+  display: flex;
+  align-items: stretch;
+  height: 48px;
+  background: #ffffff;
+  color: #000000;
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+
+/* Without this the generic `a:hover` would turn the label accent-red on a
+   white fill while the arrow, which is a stroked SVG, stayed black. */
+.hk-cal:hover,
+.hk-cal:focus-visible {
+  color: #000000;
+}
+
+.hk-cal__label {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.hk-cal__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  border-left: 1px dashed var(--ink-faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hk-time__dot,
+  .hk-time__stamp {
+    transition: none;
+  }
+}
+
+/*
+ * The timeline turns on its side before the rest of the page does. Nine
+ * stamps across the 498px a 720px window leaves after the gutter still
+ * collide at the two ends, where the events bunch up — the horizontal rail
+ * needs more room than any other block here, so it gets its own breakpoint.
+ * Below it the markers stack, each showing its title inline. The scale does
+ * not come with them: proportional spacing down a phone would be a very tall
+ * section with nothing in most of it.
+ */
+@media (max-width: 899px) {
+  /*
+   * The timeline goes vertical. Nine markers across 358px is 40px each, which
+   * is narrower than "FRI 18:00" — so below 720px the rail turns on its side,
+   * the markers stack, and each one shows its title inline. The scale goes
+   * with it: proportional spacing down a phone would be a very tall section
+   * with nothing in most of it.
+   */
+  .hk-time__rail {
+    height: auto;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    padding-left: 26px;
+  }
+
+  .hk-time__track {
+    left: 0;
+    right: auto;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    height: auto;
+    transform: none;
+  }
+
+  .hk-time__window,
+  .hk-time__stem {
+    display: none;
+  }
+
+  .hk-time__mark {
+    position: static;
+    width: 100%;
+    min-height: 44px;
+    transform: none;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: left;
+  }
+
+  .hk-time__dot,
+  .hk-time__mark:nth-of-type(odd) .hk-time__stamp,
+  .hk-time__mark:nth-of-type(even) .hk-time__stamp {
+    position: static;
+    transform: none;
+    inset: auto;
+  }
+
+  /*
+   * Fixed 11px here, active or not. On the horizontal rail the dot is
+   * absolutely positioned and can grow from its centre; in a flex row a
+   * 15px active dot shunts its own title 6px right and the column of titles
+   * develops a kink. The ring grows outside the box instead.
+   */
+  .hk-time__dot {
+    flex: none;
+    width: 11px;
+    height: 11px;
+    margin-left: -31px;
+  }
+
+  .hk-time__mark.is-active .hk-time__dot {
+    width: 11px;
+    height: 11px;
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .hk-time__stamp {
+    flex: none;
+    width: 74px;
+  }
+
+  /* On a phone the title is the useful half, so it stops being clipped. */
+  .hk-time__name {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+    font-family: var(--font-display);
+    font-size: 17px;
+    color: var(--ink-body);
+  }
+
+  .hk-time__mark.is-active .hk-time__name {
+    color: var(--ink);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Details, as the schedule row.
+
+   Five items in a three-column grid left a hole that read as a missing sixth,
+   so this became rows. It is now the nine-row schedule's treatment, inherited
+   whole when the schedule turned into a timeline: the dashed frame, the 28px
+   gutter, the 104px rhythm, a red mono chip on the left, a line of display
+   face across the middle and a small grey box on the right. Rows take their
+   top edge from the frame, exactly as the schedule's did, so the first one
+   has no double rule.
+   -------------------------------------------------------------------------- */
+
+.hk-details {
+  margin: 0;
+  border: 1px dashed var(--dash);
+}
+
+/* min-height, not the schedule's fixed 104px: the middle slot here holds a
+   sentence rather than three words, and it has to be allowed to wrap. */
+.hk-detail {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-height: 104px;
+  padding: 20px 28px;
+}
+
+.hk-detail + .hk-detail {
+  border-top: 1px dashed var(--dash);
+}
+
+/*
+ * The time chip's box, carrying the title. The floor width is what lines five
+ * of them up down the left edge the way nine identical time chips did —
+ * "WHAT TO BRING" is nearly three times the width of "COST", and ragged chips
+ * would lose the one thing this row is for.
+ */
+.hk-detail__chip {
+  flex: none;
+  min-width: 152px;
+  padding: 6px 10px;
+  background: var(--red-900);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--red-chip-text);
+  text-align: center;
+}
+
+.hk-detail__line {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  gap: 24px;
+  margin: 0;
+}
+
+/* The schedule title's treatment, a step down in size because this is a
+   sentence and that was a label. */
+.hk-detail__body {
+  flex-grow: 1;
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 30px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* The tag's box. The icon moved here from beside the title when the title
+   moved into the chip. */
+.hk-detail__mark {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  height: 48px;
+  background: var(--line-soft);
+  color: var(--ink-faint);
+}
+
+/* currentColor, so the box above sets the icon's ink without a second rule. */
+.hk-detail__icon {
+  flex: none;
+}
+
+/* --------------------------------------------------------------------------
+   Footer.
+
+   claudeneu.com's structure — a four-column block over a rule, with the small
+   print and the affiliation disclaimer under it — in this site's palette.
+   -------------------------------------------------------------------------- */
+
+.hk-footer {
+  margin-top: auto;
+  padding: 72px var(--hk-gutter) 56px;
+  border-top: 1px dashed var(--chip-bg);
+}
+
+.hk-footer__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 44px;
+}
+
+.hk-footer__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.hk-footer__col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.hk-footer__head {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.hk-footer__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hk-footer__list a {
+  font-size: 15px;
+  line-height: 22px;
+  text-decoration: none;
+  color: var(--ink);
+  text-transform: capitalize;
+}
+
+.hk-footer__list a:hover {
+  color: var(--accent);
+}
+
+.hk-footer__line {
+  margin: 0;
+  max-width: 34ch;
+  font-size: 15px;
+  line-height: 23px;
+  color: var(--ink-body);
+}
+
+.hk-footer__meta {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+}
+
+.hk-footer__fine {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 56px;
+  padding-top: 28px;
+  border-top: 1px dashed var(--chip-bg);
+}
+
+.hk-footer__fine p {
+  margin: 0;
+  max-width: 88ch;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--ink-faint);
+}
+
+@media (min-width: 640px) {
+  .hk-footer__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1000px) {
+  .hk-footer__grid {
+    grid-template-columns: 1.3fr 1fr 1fr 1.2fr;
+    gap: 48px;
+  }
+}
+
+/* ==========================================================================
+   SPEC §6 — Responsive.
+
+   SPEC §6 is headed "not designed yet; suggested" and its bullets are
+   followed as written. Where a bullet leaves a value open, the choice is
+   marked BEYOND SPEC below and listed in the README.
+   ========================================================================== */
+
+/* --- ≤1024px ------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+  /* The hero and section headings size themselves against vw at every width,
+     so neither needs an override here any more. */
+
+  /* The heading block stacks to one column. */
+  .hk-heading {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Tracks stay 2 columns: .hk-ascii scales the art to whatever panel it is
+     given, so it fits by construction. */
+  .hk-sponsors__tier {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+}
+
+/* --- ≤640px -------------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  :root {
+    /* 16px, the handoff's phone gutter. The header is the constraint: the
+       wordmark, [ MENU ] and [ SIGN UP ] need 318px of the 343px a 375px
+       screen leaves at this gutter, and 6vw would take 13px of that slack. */
+    --hk-gutter: 16px;
+    --hk-section-pad: 96px;
+  }
+
+  /* The last of the header's slack comes from here. */
+  .hk-header__actions {
+    gap: 12px;
+  }
+
+  /* BEYOND SPEC: §6 does not give hero padding. 170/220 is most of a phone
+     screen before the wordmark appears, so it drops to 96/120 — 96px is the
+     section padding §6 itself picks for this width, and both sit on the 4px
+     grid from SPEC §1. */
+  .hk-hero {
+    --hk-pad-top: 96px;
+    padding-bottom: 120px;
+  }
+
+  /* §6: the header nav collapses into a menu, keeping the wordmark and Sign
+     up visible. The panel hangs off the bottom of the 80px bar rather than
+     pushing the hero down. */
+  .hk-menu-toggle {
+    display: inline-flex;
+  }
+
+  .hk-nav {
+    display: none;
+  }
+
+  .hk-nav--open {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: absolute;
+    top: 100%;
+    left: calc(var(--hk-gutter) * -1);
+    right: calc(var(--hk-gutter) * -1);
+    z-index: 10;
+    padding: 8px var(--hk-gutter) 16px;
+    background: var(--ground);
+    border-bottom: 1px dashed var(--chip-bg);
+  }
+
+  /* §6: "Tracks go to 1 column." The nth-child rules that close the 2 x 2
+     grid's right and bottom edges are wrong for a single column, so both are
+     reset and restated: every panel needs its right edge, and only the last
+     needs a bottom. */
+  .hk-tracks {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hk-track:nth-child(2n),
+  .hk-track {
+    border-right: 1px solid var(--line-soft);
+  }
+
+  .hk-track:nth-child(n + 3) {
+    border-bottom: 0;
+  }
+
+  .hk-track:last-child {
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  /* No container query support: fall back to sizing the art from the
+     viewport. 96px is the chrome between the art and the screen edge at this
+     width — 32px of gutter, 48px of panel padding, 14px of frame padding and
+     2px of frame border. */
+  @supports not (container-type: inline-size) {
+    :root {
+      --hk-ascii-size: calc((100vw - 96px) / 96);
+      --hk-ascii-row: calc((100vw - 96px) / 96 * 1.03);
+      /* No container queries: the masthead is full-bleed, so it measures the
+         viewport rather than the padded content width. */
+    }
+  }
+
+  .hk-find {
+    padding: 44px var(--hk-gutter) 40px;
+  }
+
+
+  /*
+   * No percentage on a phone. The bar is 358px there, and the label is 93 of
+   * them — a quarter of a meter whose whole premise is one column per seat.
+   * The legend directly under it says "32 seats left of 100", which is the
+   * same fact in more useful words.
+   */
+  .hk-seats__pct {
+    display: none;
+  }
+
+  /*
+   * Two up. Four 220px cells cannot sit in a row here, and left as a wrapping
+   * flex row each one kept its left-hand dash and the last one kept a right,
+   * which reads as four unrelated fragments. A grid puts the rules back on
+   * the axes they belong to.
+   */
+  .hk-organizers__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .hk-organizers__item {
+    border-left: 0;
+    border-top: 1px dashed var(--dash);
+  }
+
+  .hk-organizers__item:nth-child(even) {
+    border-left: 1px dashed var(--dash);
+  }
+
+  .hk-organizers__item:last-child {
+    border-right: 0;
+  }
+
+  .hk-organizers__item:nth-last-child(-n + 2) {
+    border-bottom: 1px dashed var(--dash);
+  }
+
+  .hk-organizers__cell {
+    width: auto;
+    height: 116px;
+    gap: 12px;
+  }
+
+  /* The date and venue wrap here, and a wrapped flex line starts with a
+     separator that has nothing before it. A line each, no rules. */
+  .hk-hero__where {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .hk-hero__where li {
+    padding: 0;
+    border-left: 0;
+  }
+
+  /* The key column is a third of a phone screen, so the facts stack. */
+  .hk-track__fact {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  /* §6: the panel wraps, the tag is hidden, and the button drops to its own
+     line. The fixed 104px height goes with it; padding takes over. */
+  .hk-time__panel {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    min-height: 0;
+    gap: 12px;
+    padding: 20px;
+  }
+
+  .hk-time__tag {
+    display: none;
+  }
+
+  .hk-time__chip {
+    order: 1;
+  }
+
+  .hk-time__title {
+    order: 2;
+    flex: 1 1 100%;
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .hk-cal {
+    order: 3;
+  }
+
+  /*
+   * §6's schedule wrap, inherited with the row: the chip sits above the line
+   * and the box on the right is hidden. The chip keeps its own width and
+   * comes first; the line is given a 100% flex-basis, which is what actually
+   * forces the break — order alone would not, and stretching the chip to full
+   * width would pull its red fill across the row.
+   */
+  .hk-detail {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    min-height: 0;
+    gap: 12px;
+    padding: 20px;
+  }
+
+  .hk-detail__mark {
+    display: none;
+  }
+
+  .hk-detail__chip {
+    order: 1;
+    min-width: 0;
+  }
+
+  .hk-detail__line {
+    order: 2;
+    flex: 1 1 100%;
+  }
+
+  .hk-detail__body {
+    font-size: 19px;
+    line-height: 26px;
+  }
+
+}

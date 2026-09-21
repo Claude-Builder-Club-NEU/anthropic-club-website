@@ -161,49 +161,6 @@ export const ROUTES = [
   },
   {
     /**
-     * The hackathon page, and a SCAFFOLD for as long as it says so. The route
-     * exists now so the URL can go on a slide and inside a QR code weeks before
-     * a date, a theme or a sign-up link is agreed. See the header comment in
-     * pages/Hackathon.jsx for what is deliberately not on it.
-     *
-     * noindex, and this is the one call on this entry worth arguing, because
-     * the obvious move is the wrong one.
-     *
-     * The temptation is to index it. /hackathon is a query people actually
-     * type, hackathons are the centre of what this club does, and letting an
-     * early URL start collecting authority sounds free. It is not free. Index
-     * it today and the result Google shows for "northeastern claude club
-     * hackathon" is a page whose entire content is the sentence "the details
-     * are not up yet". That is a worse answer than the one a searcher already
-     * gets, because /about is indexed, says the club runs the biggest
-     * hackathons on campus alongside ACM, AINU and REV, and will still be true
-     * next month. Letting a thin page outrank a substantive one for this club's
-     * own subject is a loss, and it lands at exactly the moment somebody is
-     * deciding whether the club is real.
-     *
-     * Nothing is given up by waiting, because search is not how anyone reaches
-     * this page right now. They reach it by scanning a printed code or typing
-     * what a board member read off a slide, and noindex touches neither. The
-     * same flag drops it from sitemap.xml, which is right for the same reason:
-     * a sitemap line is an invitation to come back, and there is nothing here
-     * to come back for yet.
-     *
-     * It is emitted as `noindex, follow`, so the link out to /events still
-     * passes and the crawler leaves with somewhere to go.
-     *
-     * DELETE THIS FLAG, and write a real description, the day the real content
-     * lands. That one line is what turns this from a placeholder into a page
-     * worth finding, and it is easy to forget because nothing breaks if you do.
-     */
-    path: "/hackathon",
-    file: "hackathon/index.html",
-    title: `Hackathon | ${SITE_NAME}`,
-    description:
-      "Details for the next Claude Builders Club hackathon at Northeastern are not up yet. Date, theme and sign-ups land on this page once they are settled.",
-    noindex: true,
-  },
-  {
-    /**
      * The club fair landing page, reached by scanning a QR code on a table
      * sign. Prerendered, so the code, the printed URL and anyone typing it all
      * work identically.

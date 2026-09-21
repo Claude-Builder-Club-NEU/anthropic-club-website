@@ -5,10 +5,8 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
-  // dist-ssr is build output like dist, and was being linted.
-  // hackathon/ is a separate app with its own ESLint config and its own Node
-  // build scripts; lint it from inside that folder.
-  globalIgnores(["dist", "dist-ssr", "hackathon"]),
+  // dist-ssr is build output like dist.
+  globalIgnores(["dist", "dist-ssr", "src/styles/tokens.css"]),
   {
     files: ["**/*.{js,jsx}"],
     extends: [
@@ -30,9 +28,6 @@ export default defineConfig([
         "error",
         {
           varsIgnorePattern: "^[A-Z_]",
-          // Components destructured out of props (`{ Icon }` then `<Icon />`)
-          // read as unused arguments without eslint-plugin-react. Same
-          // convention as varsIgnorePattern: PascalCase means a component.
           argsIgnorePattern: "^[A-Z_]",
           args: "after-used",
           ignoreRestSiblings: true,
@@ -42,7 +37,7 @@ export default defineConfig([
   },
   {
     // Server entry: never hot-reloaded, and it deliberately re-exports the
-    // route table so the prerenderer can reach it through the SSR bundle.
+    // page head so the prerenderer can reach it through the SSR bundle.
     files: ["src/entry-server.jsx"],
     rules: { "react-refresh/only-export-components": "off" },
   },
