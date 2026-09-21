@@ -489,13 +489,6 @@ button:focus-visible,
 }
 
 /* The filter's <svg> is a definition, not a picture. */
-.hk-defs {
-  position: absolute;
-  width: 0;
-  height: 0;
-  overflow: hidden;
-}
-
 /*
  * When and where. The proof row's construction — a flex row of facts on the
  * page's dashed hairline — a step up in size and in mixed case, because these
@@ -697,12 +690,17 @@ button:focus-visible,
   margin-top: 72px;
 }
 
+/* Capped at the column. The section centres its children, so without this
+   the five-cell tier sizes to its 1100px of content and runs past the page
+   gutter, and off the screen near 1100px wide. Capped, its cells shrink. */
 .hk-sponsors__tier {
   display: flex;
+  max-width: 100%;
 }
 
 .hk-sponsors__cell {
   width: 220px;
+  min-width: 0;
   height: 68px;
   display: flex;
   align-items: center;
@@ -726,7 +724,7 @@ button:focus-visible,
    one oversized file cannot push the 68px row out of shape. */
 .hk-sponsors__logo {
   max-height: 32px;
-  max-width: 180px;
+  max-width: min(180px, calc(100% - 24px));
   width: auto;
   object-fit: contain;
 }
@@ -964,33 +962,23 @@ button:focus-visible,
  */
 .hk-seats {
   --hk-meter-half: 2.09cqi;
-  /* The ribbon's own centre line, as a share of the stage. Not 50%: with
-     line-height 0.82 the digits' ink centre sits at 54.57% of the box. */
-  --hk-meter-mid: 54.6%;
+  /* The ribbon's own centre line, as a share of the stage. The figure's box
+     is exactly its ink, cap top to baseline, so that is the middle. */
+  --hk-meter-mid: 50%;
 }
 
 .hk-seats__figure {
-  /* The display face, not Workbench. Workbench's numerals are rounded slabs
-     and at 300px they read as bubbles, which is the one thing this figure
-     must not do. */
-  font-family: var(--font-display);
-  /* Bigger than the wordmark's 13.9vw on purpose: this is the one number on
-     the page someone is looking for, and the bar takes a slice out of the
-     middle of it, so the halves that survive have to be big enough to read. */
-  font-size: clamp(150px, 23vw, 420px);
-  font-weight: 800;
-  /* +5px for the filter's dilation, exactly as on .hk-hero__title. */
-  letter-spacing: calc(-0.04em + 5px);
-  line-height: 0.82;
+  /* The em the digit bitmaps are drawn against: the size the figure was set
+     at when it was text. Bigger than the wordmark on purpose: this is the one
+     number on the page someone is looking for, and the bar takes a slice out
+     of the middle of it, so the halves that survive have to be big enough to
+     read. */
+  --hk-seats-em: clamp(150px, 23vw, 420px);
+  display: block;
   color: #a8150a;
-  /* The same stepped edges as the hero wordmark, so the two big numerals on
-     the page are the same object. Defined in App.jsx. */
-  filter: url(#hk-pixel);
   /*
    * THE CUT. A channel knocked straight through the numerals where the ribbon
-   * runs, so the bar is inside the figure rather than lying across it. The
-   * mask applies after the filter, so the channel's edges are clean while the
-   * letterforms stay stepped — which is the right way round.
+   * runs, so the bar is inside the figure rather than lying across it.
    */
   -webkit-mask-image: linear-gradient(
     to bottom,
@@ -1006,6 +994,31 @@ button:focus-visible,
     transparent calc(var(--hk-meter-mid) + var(--hk-meter-half)),
     #000 calc(var(--hk-meter-mid) + var(--hk-meter-half))
   );
+}
+
+/* The blocks. See SeatFigure.jsx. Sized in the figure's ems, from the width
+   and height the component measures off the bitmap. */
+.hk-seats__digits {
+  display: block;
+  width: calc(var(--hk-seats-em) * var(--w));
+  height: calc(var(--hk-seats-em) * var(--h));
+  fill: currentColor;
+}
+
+/* 25 cells to the em up to 1024px, 48 above: blocks of 6 to 9px either way,
+   where one density alone would run from 6px to 17. */
+.hk-seats__digits--fine {
+  display: none;
+}
+
+@media (min-width: 1025px) {
+  .hk-seats__digits--coarse {
+    display: none;
+  }
+
+  .hk-seats__digits--fine {
+    display: block;
+  }
 }
 
 /*
@@ -1288,6 +1301,40 @@ button:focus-visible,
   position: relative;
   height: 150px;
   margin: 0 40px;
+}
+
+/* A prompt line over the rail, so the stamps read as controls before anyone
+   has had to discover it. .hk-time's 40px gap is too much between a caption
+   and the thing it captions, so the rail is pulled up to meet it. */
+.hk-time__hint {
+  display: flex;
+  gap: 10px;
+  margin: 0 0 -20px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-body);
+}
+
+.hk-time__prompt {
+  color: var(--accent);
+}
+
+.hk-time__hintCoarse {
+  display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .hk-time__hintFine {
+    display: none;
+  }
+
+  .hk-time__hintCoarse {
+    display: inline;
+  }
 }
 
 .hk-time__track {
@@ -1867,11 +1914,77 @@ button:focus-visible,
 
   /* Tracks stay 2 columns: .hk-ascii scales the art to whatever panel it is
      given, so it fits by construction. */
-  .hk-sponsors__tier {
-    flex-wrap: wrap;
-    justify-content: center;
+
+}
+
+/* --- ≤1099px: rows of cells become a ruled grid --------------------------- */
+
+/*
+ * The sponsor tiers and the organizer row are lines of 220px cells divided by
+ * dashes, and every one of those dashes is a left border, with a right border
+ * on the last cell to close the row. That is right on one line and wrong the
+ * moment it wraps: each cell keeps its lonely left-hand dash, the row above
+ * loses its closing edge, and the result is fragments. The organizers row
+ * wraps below 1073px (880px of cells and 9vw of gutter each side), so this
+ * starts there, and it takes the sponsor tiers with it so the two blocks stay
+ * the same kind of object.
+ *
+ * Two up, ruled like a table: a dash above every row and under the last, one
+ * down the middle, none on the outside. An odd tier gives its FIRST cell the
+ * whole top row, which leaves no orphan at the bottom and puts the lead
+ * sponsor on a line of its own.
+ */
+@media (max-width: 1099px) {
+  .hk-sponsors__tier,
+  .hk-organizers__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    max-width: 440px;
   }
 
+  .hk-sponsors__tier {
+    border-bottom: 1px dashed var(--dash);
+  }
+
+  .hk-sponsors__cell,
+  .hk-sponsors__cell:last-child {
+    width: auto;
+    border: 0;
+    border-top: 1px dashed var(--dash);
+  }
+
+  .hk-sponsors__cell:first-child:nth-last-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  /* The right-hand cell of each pair carries the middle rule. With the first
+     cell spanning, the pairs start at 2, so the right-hand ones are odd. */
+  .hk-sponsors__cell:first-child:nth-last-child(odd) ~ .hk-sponsors__cell:nth-child(odd),
+  .hk-sponsors__cell:first-child:nth-last-child(even) ~ .hk-sponsors__cell:nth-child(even) {
+    border-left: 1px dashed var(--dash);
+  }
+
+  .hk-organizers__item {
+    border-left: 0;
+    border-top: 1px dashed var(--dash);
+  }
+
+  .hk-organizers__item:nth-child(even) {
+    border-left: 1px dashed var(--dash);
+  }
+
+  .hk-organizers__item:last-child {
+    border-right: 0;
+  }
+
+  .hk-organizers__item:nth-last-child(-n + 2) {
+    border-bottom: 1px dashed var(--dash);
+  }
+
+  .hk-organizers__cell {
+    width: auto;
+  }
 }
 
 /* --- ≤640px -------------------------------------------------------------- */
@@ -1897,6 +2010,13 @@ button:focus-visible,
   .hk-hero {
     --hk-pad-top: 96px;
     padding-bottom: 120px;
+  }
+
+  /* One call to action on a phone. The two bracket buttons stacked there and
+     "See the tracks" sat level with Sign up as a second primary; the tracks
+     are one scroll away regardless. */
+  .hk-hero__secondary {
+    display: none;
   }
 
   /* §6: the header nav collapses into a menu, keeping the wordmark and Sign
@@ -1958,6 +2078,26 @@ button:focus-visible,
     }
   }
 
+  /*
+   * The masthead gets a floor on its type size. Sized to fit all 240 columns
+   * across a 390px screen, each character came out 2.7px and the whole banner
+   * about 20px tall — a smudge, not a banner. So the characters stop shrinking
+   * at 7px, and once the full width no longer fits at that size the row simply
+   * overflows its box and is cropped.
+   *
+   * The crop is symmetric: .hk-ascii centres its rows, so an over-wide row
+   * spills equally off both sides and overflow: hidden trims them. That is
+   * safe here because 90% of the art's ink sits in the middle 131 of its 240
+   * columns; the outer sixty-odd each side are near-empty dots. At 390 about
+   * 93 columns show — the whole dense core — at 2.6x the old size.
+   *
+   * Phones only. At 720 and up the full 240 columns fit at 5px or more.
+   */
+  .hk-ascii--masthead {
+    --hk-ascii-size: max(calc(100cqi / 144), 7px);
+    --hk-ascii-row: calc(max(calc(100cqi / 144), 7px) * 1.03);
+  }
+
   .hk-find {
     padding: 44px var(--hk-gutter) 40px;
   }
@@ -1973,37 +2113,9 @@ button:focus-visible,
     display: none;
   }
 
-  /*
-   * Two up. Four 220px cells cannot sit in a row here, and left as a wrapping
-   * flex row each one kept its left-hand dash and the last one kept a right,
-   * which reads as four unrelated fragments. A grid puts the rules back on
-   * the axes they belong to.
-   */
-  .hk-organizers__row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 100%;
-  }
-
-  .hk-organizers__item {
-    border-left: 0;
-    border-top: 1px dashed var(--dash);
-  }
-
-  .hk-organizers__item:nth-child(even) {
-    border-left: 1px dashed var(--dash);
-  }
-
-  .hk-organizers__item:last-child {
-    border-right: 0;
-  }
-
-  .hk-organizers__item:nth-last-child(-n + 2) {
-    border-bottom: 1px dashed var(--dash);
-  }
-
+  /* The two-up organizer grid is in the ≤1099px block; a phone only makes
+     the cells a little shorter. */
   .hk-organizers__cell {
-    width: auto;
     height: 116px;
     gap: 12px;
   }

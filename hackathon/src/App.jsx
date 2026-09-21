@@ -34,41 +34,11 @@ export default function App() {
   return (
     <div className="hk-page">
       {/*
-        The filter that pixelates the hero wordmark. It has to be in the
-        document for `filter: url(#hk-pixel)` to resolve, and it is declared
-        once here rather than inside the hero so nothing re-creates it.
-
-        How it works: feFlood paints a small dot, feComposite crops the
-        result to one tile, feTile repeats that into a grid of dots,
-        compositing the text through it keeps only the pixels under a dot, and
-        feMorphology dilates each survivor back out to fill its cell. The
-        result is ordinary type with genuinely stepped edges — not a pixel
-        typeface.
-
-        EVERY DOT HERE IS 2x2, NEVER 1x1. Primitive subregions are in user
-        space and get scaled by the device pixel ratio before rasterising: a
-        1x1 dot rounds away to nothing below 1x, the grid comes back empty,
-        and the filtered text disappears entirely. That is not hypothetical —
-        it happens at any browser zoom under 100%, and it is how this was
-        caught. The dilation radius is dropped by the same amount the dot
-        gains, so the block size is unchanged.
-
-        One grid left: 6px blocks, for the Seats figure. The hero wordmark
-        had a pair of its own until it became a drawn bitmap — see
-        WordmarkBlocks.jsx — and a filter can give a glyph stepped edges but
-        never gaps between its cells, which is the whole character of that
-        mark. The dilation is what the letter-spacing beside it pays back.
+        No SVG filters on this page. The wordmark and the Seats figure were
+        both once real type under a pixelate filter; both are drawn blocks
+        now (WordmarkBlocks.jsx, SeatFigure.jsx), because the filter rendered
+        nothing at all in some browsers and the figure vanished on phones.
       */}
-      <svg className="hk-defs" aria-hidden="true" focusable="false">
-        <filter id="hk-pixel" x="-8%" y="-8%" width="116%" height="116%">
-          <feFlood x="2" y="2" width="2" height="2" floodColor="#fff" />
-          <feComposite width="6" height="6" />
-          <feTile result="grid" />
-          <feComposite in="SourceGraphic" in2="grid" operator="in" />
-          <feMorphology operator="dilate" radius="2" />
-        </filter>
-      </svg>
-
       <Header />
       <main>
         <Hero />

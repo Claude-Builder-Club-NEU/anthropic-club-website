@@ -86,11 +86,25 @@ export function Schedule() {
         chip="SCHEDULE"
         title="36 hours, start to finish"
       >
-        All times Eastern. Pick a moment on the timeline. The schedule is
-        tentative until the week of the event.
+        All times Eastern. The schedule is tentative until the week of the
+        event.
       </SectionHeading>
 
       <div className="hk-time">
+        {/*
+          Said outright. "Pick a moment" in the lede above was a hint only
+          if you already knew the stamps were buttons. Two wordings, swapped
+          on the pointer in CSS: a phone has no click, and there the panel
+          is under a 400px list, so it says where the answer lands.
+        */}
+        <p className="hk-time__hint">
+          <span className="hk-time__prompt" aria-hidden="true">
+            &gt;
+          </span>
+          <span className="hk-time__hintFine">Click a time for details</span>
+          <span className="hk-time__hintCoarse">Tap a time. Details below the list</span>
+        </p>
+
         <div
           className="hk-time__rail"
           role="tablist"

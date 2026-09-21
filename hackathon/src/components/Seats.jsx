@@ -1,4 +1,5 @@
 import { BracketButton } from "./BracketButton";
+import { SeatFigure } from "./SeatFigure";
 import { LINKS, SEATS } from "../lib/event";
 
 /**
@@ -79,9 +80,7 @@ export function Seats() {
     <section id="signup" aria-label="Sign up" className="hk-section">
       <div className="hk-seats">
         <div className="hk-seats__stage">
-          <span className="hk-seats__figure" aria-hidden="true">
-            {String(left).padStart(2, "0")}
-          </span>
+          <SeatFigure value={String(left).padStart(2, "0")} />
 
           {/*
             role="meter" is the honest role: this reports a level within a
