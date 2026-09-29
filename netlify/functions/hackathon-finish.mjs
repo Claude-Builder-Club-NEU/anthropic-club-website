@@ -87,6 +87,11 @@ export default async (req) => {
       "checkout/sessions",
       {
         mode: "payment",
+        // New Stripe accounts turn on Managed Payments (Stripe as merchant of
+        // record) by default, and it refuses any line item without a product
+        // tax code. The club is the merchant for a $5 registration fee, so it
+        // is switched off here rather than inventing a tax code for a seat.
+        managed_payments: { enabled: false },
         customer_email: row.email,
         client_reference_id: id,
         line_items: {
