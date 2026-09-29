@@ -1,17 +1,20 @@
 import { SeatFigure } from "./SeatFigure";
 import { WordmarkBlocks } from "./WordmarkBlocks";
 import { EVENT } from "../lib/event";
+import { checkInTime } from "../lib/schedule";
 import { COLLEGES, YEARS, formatPhone, labelFor, padSeat } from "../lib/signup";
 
 /**
- * The ticket: a stub you would tear off at a door.
+ * The ticket: a landscape stub, like one you would tear at a door.
  *
- * Two parts either side of a perforation. The main part opens on the hero's
- * own band — the block HACK1984 mark on its scanlines, with the red haze
- * rising under it — then says who it is for and when and where. The stub
- * carries the seat number, drawn in the same blocks as the seats-left figure
- * on the home page, because that number is what someone reads out at the
- * check-in desk (see the ticket page's check-in steps).
+ * Wide and short on purpose. The main part runs left to right: the block
+ * HACK1984 mark and ADMIT ONE across the top on a red haze, the holder's name,
+ * then their four details on ONE row, then when, where and check-in on a
+ * strip along the bottom. The stub, past a dashed perforation, carries the
+ * seat number in the same blocks as the seats-left figure on the home page,
+ * because that number is what someone reads out at the check-in desk.
+ *
+ * Below 760px it stacks, and the details drop to two columns.
  *
  * The barcode is decoration drawn from the ticket's token. Nothing scans it.
  */
@@ -66,34 +69,34 @@ export function TicketCard({
       }
     >
       <div className="hk-ticket__main">
-        <header className="hk-ticket__band">
+        <header className="hk-ticket__top">
           <WordmarkBlocks className="hk-ticket__mark" />
           <span className="hk-ticket__admit">{waitlist ? "WAITLIST" : "ADMIT ONE"}</span>
         </header>
 
-        <div className="hk-ticket__body">
+        <div className="hk-ticket__holder">
           <p className="hk-ticket__label">ISSUED TO</p>
           <p className="hk-ticket__name">{name}</p>
-
-          <dl className="hk-ticket__fields">
-            <div className="hk-ticket__wide">
-              <dt>EMAIL</dt>
-              <dd>{email}</dd>
-            </div>
-            <div>
-              <dt>PHONE</dt>
-              <dd>{formatPhone(phone)}</dd>
-            </div>
-            <div>
-              <dt>YEAR</dt>
-              <dd>{labelFor(YEARS, year)}</dd>
-            </div>
-            <div className="hk-ticket__wide">
-              <dt>COLLEGE</dt>
-              <dd>{labelFor(COLLEGES, college)}</dd>
-            </div>
-          </dl>
         </div>
+
+        <dl className="hk-ticket__fields">
+          <div>
+            <dt>EMAIL</dt>
+            <dd>{email}</dd>
+          </div>
+          <div>
+            <dt>PHONE</dt>
+            <dd>{formatPhone(phone)}</dd>
+          </div>
+          <div>
+            <dt>YEAR</dt>
+            <dd>{labelFor(YEARS, year)}</dd>
+          </div>
+          <div>
+            <dt>COLLEGE</dt>
+            <dd>{labelFor(COLLEGES, college)}</dd>
+          </div>
+        </dl>
 
         <dl className="hk-ticket__when">
           <div>
@@ -104,13 +107,17 @@ export function TicketCard({
             <dt>WHERE</dt>
             <dd>{EVENT.venue}</dd>
           </div>
+          <div>
+            <dt>CHECK-IN</dt>
+            <dd>Fri from {checkInTime({ long: false })}</dd>
+          </div>
         </dl>
       </div>
 
       <div className="hk-ticket__stub">
         <span className="hk-ticket__stub-label">{waitlist ? "IN LINE" : "SEAT"}</span>
         <SeatFigure value={number} />
-        <span className="hk-ticket__stub-of">{waitlist ? "ON THE WAITLIST" : `OF ${capacity}`}</span>
+        <span className="hk-ticket__stub-of">{waitlist ? "WAITLIST" : `OF ${capacity}`}</span>
         <Barcode seed={token} />
         {token ? <span className="hk-ticket__code">{token.slice(0, 8).toUpperCase()}</span> : null}
       </div>

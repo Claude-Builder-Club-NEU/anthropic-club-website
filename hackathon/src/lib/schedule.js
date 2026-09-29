@@ -1,3 +1,5 @@
+import { EVENT } from "./event.js";
+
 /**
  * The schedule (SPEC §3.6).
  *
@@ -79,3 +81,19 @@ export const HACK_WINDOW = (() => {
     hours: Math.round(hourOf(end) - hourOf(start)),
   };
 })();
+
+/**
+ * When check-in opens, from the first row of the schedule, so the ticket and
+ * the timeline cannot disagree. "18:00" on FRI becomes "6:00 PM", and with
+ * `long`, "Friday, Nov 6 at 6:00 PM" (the date is the first day of
+ * EVENT.dateLong's range).
+ *
+ * PLACEHOLDER, like every time in SCHEDULE: it moves when that row does.
+ */
+export function checkInTime({ long = true } = {}) {
+  const [h, m] = SCHEDULE[0].time.split(":").map(Number);
+  const clock = `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+  if (!long) return clock;
+  const date = EVENT.dateLong.split("–")[0].trim().replace(/^Fri /, "Friday, ");
+  return `${date} at ${clock}`;
+}

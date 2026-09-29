@@ -3,7 +3,7 @@ import { BracketButton } from "../components/BracketButton";
 import { TicketCard } from "../components/TicketCard";
 import { withBase } from "../lib/base";
 import { EVENT, LINKS } from "../lib/event";
-import { SCHEDULE } from "../lib/schedule";
+import { checkInTime } from "../lib/schedule";
 import { refreshSeats } from "../lib/seats";
 import { padSeat, pending, savedTicket } from "../lib/signup";
 
@@ -23,19 +23,6 @@ import { padSeat, pending, savedTicket } from "../lib/signup";
  * Nothing about the ticket is in the prerendered HTML: it is per person, so
  * the server renders the loading state and the browser fills it in.
  */
-
-/**
- * When check-in opens, from the first row of the schedule, so the ticket and
- * the timeline cannot disagree: "18:00" on FRI becomes "Friday, Nov 6 at
- * 6:00 PM". The date is the first day of EVENT.dateLong's range.
- */
-function checkInTime() {
-  const first = SCHEDULE[0];
-  const [h, m] = first.time.split(":").map(Number);
-  const clock = `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
-  const date = EVENT.dateLong.split("–")[0].trim().replace(/^Fri /, "Friday, ");
-  return `${date} at ${clock}`;
-}
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
