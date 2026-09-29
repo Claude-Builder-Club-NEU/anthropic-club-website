@@ -93,7 +93,10 @@ export async function rpc(fn, args = {}) {
     const detail = await res.text().catch(() => "");
     throw new Error(`rpc ${fn} failed (${res.status}): ${detail.slice(0, 300)}`);
   }
-  return res.json();
+  // A function that `returns void` comes back as 204 with no body, and
+  // res.json() on an empty body throws.
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
 }
 
 /**
