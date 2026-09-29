@@ -1,6 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { BracketButton } from "../components/BracketButton";
-import { TicketCard } from "../components/TicketCard";
 import { withBase } from "../lib/base";
 import { EVENT } from "../lib/event";
 import { useSeats } from "../lib/seats";
@@ -35,8 +34,8 @@ import {
  * the answers and files are already saved, so the page offers the payment
  * again instead of the whole form.
  *
- * The right-hand column is the ticket they are about to get, filling in as
- * they type. On a phone it drops under the form.
+ * One centred column: the heading, then the form. The ticket itself is only
+ * shown once it is real, on the ticket page.
  */
 
 const EMPTY = {
@@ -183,7 +182,6 @@ export function Signup() {
     if (window.location.search) window.history.replaceState(null, "", window.location.pathname);
   }
 
-  const nextSeat = Math.min(seats.capacity, seats.taken + 1);
   const cta = seats.full ? "Join the waitlist" : "Continue to payment · $5";
 
   return (
@@ -241,7 +239,7 @@ export function Signup() {
               value={form.email} onChange={set("email")} error={errors.email}
             />
             <TextField
-              name="phone" label="Phone" type="tel" autoComplete="tel" inputMode="tel"
+              name="phone" label="Phone" type="tel" wide autoComplete="tel" inputMode="tel"
               placeholder="(617) 555-0100"
               value={form.phone} onChange={set("phone")} error={errors.phone}
             />
@@ -260,7 +258,7 @@ export function Signup() {
 
           <Group index="03" title="Profile" note="Shared with sponsors who are hiring.">
             <TextField
-              name="linkedin" label="LinkedIn" type="url" autoComplete="url" inputMode="url"
+              name="linkedin" label="LinkedIn" type="url" wide autoComplete="url" inputMode="url"
               placeholder="linkedin.com/in/your-name"
               value={form.linkedin} onChange={set("linkedin")} error={errors.linkedin}
             />
@@ -309,26 +307,6 @@ export function Signup() {
           </div>
         </form>
 
-        <aside className="hk-su__aside" aria-label="Your ticket, previewed">
-          <p className="hk-su__aside-label">YOUR TICKET</p>
-          <TicketCard
-            preview
-            name={form.name.trim()}
-            email={form.email.trim().toLowerCase()}
-            phone={normalizePhone(form.phone)}
-            year={form.year}
-            college={form.college}
-            status={seats.full ? "waitlist" : "paid"}
-            spot={nextSeat}
-            waitlistPosition={1}
-            capacity={seats.capacity}
-          />
-          <ol className="hk-su__steps">
-            <li><span>01</span> Fill this in</li>
-            <li><span>02</span> {seats.full ? "Join the waitlist, free" : "Pay $5 on Stripe"}</li>
-            <li><span>03</span> {seats.full ? "Get your place in line" : "Get your ticket and seat number"}</li>
-          </ol>
-        </aside>
       </div>
     </main>
   );
@@ -367,11 +345,11 @@ function FieldError({ id, error }) {
   ) : null;
 }
 
-function TextField({ name, label, value, onChange, error, optional, multiline, ...rest }) {
+function TextField({ name, label, value, onChange, error, optional, multiline, wide, ...rest }) {
   const id = useId();
   const Tag = multiline ? "textarea" : "input";
   return (
-    <div className={`hk-su__field${multiline ? " hk-su__field--wide" : ""}`}>
+    <div className={`hk-su__field${multiline || wide ? " hk-su__field--wide" : ""}`}>
       <Label id={id} label={label} optional={optional} />
       <Tag
         id={id}

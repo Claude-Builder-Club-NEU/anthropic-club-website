@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { BracketButton } from "../components/BracketButton";
 import { TicketCard } from "../components/TicketCard";
 import { withBase } from "../lib/base";
-import { LINKS } from "../lib/event";
+import { EVENT, LINKS } from "../lib/event";
+import { SCHEDULE } from "../lib/schedule";
 import { refreshSeats } from "../lib/seats";
-import { pending, savedTicket } from "../lib/signup";
+import { padSeat, pending, savedTicket } from "../lib/signup";
 
 /**
  * /hackathon/ticket/: the ticket.
@@ -22,6 +23,19 @@ import { pending, savedTicket } from "../lib/signup";
  * Nothing about the ticket is in the prerendered HTML: it is per person, so
  * the server renders the loading state and the browser fills it in.
  */
+
+/**
+ * When check-in opens, from the first row of the schedule, so the ticket and
+ * the timeline cannot disagree: "18:00" on FRI becomes "Friday, Nov 6 at
+ * 6:00 PM". The date is the first day of EVENT.dateLong's range.
+ */
+function checkInTime() {
+  const first = SCHEDULE[0];
+  const [h, m] = first.time.split(":").map(Number);
+  const clock = `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+  const date = EVENT.dateLong.split("–")[0].trim().replace(/^Fri /, "Friday, ");
+  return `${date} at ${clock}`;
+}
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -166,6 +180,7 @@ function Issued({ ticket }) {
   const headline = waitlist
     ? `You're #${ticket.waitlist_position} on the waitlist.`
     : `You're in. Seat ${ticket.spot} of ${ticket.capacity}.`;
+  const seat = padSeat(ticket.spot);
 
   async function copyLink() {
     try {
@@ -187,7 +202,7 @@ function Issued({ ticket }) {
             ? "The last seat went while you were paying, so your $5 has been refunded. We'll write to you in order if a seat opens."
             : waitlist
               ? "We'll write to you in order if a seat opens. There's nothing to pay unless one does."
-              : "This page is your ticket. Bookmark it or print it. At the door, check in with your name and student ID."}
+              : "This page is your ticket. Bookmark it, print it or screenshot it."}
         </p>
       </div>
 
@@ -213,6 +228,47 @@ function Issued({ ticket }) {
         ) : null}
         <BracketButton onClick={copyLink}>{copied ? "Link copied" : "Copy link"}</BracketButton>
       </div>
+
+      {!waitlist ? (
+        <section className="hk-checkin" aria-labelledby="checkin-h">
+          <h2 id="checkin-h" className="hk-checkin__title">
+            <span className="hk-chip">ON THE DAY</span>
+            Checking in
+          </h2>
+          <ol className="hk-checkin__steps">
+            <li>
+              <span className="hk-checkin__n">01</span>
+              <div>
+                <p className="hk-checkin__head">Come to {EVENT.venue}.</p>
+                <p className="hk-checkin__text">
+                  Check-in opens {checkInTime()}, with dinner. Come any time
+                  before the opening ceremony.
+                </p>
+              </div>
+            </li>
+            <li>
+              <span className="hk-checkin__n">02</span>
+              <div>
+                <p className="hk-checkin__head">Give the desk your seat number.</p>
+                <p className="hk-checkin__text">
+                  Yours is <strong className="hk-checkin__seat">{seat}</strong>.
+                  That is all we need to find you: no email, no QR code.
+                </p>
+              </div>
+            </li>
+            <li>
+              <span className="hk-checkin__n">03</span>
+              <div>
+                <p className="hk-checkin__head">Show your Northeastern ID.</p>
+                <p className="hk-checkin__text">
+                  The name on it should match the one on this ticket:{" "}
+                  {ticket.name}. Then find your team and start building.
+                </p>
+              </div>
+            </li>
+          </ol>
+        </section>
+      ) : null}
     </section>
   );
 }

@@ -100,7 +100,7 @@ only generator left; the detail icons are hand-written vector.
 | `src/lib/pages.js` + `src/App.jsx` | The four pages and the shell around them |
 | `src/pages/Sponsor.jsx` + `src/lib/sponsorship.js` | `/sponsor/`, the one-pager as a page |
 | `src/pages/Signup.jsx` + `src/lib/signup.js` | `/signup/`, the form and its three-step submit |
-| `src/pages/Ticket.jsx` + `src/components/TicketCard.jsx` | `/ticket/`, and the live preview on the form |
+| `src/pages/Ticket.jsx` + `src/components/TicketCard.jsx` | `/ticket/`: the ticket and the check-in steps |
 | `src/lib/seats.js` | The live seat count every button and the meter share |
 | `src/pages.css` | Styles for the three pages above |
 | `dev/api.mjs` | `/api/*` in `npm run dev`: the real functions with keys, a mock without |

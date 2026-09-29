@@ -54,6 +54,10 @@ export function normalizePhone(raw) {
   return cleaned;
 }
 
+/** 7 → "007": how a seat number is printed on the ticket and read out at
+ *  check-in. */
+export const padSeat = (n, width = 3) => String(Math.max(0, n || 0)).padStart(width, "0");
+
 /** +16175550142 → (617) 555-0142; anything else as stored. */
 export function formatPhone(e164) {
   const m = /^\+1(\d{3})(\d{3})(\d{4})$/.exec(e164 || "");

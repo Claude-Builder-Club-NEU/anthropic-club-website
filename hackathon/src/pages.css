@@ -439,18 +439,23 @@
    /hackathon/signup/ — the registration form.
    ========================================================================== */
 
+/* One centred column, capped at a comfortable form width. */
 .hk-su {
   display: flex;
   flex-direction: column;
   gap: 48px;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
   padding: 72px 0 var(--hk-section-pad);
 }
 
 .hk-su__head {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 20px;
+  text-align: center;
 }
 
 .hk-su__title {
@@ -477,10 +482,7 @@
 }
 
 .hk-su__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-  gap: 64px;
-  align-items: start;
+  display: block;
 }
 
 .hk-su__grid[hidden] {
@@ -834,7 +836,8 @@ textarea.hk-su__input {
 .hk-su__submit {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  text-align: center;
   gap: 14px;
   padding-top: 28px;
   border-top: 1px dashed var(--dash);
@@ -857,46 +860,12 @@ textarea.hk-su__input {
   color: var(--ink-faint);
 }
 
-.hk-su__aside {
-  position: sticky;
-  top: 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.hk-su__aside-label {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  color: var(--ink-faint);
-}
-
-.hk-su__steps {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 8px 0 0;
-  padding: 0;
-  list-style: none;
-  font-size: 15px;
-  color: var(--ink-body);
-}
-
-.hk-su__steps span {
-  display: inline-block;
-  width: 32px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--accent);
-}
-
 .hk-su__resume {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
   gap: 12px;
   max-width: 640px;
   padding: 28px;
@@ -942,17 +911,6 @@ textarea.hk-su__input {
   color: var(--accent);
 }
 
-@media (max-width: 1024px) {
-  .hk-su__grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 56px;
-  }
-
-  .hk-su__aside {
-    position: static;
-  }
-}
-
 @media (max-width: 640px) {
   .hk-su {
     padding-top: 40px;
@@ -975,90 +933,130 @@ textarea.hk-su__input {
 }
 
 /* ==========================================================================
-   The ticket (TicketCard.jsx), on the ticket page and as the live preview.
+   The ticket (TicketCard.jsx).
+
+   The main part opens on the hero's band: the block mark on the hero's
+   scanlines with its red haze rising underneath, so the ticket reads as a
+   piece of the same poster. Below it, who it is for; along the bottom, when
+   and where. A perforation — a dashed rule with a notch bitten out top and
+   bottom — separates the stub, which carries the seat number.
    ========================================================================== */
 
 .hk-ticket {
-  --hk-notch: 14px;
+  --hk-notch: 18px;
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  max-width: 760px;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  width: 100%;
+  max-width: 820px;
   color: var(--ink);
+  text-align: left;
+  box-shadow: 0 30px 80px -30px rgba(255, 59, 47, 0.25);
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
 
-.hk-ticket__body,
+.hk-ticket__main,
 .hk-ticket__stub {
   position: relative;
-  background-color: var(--surface);
   border: 1px solid var(--dash);
+  background-color: var(--surface);
 }
 
-.hk-ticket__body {
+.hk-ticket__main {
   display: flex;
   flex-direction: column;
-  gap: 20px;
   min-width: 0;
-  padding: 24px 28px;
   border-right: 0;
   overflow: hidden;
 }
 
-/* The hero's red haze, rising off the body's bottom-left corner. */
-.hk-ticket__body::before {
-  content: "";
-  position: absolute;
-  left: -120px;
-  bottom: -220px;
-  width: 520px;
-  height: 320px;
-  pointer-events: none;
-  background: radial-gradient(closest-side, rgba(255, 59, 47, 0.2), transparent);
-}
-
-.hk-ticket__body > * {
+/* The hero, in miniature: the mark on black, a red haze off the bottom. */
+.hk-ticket__band {
   position: relative;
-}
-
-.hk-ticket__top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
+  padding: 26px 28px 24px;
+  /* Plain black, not the hero's scanlines: at ticket size the lines fall
+     at a different pitch from the mark's cells and turn it into a dither. */
+  background-color: #000000;
+  border-bottom: 1px dashed var(--dash);
+  overflow: hidden;
+}
+
+.hk-ticket__band::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -150px;
+  width: 640px;
+  height: 220px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255, 59, 47, 0.35), rgba(160, 20, 12, 0.12) 55%, transparent);
+}
+
+.hk-ticket__band > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* The hero's block mark, at ticket size. .hk-blocks sizes itself off the
+   hero's --hk-mark-w, so the width is restated here. */
+.hk-ticket .hk-ticket__mark {
+  width: clamp(180px, 36vw, 300px);
 }
 
 .hk-ticket__admit {
-  padding: 4px 8px;
+  flex: none;
+  padding: 5px 9px;
   background: var(--accent);
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
   color: var(--on-accent);
 }
 
-.hk-ticket--preview .hk-ticket__admit,
 .hk-ticket--waitlist .hk-ticket__admit {
   background: var(--red-900);
   color: var(--red-chip-text);
 }
 
-.hk-ticket__name {
+.hk-ticket__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 26px 28px 22px;
+}
+
+.hk-ticket__label,
+.hk-ticket__fields dt,
+.hk-ticket__when dt {
   margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--ink-faint);
+}
+
+.hk-ticket__name {
+  margin: 0 0 18px;
   overflow-wrap: anywhere;
   font-family: var(--font-display);
-  font-size: clamp(28px, 3vw, 40px);
-  line-height: 1.08;
+  font-size: clamp(30px, 3.4vw, 44px);
+  line-height: 1.05;
   font-weight: 600;
   letter-spacing: -0.03em;
 }
 
 .hk-ticket__fields {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
-  gap: 14px 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
   margin: 0;
 }
 
@@ -1070,49 +1068,38 @@ textarea.hk-su__input {
   grid-column: 1 / -1;
 }
 
-.hk-ticket__fields dt {
-  margin-bottom: 3px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  color: var(--ink-faint);
-}
-
-.hk-ticket__fields dd {
-  margin: 0;
-  overflow: hidden;
+.hk-ticket__fields dd,
+.hk-ticket__when dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
   font-family: var(--font-mono);
   font-size: 14px;
   line-height: 20px;
   color: var(--ink);
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .hk-ticket__when {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 16px;
-  padding-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 24px;
+  margin: auto 0 0;
+  padding: 16px 28px 20px;
   border-top: 1px dashed var(--dash);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.06em;
+}
+
+.hk-ticket__when dd {
+  font-size: 13px;
   color: var(--ink-body);
 }
 
-/* The stub, behind a perforation: a dashed rule with a notch bitten out of
-   the top and bottom edge where it meets the body. Its scanlines are the
-   hero's, at ticket scale. */
+/* The stub. Its scanlines are the band's, so the two halves share a ground. */
 .hk-ticket__stub {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-width: 180px;
-  padding: 24px 20px;
+  gap: 10px;
+  padding: 28px 20px;
   border-left: 2px dashed var(--dash);
   background-color: #070707;
   background-image: linear-gradient(180deg, #121212 0 13%, transparent 13% 87%, #121212 87% 100%);
@@ -1144,14 +1131,14 @@ textarea.hk-su__input {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.24em;
   color: var(--ink-faint);
 }
 
-/* The seat number reuses the home page's block digits, without the channel
-   the meter cuts through them, always at the chunky density. */
+/* The seat number: the home page's block digits, without the channel the
+   meter cuts through them, always at the chunky density. */
 .hk-ticket .hk-seats__figure {
-  --hk-seats-em: 76px;
+  --hk-seats-em: 92px;
   color: var(--accent);
   -webkit-mask-image: none;
   mask-image: none;
@@ -1165,41 +1152,83 @@ textarea.hk-su__input {
   display: block;
 }
 
-.hk-ticket--preview .hk-seats__figure {
-  color: var(--ascii-3);
-}
-
 .hk-ticket__barcode {
-  width: 132px;
-  height: 36px;
-  margin-top: 8px;
+  width: 150px;
+  height: 38px;
+  margin-top: 10px;
   fill: var(--ink-body);
 }
 
 .hk-ticket__code {
   font-family: var(--font-mono);
   font-size: 10px;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.3em;
   color: var(--ink-faint);
 }
 
-@media (max-width: 560px) {
+@media (max-width: 640px) {
   .hk-ticket {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .hk-ticket__body {
+  .hk-ticket__main {
     border-right: 1px solid var(--dash);
     border-bottom: 0;
-    padding: 20px;
+  }
+
+  .hk-ticket__band,
+  .hk-ticket__body {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .hk-ticket__when {
+    grid-template-columns: minmax(0, 1fr);
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .hk-ticket__fields {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .hk-ticket__stub {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "label label"
+      "fig   bar"
+      "of    code";
+    align-items: center;
+    justify-items: start;
+    gap: 6px 20px;
     border-left: 1px solid var(--dash);
     border-top: 2px dashed var(--dash);
+  }
+
+  .hk-ticket__stub-label {
+    grid-area: label;
+  }
+
+  .hk-ticket .hk-seats__figure {
+    grid-area: fig;
+    --hk-seats-em: 72px;
+  }
+
+  .hk-ticket__stub-of {
+    grid-area: of;
+  }
+
+  .hk-ticket__barcode {
+    grid-area: bar;
+    justify-self: end;
+    width: 110px;
+    margin: 0;
+  }
+
+  .hk-ticket__code {
+    grid-area: code;
+    justify-self: end;
   }
 
   .hk-ticket__stub::before,
@@ -1212,41 +1241,35 @@ textarea.hk-su__input {
     left: auto;
     right: calc(var(--hk-notch) / -2 - 1px);
   }
-
-  .hk-ticket__stub-label {
-    flex-basis: 100%;
-  }
-
-  .hk-ticket__barcode {
-    width: 96px;
-  }
-
-  .hk-ticket__fields {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 /* ==========================================================================
-   /hackathon/ticket/ — the page around the ticket.
+   /hackathon/ticket/ — the page around the ticket. One centred column.
    ========================================================================== */
 
 .hk-tk {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 72px 0 var(--hk-section-pad);
+  text-align: center;
 }
 
 .hk-tk__msg,
 .hk-tk__head {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 18px;
-  max-width: 44em;
+  max-width: 40em;
 }
 
 .hk-tk__issued {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  align-items: center;
+  gap: 44px;
+  width: 100%;
 }
 
 .hk-tk__title {
@@ -1265,6 +1288,7 @@ textarea.hk-su__input {
   font-size: 18px;
   line-height: 28px;
   color: var(--ink-body);
+  text-wrap: pretty;
 }
 
 .hk-tk__terminal {
@@ -1300,12 +1324,105 @@ textarea.hk-su__input {
 .hk-tk__actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 8px 36px;
+}
+
+/* Check-in: three numbered rows in the Details section's dashed frame. */
+.hk-checkin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 820px;
+  margin-top: 24px;
+}
+
+.hk-checkin__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.hk-checkin__steps {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px dashed var(--dash);
+  text-align: left;
+}
+
+.hk-checkin__steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 22px 28px;
+}
+
+.hk-checkin__steps li + li {
+  border-top: 1px dashed var(--dash);
+}
+
+.hk-checkin__n {
+  flex: none;
+  min-width: 52px;
+  padding: 6px 10px;
+  background: var(--red-900);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--red-chip-text);
+  text-align: center;
+}
+
+.hk-checkin__head {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 30px;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.hk-checkin__text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 25px;
+  color: var(--ink-body);
+}
+
+.hk-checkin__seat {
+  padding: 1px 8px;
+  background: var(--accent);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--on-accent);
 }
 
 @media (max-width: 640px) {
   .hk-tk {
     padding-top: 40px;
+  }
+
+  .hk-checkin__steps li {
+    gap: 16px;
+    padding: 18px 16px;
+  }
+
+  .hk-checkin__head {
+    font-size: 19px;
+    line-height: 26px;
   }
 }
 
