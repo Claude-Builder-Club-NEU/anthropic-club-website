@@ -2,6 +2,7 @@ import { BracketButton } from "./BracketButton";
 import { Wordmark } from "./Wordmark";
 import { EVENT, LINKS, NAV, SOCIAL } from "../lib/event";
 import { ORGANIZERS } from "../lib/organizers";
+import { homeAnchor, withBase } from "../lib/base";
 
 /**
  * Footer, laid out the way claudeneu.com's is: a four-column block — brand
@@ -33,9 +34,12 @@ export function Footer() {
           <ul className="hk-footer__list">
             {NAV.map((item) => (
               <li key={item.href}>
-                <a href={item.href}>{item.label.toLowerCase()}</a>
+                <a href={homeAnchor(item.href)}>{item.label.toLowerCase()}</a>
               </li>
             ))}
+            <li>
+              <a href={withBase(LINKS.sponsor)}>sponsor us</a>
+            </li>
           </ul>
         </nav>
 
@@ -53,10 +57,9 @@ export function Footer() {
         <div className="hk-footer__col">
           <h2 className="hk-footer__head">Get involved</h2>
           <p className="hk-footer__line">
-            Claim a seat and we will write with everything you need for the
-            weekend.
+            Claim a seat for $5 and get your ticket straight away.
           </p>
-          <BracketButton href={LINKS.signUp}>Sign up</BracketButton>
+          <BracketButton href={withBase(LINKS.signUp)}>Sign up</BracketButton>
         </div>
       </div>
 

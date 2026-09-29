@@ -93,6 +93,16 @@
   to = "/polls/info-session-2026-09"
   status = 302
 
+# HACK1984 registration: netlify/functions/hackathon-*.mjs. Each declares its
+# own route under /hackathon/api/ in `export const config`, so there are no
+# redirects for them here. They hold the only secrets on the site — the
+# Supabase service role key and the Stripe secret key — as Netlify environment
+# variables, never in the repo and never in a VITE_ variable. The list, and
+# what each is for, is at the top of netlify/lib/hackathon.mjs.
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 # Long-cache the fingerprinted build output.
 [[headers]]
   for = "/assets/*"
@@ -108,7 +118,10 @@
 # The HACK1984 page at /hackathon/ is its own build — see "The hackathon page"
 # in the README and scripts/copy-hackathon.mjs. Its assets are fingerprinted
 # and its fonts self-hosted, exactly like this site's, so they take the same
-# headers. It needs no CSP change: every request it makes is same-origin.
+# headers. It needs no CSP change: its API calls are same-origin
+# (/hackathon/api/*, the functions below), and the one cross-origin request,
+# the signup form's resume and headshot upload, goes to the club's own
+# Supabase host, which connect-src already names.
 [[headers]]
   for = "/hackathon/assets/*"
   [headers.values]

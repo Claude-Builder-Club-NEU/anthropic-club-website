@@ -174,6 +174,25 @@ from strangers rather than from people already in the room.
 | Name refused if it begins with `=`, `+`, `-` or `@` | `submit_signup()` and `src/lib/join.js` | The roster is exported to CSV from the Supabase table editor, where a leading `=` is a formula |
 | No password, no account, no session | by design | Nothing to breach, nothing to reset, nothing to leave behind at handover |
 
+**HACK1984 registrations are a third store, and the most sensitive.**
+`hackathon_registrations` (`supabase/hackathon.sql`) holds a name, email,
+phone number, year, college, LinkedIn URL and dietary notes, and the private
+`hackathon` storage bucket holds a resume and a headshot, for everyone who
+signs up at `/hackathon/signup/`. It is built differently from the tables
+above, on purpose:
+
+| Decision | Where | Rationale |
+|---|---|---|
+| Nothing granted to anon: no table access, no function, no storage policy | `hackathon.sql` | A seat is money paid; the thing that marks one paid cannot be something the public key can call |
+| The browser talks only to Netlify functions, which hold the service role key and the Stripe secret key as environment variables | `netlify/functions/hackathon-*.mjs` | The first secrets on this site. Neither may ever appear in the repo or in a `VITE_` variable |
+| Files go in through one-time signed upload URLs, into a private bucket that caps size (5MB) and type (PDF, JPEG, PNG, WebP) | `hackathon.sql`, `hackathon-register.mjs` | A signed URL can write one path and nothing else; the bucket enforces the limits, not the browser |
+| A registration is only a seat once Stripe says the session is paid, verified server-side by retrieving the session or by a signature-checked webhook | `hackathon-ticket.mjs`, `hackathon-stripe-webhook.mjs` | The success redirect alone proves nothing; anyone can type the URL |
+| The form says when an email already has a ticket | `hackathon_register()` | A deliberate exception to the no-oracle rule, explained in the file: otherwise a repeat visit ends in a charge and a refund |
+| Resume, LinkedIn and headshot are shared with sponsors only with a required consent box | `Signup.jsx`, `sponsor_consent` | The sponsor tiers promise resumes; the registrant is told so before they give one |
+
+Retention applies here more than anywhere: delete the rows and the bucket's
+files after the event once sponsors have what they were promised.
+
 **Open and unresolved, for the club rather than for code:**
 
 - **Retention.** Nothing deletes old check-ins **or old signups**. Both

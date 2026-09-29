@@ -21,3 +21,14 @@ export function withBase(path) {
   }
   return import.meta.env.BASE_URL + path.replace(/^\/+/, "");
 }
+
+/**
+ * An in-page anchor on the HOME page ("#tracks"), from any page. The header
+ * and footer are shared by the sponsor, signup and ticket pages now, where a
+ * bare "#tracks" would point at a section that page does not have. On the home
+ * page itself "/hackathon/#tracks" is still a same-document jump, so nothing
+ * reloads there.
+ */
+export function homeAnchor(hash) {
+  return import.meta.env.BASE_URL + hash;
+}

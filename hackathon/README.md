@@ -97,6 +97,13 @@ only generator left; the detail icons are hand-written vector.
 | `src/lib/wordmarkBlocks.js` + `WordmarkBlocks.jsx` | The hero mark, cell by cell |
 | `src/lib/seatDigits.js` + `SeatFigure.jsx` | The seats-left number, block by block |
 | `src/lib/organizers.js` | The four orgs running the event |
+| `src/lib/pages.js` + `src/App.jsx` | The four pages and the shell around them |
+| `src/pages/Sponsor.jsx` + `src/lib/sponsorship.js` | `/sponsor/`, the one-pager as a page |
+| `src/pages/Signup.jsx` + `src/lib/signup.js` | `/signup/`, the form and its three-step submit |
+| `src/pages/Ticket.jsx` + `src/components/TicketCard.jsx` | `/ticket/`, and the live preview on the form |
+| `src/lib/seats.js` | The live seat count every button and the meter share |
+| `src/pages.css` | Styles for the three pages above |
+| `dev/api.mjs` | `/api/*` in `npm run dev`: the real functions with keys, a mock without |
 | `src/ascii/` + `src/lib/ascii.js` | The four track banners |
 | `tools/ascii_scenes.py` | The generator for the banners |
 
@@ -189,6 +196,38 @@ Reverted along the way, and worth knowing about: the hero briefly had its
 gradient replaced by a field of ASCII characters whose density was the
 gradient. The red `linear-gradient` is back and that code is gone.
 
+## Pages and registration
+
+Four pages, each prerendered to its own `index.html` by `scripts/prerender.mjs`:
+`/hackathon/`, `/hackathon/sponsor/`, `/hackathon/signup/` and
+`/hackathon/ticket/`. There is still no router; `main.jsx` reads the path once
+to pick which page to hydrate. The header and footer are shared, so their nav
+links point at `/hackathon/#tracks` rather than a bare `#tracks`.
+
+**Signing up** is three calls behind one button. `/api/register` stores a
+*pending* row and returns two one-time upload URLs; the browser uploads the
+resume and headshot straight to the private Supabase bucket; `/api/finish`
+creates a $5 Stripe Checkout Session (or, when the room is full, a free
+waitlist place). Stripe returns to `/ticket/?session_id=…`, which settles the
+payment without waiting for the webhook and swaps the URL for `?t=<token>`, the
+ticket's own address. The webhook settles it for anyone who closes the tab
+first. Leaving checkout returns to `/signup/?resume=<id>`, which offers the
+payment again without the form.
+
+**The meter is live.** `useSeats()` reads `/api/seats` on load and every 30
+seconds while the tab is visible, and every sign-up button on every page reads
+the same store. The prerendered HTML shows 100 seats left for the moment before
+that lands.
+
+**Locally**, `npm run dev` answers `/hackathon/api/*` itself (`dev/api.mjs`).
+With no keys it is an in-memory mock where "checkout" goes straight to the
+ticket; set `HACKATHON_MOCK_TAKEN=100` to see the waitlist. With a service role
+key and a Stripe **test** key in `.env.local` it runs the real functions. See
+`.env.example`.
+
+The server side, the SQL and the environment variables are documented in the
+root README under "Registration, payment and the seat count".
+
 ## Before launch
 
 Every one of these is marked `PLACEHOLDER` at the point it occurs.
@@ -198,13 +237,15 @@ Every one of these is marked `PLACEHOLDER` at the point it occurs.
 - [ ] **Hacking window.** `EVENT.hackingStartISO` / `hackingEndISO`. Drives the
       `.ics` file.
 - [ ] **Schedule.** Every time in `src/lib/schedule.js` is a draft.
-- [ ] **Track prizes.** The `[$1,000]` figures in `src/lib/tracks.js` and the
-      "SPONSOR [TBD]" line in `src/components/Tracks.jsx`. The `[$4,000]` total
-      went with the hero's proof row and is no longer anywhere on the page.
-- [ ] **Seats taken.** `SEATS.seatsTaken` in `src/lib/event.js` is typed in by
-      hand. There is no signup backend, so nothing updates it; when one exists
-      this is the single value to wire up and the whole Seats section, and the
-      hero's seat line, follow from it.
+- [ ] **Prize amounts.** The three ways to win in `src/lib/tracks.js` say
+      what each pays in places ("1st, 2nd and 3rd place", "One prize"), not in
+      dollars. Add figures once they are confirmed.
+- [ ] **Event date.** The sponsor one-pager says Nov 7–8; this site says
+      Fri Nov 6 – Sun Nov 8 (`EVENT` in `src/lib/event.js`). The sponsor page
+      reads `EVENT`, so fix the one that is wrong.
+- [ ] **Tavily logo.** The sponsor page credits Tavily as text. Drop a white
+      logo into `public/logos/` and add it to `SPONSOR_TIERS` to show it on the
+      home page too.
 - [ ] **Confirm which logo is Rev.** `public/logos/rev.png` is the four-pointed
       star from the supplied set, assigned by elimination — the lightbulb with a
       neural net in it is clearly AINU and the other two are unambiguous. The
@@ -217,7 +258,6 @@ Every one of these is marked `PLACEHOLDER` at the point it occurs.
 - [ ] **Sponsors.** `src/lib/sponsors.js` — Anthropic is in; replace each
       remaining `null` with `{ src, alt, height }`. Monochrome white, 28–32px
       tall.
-- [ ] **Link targets.** `LINKS.signUp` and `LINKS.saveYourSpot` are `#`.
 - [ ] **Domain.** `SITE_ORIGIN` in `src/lib/head.js`.
 
 ## Known trade-offs

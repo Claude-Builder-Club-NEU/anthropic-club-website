@@ -4,17 +4,15 @@ import App from "./App.jsx";
 
 /**
  * Server entry for the prerender step. scripts/prerender.mjs calls render()
- * once and injects the result into dist/index.html.
- *
- * There is no router: the site is a single page with anchors, so the only
- * thing the server needs to produce is that page.
+ * once per page and writes each into its own index.html.
  */
-export function render() {
+export function render(page = "home") {
   return renderToString(
     <StrictMode>
-      <App />
+      <App page={page} />
     </StrictMode>
   );
 }
 
-export { HEAD } from "./lib/head";
+export { headFor } from "./lib/head";
+export { PAGES, PAGE_NAMES } from "./lib/pages";

@@ -13,7 +13,8 @@
     "images": "node scripts/build-blog-images.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test:db": "node supabase/signups.test.mjs"
+    "test:db": "node supabase/signups.test.mjs",
+    "test:hackathon-db": "node supabase/hackathon.test.mjs"
   },
   "dependencies": {
     "react": "^19.2.3",

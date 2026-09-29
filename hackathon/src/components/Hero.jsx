@@ -1,6 +1,8 @@
 import { BracketButton } from "./BracketButton";
 import { WordmarkBlocks } from "./WordmarkBlocks";
 import { EVENT, LINKS } from "../lib/event";
+import { withBase } from "../lib/base";
+import { useSeats } from "../lib/seats";
 
 /**
  * Hero.
@@ -25,6 +27,7 @@ import { EVENT, LINKS } from "../lib/event";
  * typed here, so the footer and the details cannot drift away from them.
  */
 export function Hero() {
+  const { full } = useSeats();
   return (
     <section className="hk-hero hk-bleed">
       <h1 className="hk-hero__title">
@@ -37,7 +40,9 @@ export function Hero() {
       </ul>
 
       <div className="hk-hero__actions">
-        <BracketButton href={LINKS.signUp}>Sign up</BracketButton>
+        <BracketButton href={withBase(LINKS.signUp)}>
+          {full ? "Join the waitlist" : "Sign up"}
+        </BracketButton>
         <BracketButton className="hk-hero__secondary" href="#tracks">
           See the tracks
         </BracketButton>

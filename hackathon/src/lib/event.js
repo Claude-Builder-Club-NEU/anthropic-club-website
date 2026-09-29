@@ -45,29 +45,34 @@ export const EVENT = {
 };
 
 /**
- * Capacity, and how much of it is gone.
+ * Capacity, and how much of it is gone, BEFORE the live count arrives.
  *
- * PLACEHOLDER: `seatsTaken` is typed in by hand. There is no signup backend
- * yet, so nothing updates it — when one exists this is the single value to
- * wire up, and the whole Seats section follows from it.
+ * The real number comes from /hackathon/api/seats, which counts paid
+ * registrations in Supabase; see src/lib/seats.js. These two values are only
+ * what the prerendered HTML shows for the moment before that request lands,
+ * and what stays on screen if the endpoint is not reachable.
  *
- * `capacity` is the real number: 100 builders is the room's limit.
+ * `capacity` is the real number: 100 builders is the room's limit. The
+ * database enforces the same 100 in hackathon_capacity() in
+ * supabase/hackathon.sql, and the live endpoint reports that one.
  */
 export const SEATS = {
   capacity: 100,
-  seatsTaken: 68,
+  seatsTaken: 0,
 };
 
 /**
- * PLACEHOLDER (SPEC §5, "Link targets"). All three are "#" in the reference
- * render and stay "#" here rather than guessing a form URL.
+ * Where the buttons go. All base-relative, resolved against the mount point by
+ * withBase() at render: this file is also read by scripts/build-ics.mjs under
+ * bare Node, where import.meta.env does not exist.
  *
- * `calendar` is the exception: it points at a real file this repo generates,
- * so "Add to calendar" works today. See scripts/build-ics.mjs.
+ * `signUp` is the registration form at /hackathon/signup/; `sponsor` is the
+ * sponsor one-pager at /hackathon/sponsor/; `calendar` is the .ics file
+ * scripts/build-ics.mjs generates.
  */
 export const LINKS = {
-  signUp: "#",
-  // Base-relative: resolved against the mount point by withBase() at render.
+  signUp: "signup/",
+  sponsor: "sponsor/",
   calendar: "hacking-starts.ics",
 };
 

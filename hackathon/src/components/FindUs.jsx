@@ -1,5 +1,6 @@
 import { SocialIcon } from "./SocialIcons";
 import { LINKS, SOCIAL } from "../lib/event";
+import { withBase } from "../lib/base";
 
 /**
  * Find us.
@@ -20,7 +21,7 @@ import { LINKS, SOCIAL } from "../lib/event";
  */
 
 const CARDS = [
-  { label: "Sign up", note: "Claim a seat", href: LINKS.signUp, icon: "mail" },
+  { label: "Sign up", note: "Claim a seat", href: withBase(LINKS.signUp), icon: "mail", internal: true },
   ...SOCIAL,
 ];
 
@@ -41,8 +42,8 @@ export function FindUs() {
             <a
               className="hk-find__card"
               href={item.href}
-              target="_blank"
-              rel="noopener noreferrer"
+              // The sign-up card is this site; the rest leave it.
+              {...(item.internal ? {} : { target: "_blank", rel: "noopener noreferrer" })}
             >
               <span className="hk-find__mark">
                 <SocialIcon name={item.icon} />

@@ -69,6 +69,8 @@ async function main() {
   // is its canonical URL and Netlify 301s the bare path to it.
   const STATIC_PAGES = [
     { path: "/hackathon/", changefreq: "weekly", priority: "0.9" },
+    { path: "/hackathon/signup/", changefreq: "weekly", priority: "0.8" },
+    { path: "/hackathon/sponsor/", changefreq: "monthly", priority: "0.6" },
   ];
   const indexable = [...ROUTES.filter((r) => !r.noindex), ...STATIC_PAGES];
 

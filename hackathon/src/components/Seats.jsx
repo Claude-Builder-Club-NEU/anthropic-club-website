@@ -1,6 +1,8 @@
 import { BracketButton } from "./BracketButton";
 import { SeatFigure } from "./SeatFigure";
-import { LINKS, SEATS } from "../lib/event";
+import { LINKS } from "../lib/event";
+import { withBase } from "../lib/base";
+import { useSeats } from "../lib/seats";
 
 /**
  * Seats left, straight after the tracks.
@@ -68,12 +70,10 @@ function trackRow(taken, capacity) {
 }
 
 export function Seats() {
-  const { capacity, seatsTaken } = SEATS;
-
-  // Clamped both ways: a hand-typed `seatsTaken` above capacity would
-  // otherwise render more columns than the meter has, and a negative count.
-  const taken = Math.max(0, Math.min(capacity, seatsTaken));
-  const left = capacity - taken;
+  // Live: paid registrations in Supabase, refreshed while the page is open.
+  // useSeats() clamps `taken` to 0..capacity, so the meter can never draw
+  // more columns than it has.
+  const { capacity, taken, left, full } = useSeats();
   const pct = Math.round((taken / capacity) * 100);
 
   return (
@@ -120,11 +120,20 @@ export function Seats() {
         </div>
 
         <div className="hk-seats__cta">
-          <p className="hk-seats__legend">
-            <strong>{left}</strong> seats left of {capacity}
+          <p className="hk-seats__legend" aria-live="polite">
+            {full ? (
+              <>
+                All <strong>{capacity}</strong> seats are taken. Join the
+                waitlist and we will write if one opens.
+              </>
+            ) : (
+              <>
+                <strong>{left}</strong> seats left of {capacity}
+              </>
+            )}
           </p>
-          <BracketButton href={LINKS.signUp}>
-            {left > 0 ? "Claim a seat" : "Join the waitlist"}
+          <BracketButton href={withBase(LINKS.signUp)}>
+            {full ? "Join the waitlist" : "Claim a seat"}
           </BracketButton>
         </div>
       </div>

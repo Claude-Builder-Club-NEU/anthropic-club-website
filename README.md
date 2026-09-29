@@ -362,6 +362,35 @@ layouts are sized off Geist Mono's advance, so a fallback face breaks the art.
 cd hackathon && npm install && npm run dev
 ```
 
+#### Registration, payment and the seat count
+
+`/hackathon/signup/` takes a name, Northeastern email, phone, year, college,
+LinkedIn, resume and headshot, charges **$5 through Stripe Checkout**, and
+lands on a ticket at `/hackathon/ticket/` with the person's seat number. The
+seats-left meter on `/hackathon/` counts paid registrations live, and at 100
+every sign-up button becomes **Join the waitlist**, which is free.
+`/hackathon/sponsor/` is the sponsor one-pager.
+
+| Piece | Where |
+|---|---|
+| Table, bucket and the functions that hand out seats | `supabase/hackathon.sql` (run once in the SQL editor, after `schema.sql`) |
+| Its tests, against real Postgres | `npm run test:hackathon-db` |
+| The API: `/hackathon/api/{seats,register,finish,ticket,stripe-webhook}` | `netlify/functions/hackathon-*.mjs`, shared code in `netlify/lib/hackathon.mjs` |
+
+Unlike every other Supabase table here, **nothing is granted to anon**. The
+browser only ever talks to the Netlify functions, which hold the service role
+key and the Stripe key as Netlify environment variables. A seat is a row
+Stripe has confirmed as paid; there is no way to mark one paid from the
+browser. Resumes and headshots go into a private bucket through one-time
+signed upload URLs.
+
+**Environment variables** (Netlify → Site configuration → Environment
+variables): `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`,
+`STRIPE_WEBHOOK_SECRET`. Without the first two the API answers 503 and the
+form says registration is not open yet. The Stripe webhook endpoint is
+`https://claudeneu.com/hackathon/api/stripe-webhook`, listening for
+`checkout.session.completed` and `checkout.session.async_payment_succeeded`.
+
 `hackathon/README.md` has the rest — the launch placeholders, the design
 decisions and the reasoning behind them. It is linted from inside its own
 folder; the root `eslint.config.js` ignores it.

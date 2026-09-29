@@ -1,0 +1,1324 @@
+/*
+ * The sponsor, signup and ticket pages.
+ *
+ * Separate from index.css, which is the home page's design system, so the
+ * three pages that arrived together can be read together. Everything here is
+ * built from the same tokens and the same moves — dashed rules, mono caps,
+ * square corners, the one red — and imported after index.css, so a shared
+ * class such as .hk-btn or .hk-chip is only ever refined here, never defined.
+ */
+
+/* ==========================================================================
+   /hackathon/sponsor/ — the sponsor one-pager as a page.
+   ========================================================================== */
+
+.hk-sp {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--hk-section-pad);
+}
+
+.hk-sp__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 28px;
+  padding: 96px 0 88px;
+}
+
+.hk-sp__eyebrow {
+  background: var(--red-900);
+  color: var(--red-chip-text);
+}
+
+.hk-sp__title {
+  margin: 0;
+  max-width: 18em;
+  font-family: var(--font-display);
+  font-size: clamp(36px, 4.6vw, 72px);
+  line-height: 1.04;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.hk-sp__accent {
+  color: var(--accent);
+}
+
+/* The one-pager's fact line, on the hero's dashed separators. */
+.hk-sp__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hk-sp__facts li {
+  padding: 0 18px;
+  border-left: 1px dashed var(--dash);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+.hk-sp__facts li:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.hk-sp__lede {
+  margin: 0;
+  max-width: 40em;
+  font-size: 19px;
+  line-height: 30px;
+  color: var(--ink-body);
+  text-wrap: pretty;
+}
+
+.hk-sp__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 36px;
+}
+
+.hk-sp__secondary {
+  color: var(--ink-body);
+}
+
+.hk-sp__block {
+  padding: 56px 0;
+  border-top: 1px dashed var(--chip-bg);
+}
+
+/* The one-pager's red, letter-spaced section labels. */
+.hk-sp__label {
+  margin: 0 0 28px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+}
+
+.hk-sp__win {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--line-soft);
+  border: 1px solid var(--line-soft);
+}
+
+.hk-sp__win li {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 24px;
+  background: var(--ground);
+}
+
+.hk-sp__win-kind {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--red-chip-text);
+}
+
+.hk-sp__win-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.hk-sp__win-text {
+  font-size: 16px;
+  line-height: 25px;
+  color: var(--ink-body);
+}
+
+/* The tier table. Dashed row rules, no verticals, the benefit column left
+   and the five tiers centred: the one-pager's own table. */
+.hk-sp__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.hk-sp__table thead th {
+  padding: 0 8px 16px;
+  vertical-align: bottom;
+  text-align: center;
+  border-bottom: 2px solid var(--ink);
+}
+
+.hk-sp__table thead td {
+  border-bottom: 2px solid var(--ink);
+}
+
+.hk-sp__tier-name {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 26px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.hk-sp__tier-price {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.hk-sp__table tbody th {
+  width: 34%;
+  padding: 14px 16px 14px 0;
+  text-align: left;
+  font-weight: 400;
+  color: var(--ink-body);
+}
+
+.hk-sp__table tbody td {
+  padding: 14px 8px;
+  text-align: center;
+  color: var(--ink);
+}
+
+.hk-sp__table tbody tr {
+  border-bottom: 1px dashed var(--dash);
+}
+
+/* Platinum is the tier with everything; it gets the red wash the tokens
+   reserve for "a featured row". */
+.hk-sp__table th:last-child,
+.hk-sp__table td:last-child {
+  background: var(--accent-soft);
+}
+
+.hk-sp__check {
+  display: inline-block;
+  vertical-align: middle;
+  color: var(--accent);
+}
+
+.hk-sp__text {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.hk-sp__none::before {
+  content: "·";
+  color: var(--dash);
+}
+
+/* Phones get cards instead; see Sponsor.jsx. */
+.hk-sp__cards {
+  display: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hk-sp__card {
+  padding: 20px;
+  border: 1px dashed var(--dash);
+}
+
+.hk-sp__card + .hk-sp__card {
+  border-top: 0;
+}
+
+.hk-sp__card:last-child {
+  background: var(--accent-soft);
+}
+
+.hk-sp__card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0 0 12px;
+}
+
+.hk-sp__card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--ink-body);
+}
+
+.hk-sp__card-list li {
+  display: flex;
+  gap: 12px;
+}
+
+.hk-sp__card-list li::before {
+  content: "+";
+  flex: none;
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+
+.hk-sp__card-list li > span:first-child {
+  flex: 1;
+}
+
+.hk-sp__card-value {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.hk-sp__split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 48px;
+}
+
+.hk-sp__help {
+  margin: 0;
+  max-width: 34em;
+  font-size: 17px;
+  line-height: 28px;
+  color: var(--ink-body);
+}
+
+.hk-sp__help strong,
+.hk-sp__contacts strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.hk-sp__contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+  font-size: 17px;
+  line-height: 26px;
+}
+
+.hk-sp__contacts li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+}
+
+.hk-sp__contacts a {
+  color: var(--ink-body);
+}
+
+.hk-sp__contacts a:hover {
+  color: var(--accent);
+}
+
+/* The one-pager's footer band: organizers on the left, backers on the right. */
+.hk-sp__credits {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 16px;
+  border: 1px dashed var(--dash);
+}
+
+.hk-sp__credit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 32px 24px;
+}
+
+.hk-sp__credit + .hk-sp__credit {
+  border-left: 1px dashed var(--dash);
+}
+
+.hk-sp__credit-label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--ink-faint);
+}
+
+.hk-sp__logos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 20px 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hk-sp__logo {
+  display: block;
+  height: 32px;
+  width: auto;
+  max-width: 120px;
+  object-fit: contain;
+}
+
+.hk-sp__logo--wide {
+  height: 18px;
+  max-width: 180px;
+}
+
+.hk-sp__wordmark {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+}
+
+@media (max-width: 899px) {
+  .hk-sp__table {
+    display: none;
+  }
+
+  .hk-sp__cards {
+    display: block;
+  }
+
+  .hk-sp__win,
+  .hk-sp__split,
+  .hk-sp__credits {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hk-sp__credit + .hk-sp__credit {
+    border-left: 0;
+    border-top: 1px dashed var(--dash);
+  }
+}
+
+@media (max-width: 640px) {
+  .hk-sp__hero {
+    padding: 56px 0 48px;
+  }
+
+  .hk-sp__facts {
+    flex-direction: column;
+  }
+
+  .hk-sp__facts li {
+    padding: 0;
+    border-left: 0;
+  }
+}
+
+/* ==========================================================================
+   /hackathon/signup/ — the registration form.
+   ========================================================================== */
+
+.hk-su {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  padding: 72px 0 var(--hk-section-pad);
+}
+
+.hk-su__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.hk-su__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(36px, 4.4vw, 68px);
+  line-height: 1.04;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+
+.hk-su__lede {
+  margin: 0;
+  max-width: 38em;
+  font-size: 18px;
+  line-height: 28px;
+  color: var(--ink-body);
+}
+
+.hk-su__lede strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.hk-su__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 64px;
+  align-items: start;
+}
+
+.hk-su__grid[hidden] {
+  display: none;
+}
+
+.hk-su__form {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.hk-su__group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.hk-su__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  width: 100%;
+  padding: 0 0 14px;
+  margin-bottom: 24px;
+  border-bottom: 1px dashed var(--dash);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--ink);
+}
+
+.hk-su__legend-index {
+  color: var(--accent);
+}
+
+.hk-su__legend-note {
+  margin-left: auto;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+
+.hk-su__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 20px;
+}
+
+.hk-su__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.hk-su__field--wide {
+  grid-column: 1 / -1;
+}
+
+.hk-su__label {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-body);
+}
+
+.hk-su__optional {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  color: var(--ink-faint);
+}
+
+/* 16px type: anything smaller and iOS zooms the page on focus. */
+.hk-su__input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--surface);
+  font: inherit;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--ink);
+  appearance: none;
+}
+
+textarea.hk-su__input {
+  resize: vertical;
+  min-height: 88px;
+}
+
+.hk-su__input::placeholder {
+  color: #5c5c5c;
+}
+
+.hk-su__input:hover {
+  border-color: var(--ink-faint);
+}
+
+.hk-su__input:focus {
+  outline: var(--rule-focus) solid var(--accent);
+  outline-offset: 0;
+  border-color: var(--accent);
+}
+
+.hk-su__input[aria-invalid="true"] {
+  border-color: var(--accent);
+}
+
+.hk-su__select {
+  position: relative;
+}
+
+.hk-su__select::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid var(--ink-body);
+  border-bottom: 1.5px solid var(--ink-body);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+
+.hk-su__select select {
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.hk-su__select select option {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+/* Year: a row of square toggles rather than a dropdown, because six short
+   choices are faster to hit than to open. */
+.hk-su__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hk-su__choice {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--ink-body);
+  cursor: pointer;
+}
+
+.hk-su__choice input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.hk-su__choice:hover {
+  border-color: var(--ink-faint);
+  color: var(--ink);
+}
+
+.hk-su__choice.is-on {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.hk-su__choice:has(input:focus-visible) {
+  outline: var(--rule-focus) solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* File pickers: a dashed drop box with the real input laid over it, so
+   clicking anywhere opens the picker and keyboard focus lands on the input. */
+.hk-su__drop {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 72px;
+  padding: 12px 16px;
+  border: 1px dashed var(--line);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.hk-su__drop:hover {
+  border-color: var(--ink-faint);
+}
+
+.hk-su__drop.has-file {
+  border-style: solid;
+  border-color: var(--dash);
+}
+
+.hk-su__drop.is-invalid {
+  border-color: var(--accent);
+}
+
+.hk-su__drop:has(input:focus-visible) {
+  outline: var(--rule-focus) solid var(--accent);
+  outline-offset: 2px;
+}
+
+.hk-su__file {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.hk-su__drop-mark {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 48px;
+  background: var(--red-900);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--red-chip-text);
+}
+
+.hk-su__thumb {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border: 1px solid var(--dash);
+}
+
+.hk-su__drop-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hk-su__drop-name {
+  overflow: hidden;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hk-su__drop-hint {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+
+.hk-su__field-error,
+.hk-su__error {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--red-chip-text);
+}
+
+.hk-su__error {
+  padding: 12px 14px;
+  border-left: 2px solid var(--accent);
+  background: var(--accent-soft);
+}
+
+.hk-su__consent {
+  grid-column: 1 / -1;
+  position: relative;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  font-size: 15px;
+  line-height: 23px;
+  color: var(--ink-body);
+  cursor: pointer;
+}
+
+.hk-su__consent input {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  opacity: 0;
+}
+
+.hk-su__box {
+  flex: none;
+  position: relative;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.hk-su__consent input:checked + .hk-su__box {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.hk-su__consent input:checked + .hk-su__box::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border-right: 2px solid var(--on-accent);
+  border-bottom: 2px solid var(--on-accent);
+  transform: rotate(45deg);
+}
+
+.hk-su__consent input:focus-visible + .hk-su__box {
+  outline: var(--rule-focus) solid var(--accent);
+  outline-offset: 3px;
+}
+
+.hk-su__consent.is-invalid .hk-su__box {
+  border-color: var(--accent);
+}
+
+.hk-su__submit {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding-top: 28px;
+  border-top: 1px dashed var(--dash);
+}
+
+.hk-su__submit .hk-btn {
+  font-size: 17px;
+}
+
+.hk-btn:disabled {
+  cursor: progress;
+  color: var(--ink-faint);
+}
+
+.hk-su__status {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+
+.hk-su__aside {
+  position: sticky;
+  top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.hk-su__aside-label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--ink-faint);
+}
+
+.hk-su__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+  color: var(--ink-body);
+}
+
+.hk-su__steps span {
+  display: inline-block;
+  width: 32px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.hk-su__resume {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 640px;
+  padding: 28px;
+  border: 1px dashed var(--dash);
+  background: var(--surface);
+}
+
+.hk-su__resume-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.hk-su__resume-text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 25px;
+  color: var(--ink-body);
+}
+
+.hk-su__resume-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+}
+
+.hk-su__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink-faint);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.hk-su__link:hover {
+  color: var(--accent);
+}
+
+@media (max-width: 1024px) {
+  .hk-su__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 56px;
+  }
+
+  .hk-su__aside {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .hk-su {
+    padding-top: 40px;
+    gap: 36px;
+  }
+
+  .hk-su__fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hk-su__legend-note {
+    margin-left: 0;
+    flex-basis: 100%;
+  }
+
+  .hk-su__submit .hk-btn {
+    font-size: 15px;
+    white-space: normal;
+  }
+}
+
+/* ==========================================================================
+   The ticket (TicketCard.jsx), on the ticket page and as the live preview.
+   ========================================================================== */
+
+.hk-ticket {
+  --hk-notch: 14px;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  max-width: 760px;
+  color: var(--ink);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.hk-ticket__body,
+.hk-ticket__stub {
+  position: relative;
+  background-color: var(--surface);
+  border: 1px solid var(--dash);
+}
+
+.hk-ticket__body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  padding: 24px 28px;
+  border-right: 0;
+  overflow: hidden;
+}
+
+/* The hero's red haze, rising off the body's bottom-left corner. */
+.hk-ticket__body::before {
+  content: "";
+  position: absolute;
+  left: -120px;
+  bottom: -220px;
+  width: 520px;
+  height: 320px;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255, 59, 47, 0.2), transparent);
+}
+
+.hk-ticket__body > * {
+  position: relative;
+}
+
+.hk-ticket__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.hk-ticket__admit {
+  padding: 4px 8px;
+  background: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--on-accent);
+}
+
+.hk-ticket--preview .hk-ticket__admit,
+.hk-ticket--waitlist .hk-ticket__admit {
+  background: var(--red-900);
+  color: var(--red-chip-text);
+}
+
+.hk-ticket__name {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.08;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.hk-ticket__fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 14px 20px;
+  margin: 0;
+}
+
+.hk-ticket__fields div {
+  min-width: 0;
+}
+
+.hk-ticket__wide {
+  grid-column: 1 / -1;
+}
+
+.hk-ticket__fields dt {
+  margin-bottom: 3px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--ink-faint);
+}
+
+.hk-ticket__fields dd {
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hk-ticket__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--dash);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--ink-body);
+}
+
+/* The stub, behind a perforation: a dashed rule with a notch bitten out of
+   the top and bottom edge where it meets the body. Its scanlines are the
+   hero's, at ticket scale. */
+.hk-ticket__stub {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 180px;
+  padding: 24px 20px;
+  border-left: 2px dashed var(--dash);
+  background-color: #070707;
+  background-image: linear-gradient(180deg, #121212 0 13%, transparent 13% 87%, #121212 87% 100%);
+  background-size: 100% 6px;
+}
+
+.hk-ticket__stub::before,
+.hk-ticket__stub::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--hk-notch) / -2 - 1px);
+  width: var(--hk-notch);
+  height: var(--hk-notch);
+  border-radius: 50%;
+  background: var(--ground);
+  border: 1px solid var(--dash);
+}
+
+.hk-ticket__stub::before {
+  top: calc(var(--hk-notch) / -2 - 1px);
+}
+
+.hk-ticket__stub::after {
+  bottom: calc(var(--hk-notch) / -2 - 1px);
+}
+
+.hk-ticket__stub-label,
+.hk-ticket__stub-of {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--ink-faint);
+}
+
+/* The seat number reuses the home page's block digits, without the channel
+   the meter cuts through them, always at the chunky density. */
+.hk-ticket .hk-seats__figure {
+  --hk-seats-em: 76px;
+  color: var(--accent);
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.hk-ticket .hk-seats__digits--fine {
+  display: none;
+}
+
+.hk-ticket .hk-seats__digits--coarse {
+  display: block;
+}
+
+.hk-ticket--preview .hk-seats__figure {
+  color: var(--ascii-3);
+}
+
+.hk-ticket__barcode {
+  width: 132px;
+  height: 36px;
+  margin-top: 8px;
+  fill: var(--ink-body);
+}
+
+.hk-ticket__code {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: var(--ink-faint);
+}
+
+@media (max-width: 560px) {
+  .hk-ticket {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hk-ticket__body {
+    border-right: 1px solid var(--dash);
+    border-bottom: 0;
+    padding: 20px;
+  }
+
+  .hk-ticket__stub {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    border-left: 1px solid var(--dash);
+    border-top: 2px dashed var(--dash);
+  }
+
+  .hk-ticket__stub::before,
+  .hk-ticket__stub::after {
+    top: calc(var(--hk-notch) / -2 - 1px);
+    bottom: auto;
+  }
+
+  .hk-ticket__stub::after {
+    left: auto;
+    right: calc(var(--hk-notch) / -2 - 1px);
+  }
+
+  .hk-ticket__stub-label {
+    flex-basis: 100%;
+  }
+
+  .hk-ticket__barcode {
+    width: 96px;
+  }
+
+  .hk-ticket__fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ==========================================================================
+   /hackathon/ticket/ — the page around the ticket.
+   ========================================================================== */
+
+.hk-tk {
+  padding: 72px 0 var(--hk-section-pad);
+}
+
+.hk-tk__msg,
+.hk-tk__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  max-width: 44em;
+}
+
+.hk-tk__issued {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.hk-tk__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4vw, 60px);
+  line-height: 1.05;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.hk-tk__text {
+  margin: 0;
+  font-size: 18px;
+  line-height: 28px;
+  color: var(--ink-body);
+}
+
+.hk-tk__terminal {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  color: var(--ink-body);
+}
+
+.hk-tk__cursor {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.1em;
+  margin-left: 6px;
+  vertical-align: text-bottom;
+  background: var(--accent);
+  animation: hk-blink 1s steps(1) infinite;
+}
+
+@keyframes hk-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hk-tk__cursor {
+    animation: none;
+  }
+}
+
+.hk-tk__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 36px;
+}
+
+@media (max-width: 640px) {
+  .hk-tk {
+    padding-top: 40px;
+  }
+}
+
+/* Printing a ticket: just the ticket, with its dark fills kept. */
+@media print {
+  .hk-header,
+  .hk-footer,
+  .hk-tk__actions {
+    display: none !important;
+  }
+
+  body,
+  .hk-page {
+    background: #000000;
+  }
+}

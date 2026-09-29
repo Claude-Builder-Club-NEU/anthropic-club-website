@@ -1,5 +1,6 @@
 /**
- * Render the page to static HTML.
+ * Render every page to static HTML: /hackathon/ and its sponsor, signup and
+ * ticket pages, each to its own index.html so Netlify serves them as files.
  *
  * Runs after `vite build` (client) and `vite build --ssr` (server). Without
  * it the site ships an empty <div id="root">: a crawler sees no tracks, no
@@ -8,7 +9,7 @@
  * rendering it once at build time.
  */
 
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -23,9 +24,7 @@ if (!existsSync(SSR_ENTRY)) {
 }
 
 const template = readFileSync(join(DIST, "index.html"), "utf8");
-const { render, HEAD } = await import(pathToFileURL(SSR_ENTRY).href);
-
-const appHtml = render();
+const { render, headFor, PAGES, PAGE_NAMES } = await import(pathToFileURL(SSR_ENTRY).href);
 
 /**
  * Function replacers, not strings.
@@ -36,11 +35,17 @@ const appHtml = render();
  * would splice a copy of the page into the middle of itself. A function's
  * return value is inserted literally.
  */
-const html = template
-  .replace("<!--app-head-->", () => HEAD)
-  // The template's dev-only <title> would otherwise duplicate the real one.
-  .replace(/<title>HACK1984<\/title>\s*/, "")
-  .replace("<!--app-html-->", () => appHtml);
+for (const page of PAGE_NAMES) {
+  const html = template
+    .replace("<!--app-head-->", () => headFor(page))
+    // The template's dev-only <title> would otherwise duplicate the real one.
+    .replace(/<title>HACK1984<\/title>\s*/, "")
+    .replace("<!--app-html-->", () => render(page));
 
-writeFileSync(join(DIST, "index.html"), html);
-console.log(`[prerender] / → index.html (${(html.length / 1024).toFixed(0)}KB)`);
+  const dir = PAGES[page].path ? join(DIST, PAGES[page].path) : DIST;
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "index.html"), html);
+  console.log(
+    `[prerender] /${PAGES[page].path ? `${PAGES[page].path}/` : ""} → ${PAGES[page].path ? `${PAGES[page].path}/` : ""}index.html (${(html.length / 1024).toFixed(0)}KB)`,
+  );
+}

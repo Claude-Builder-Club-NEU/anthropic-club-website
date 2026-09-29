@@ -1,5 +1,7 @@
 import { AsciiPanel } from "./AsciiPanel";
+import { BracketButton } from "./BracketButton";
 import { withBase } from "../lib/base";
+import { LINKS } from "../lib/event";
 import { SPONSOR_TIERS } from "../lib/sponsors";
 
 /**
@@ -30,6 +32,12 @@ export function Sponsors() {
       {SPONSOR_TIERS.map((tier, tierIndex) => (
         <Tier key={tier.label} tier={tier} first={tierIndex === 0} />
       ))}
+
+      {/* The empty cells are an invitation; this is where it goes. */}
+      <div className="hk-sponsors__cta">
+        <p>Want your logo in one of these?</p>
+        <BracketButton href={withBase(LINKS.sponsor)}>Sponsor HACK1984</BracketButton>
+      </div>
     </section>
   );
 }

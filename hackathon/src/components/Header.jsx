@@ -2,6 +2,8 @@ import { useEffect, useId, useRef, useState } from "react";
 import { BracketButton } from "./BracketButton";
 import { Wordmark } from "./Wordmark";
 import { LINKS, NAV } from "../lib/event";
+import { homeAnchor, withBase } from "../lib/base";
+import { useSeats } from "../lib/seats";
 
 /**
  * 3.1 Header.
@@ -26,6 +28,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const toggleRef = useRef(null);
   const navId = useId();
+  const { full } = useSeats();
 
   // Escape closes the panel and puts focus back on the control that opened
   // it, which is where a keyboard user expects to land.
@@ -45,7 +48,7 @@ export function Header() {
 
   return (
     <header className="hk-header">
-      <a className="hk-header__brand" href="#" aria-label="HACK1984 home">
+      <a className="hk-header__brand" href={homeAnchor("")} aria-label="HACK1984 home">
         <Wordmark />
       </a>
 
@@ -57,7 +60,7 @@ export function Header() {
         {NAV.map((item) => (
           <a
             key={item.href}
-            href={item.href}
+            href={homeAnchor(item.href)}
             // Following a link inside the panel has already done what the
             // panel is for.
             onClick={() => setOpen(false)}
@@ -79,8 +82,8 @@ export function Header() {
           {open ? "Close" : "Menu"}
         </BracketButton>
 
-        <BracketButton small href={LINKS.signUp}>
-          Sign up
+        <BracketButton small href={withBase(LINKS.signUp)}>
+          {full ? "Waitlist" : "Sign up"}
         </BracketButton>
       </div>
     </header>

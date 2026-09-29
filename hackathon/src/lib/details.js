@@ -11,7 +11,7 @@ export const DETAILS = [
   {
     icon: "meal",
     title: "Meals",
-    body: "Dinner, breakfast, lunch and late-night snacks all weekend. Tell us about dietary needs when you sign up.",
+    body: "Dinner, breakfast, lunch and late-night snacks all weekend. Tell us about dietary needs on the signup form.",
   },
   {
     icon: "venue",
@@ -26,7 +26,7 @@ export const DETAILS = [
   {
     icon: "bring",
     title: "What to bring",
-    body: "Laptop, charger and ID. Room 101 hackers: bring a soldering iron.",
+    body: "Laptop, charger and student ID. Building hardware? Bring your own parts.",
   },
   {
     icon: "cost",

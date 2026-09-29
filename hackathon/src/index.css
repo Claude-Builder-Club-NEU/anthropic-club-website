@@ -729,6 +729,23 @@ button:focus-visible,
   object-fit: contain;
 }
 
+.hk-sponsors__cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 24px;
+  margin-top: 56px;
+  text-align: center;
+}
+
+.hk-sponsors__cta p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 23px;
+  color: var(--ink-body);
+}
+
 /* --------------------------------------------------------------------------
    3.4 Tracks.
    -------------------------------------------------------------------------- */
@@ -736,28 +753,54 @@ button:focus-visible,
 .hk-tracks {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
+  /* The rules between panels are this 1px gap showing the line colour
+     behind it, so each is drawn once whatever the shape of the grid. The
+     border closes the outside. */
+  gap: 1px;
+  background: var(--line-soft);
+  border: 1px solid var(--line-soft);
 }
 
-/* Every panel carries its left and top edge; the grid's right and bottom
-   edges are closed by the rules below. Written as nth-child because the
-   2 x 2 shape is fixed by SPEC §3.4 — four tracks, two columns. The phone
-   breakpoint restates both rules for a single column. */
 .hk-track {
   display: flex;
   flex-direction: column;
   gap: 32px;
   padding: 32px 24px 40px;
-  border-left: 1px solid var(--line-soft);
-  border-top: 1px solid var(--line-soft);
+  background: var(--ground);
 }
 
-.hk-track:nth-child(2n) {
-  border-right: 1px solid var(--line-soft);
+.hk-track__media,
+.hk-track__content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
-.hk-track:nth-child(n + 3) {
-  border-bottom: 1px solid var(--line-soft);
+.hk-track__content {
+  flex-grow: 1;
+}
+
+/* The main track: full width, art on the left and the brief on the right. */
+.hk-track--lead {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 48px;
+  align-items: start;
+  padding: 32px 32px 40px;
+}
+
+.hk-track--lead .hk-track__title {
+  font-size: clamp(36px, 3.4vw, 52px);
+  line-height: 1.08;
+}
+
+@media (max-width: 1024px) {
+  .hk-track--lead {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    padding: 32px 24px 40px;
+  }
 }
 
 /* The frame takes the darkest step of the ASCII ramp rather than the neutral
@@ -873,6 +916,15 @@ button:focus-visible,
   color: var(--ink-faint);
 }
 
+/* The one-pager's label over each title: MAIN TRACK, ONE PRIZE, SPONSOR
+   TRACK. In the red chip colours, so it reads as the panel's category rather
+   than as another piece of metadata like the count beside it. */
+.hk-track__tag--kind {
+  border-color: var(--red-900);
+  background: var(--red-900);
+  color: var(--red-chip-text);
+}
+
 .hk-track__text {
   display: flex;
   flex-direction: column;
@@ -891,9 +943,18 @@ button:focus-visible,
 
 .hk-track__desc {
   margin: 0;
-  font-size: 17px;
-  line-height: 27px;
+  font-size: 19px;
+  line-height: 28px;
+  color: var(--ink);
+}
+
+.hk-track__body {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 16px;
+  line-height: 26px;
   color: var(--ink-body);
+  text-wrap: pretty;
 }
 
 .hk-track__sponsor {
@@ -2044,25 +2105,15 @@ button:focus-visible,
     border-bottom: 1px dashed var(--chip-bg);
   }
 
-  /* §6: "Tracks go to 1 column." The nth-child rules that close the 2 x 2
-     grid's right and bottom edges are wrong for a single column, so both are
-     reset and restated: every panel needs its right edge, and only the last
-     needs a bottom. */
+  /* §6: "Tracks go to 1 column." The hairlines are the grid gap, so there
+     are no per-panel borders to restate. */
   .hk-tracks {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .hk-track:nth-child(2n),
-  .hk-track {
-    border-right: 1px solid var(--line-soft);
-  }
-
-  .hk-track:nth-child(n + 3) {
-    border-bottom: 0;
-  }
-
-  .hk-track:last-child {
-    border-bottom: 1px solid var(--line-soft);
+  .hk-track,
+  .hk-track--lead {
+    padding: 24px 16px 32px;
   }
 
   /* No container query support: fall back to sizing the art from the
