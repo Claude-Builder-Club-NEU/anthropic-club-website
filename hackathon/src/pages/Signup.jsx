@@ -24,10 +24,14 @@ import {
  *   1. /api/register stores the answers as a PENDING row and hands back two
  *      one-time upload URLs.
  *   2. The resume and headshot go straight to the private Supabase bucket.
- *   3. /api/finish sends them to Stripe for the $5 — or, if the room is full,
- *      gives them a free waitlist place — and they land on their ticket.
+ *   3. /api/finish gives them a seat, or a waitlist place if the room is
+ *      full, and they land on their ticket.
  *
- * Nothing holds a seat until Stripe says it is paid; see supabase/hackathon.sql.
+ * PAYMENT IS OFF for now (Northeastern's limits), so step 3 charges nothing:
+ * the seat is held with the $5 owed, and the page says so plainly, including
+ * what happens if it is not paid. With HACKATHON_PAYMENTS=stripe on the
+ * server, step 3 goes to Stripe Checkout instead and `seats.payments` flips
+ * the copy back to paying now.
  *
  * COMING BACK. Stripe's cancel link returns here with ?resume=<id>, and the
  * pending id is also kept in sessionStorage for the back button. Either way
@@ -89,7 +93,9 @@ export function Signup() {
   };
 
   async function proceed(id) {
-    setStep(seats.full ? "Joining the waitlist…" : "Opening secure checkout…");
+    setStep(
+      seats.full ? "Joining the waitlist…" : seats.payments ? "Opening secure checkout…" : "Claiming your seat…",
+    );
     const done = await finish(id);
     if (done.ok && done.checkout) {
       window.location.assign(done.checkout);
@@ -182,7 +188,11 @@ export function Signup() {
     if (window.location.search) window.history.replaceState(null, "", window.location.pathname);
   }
 
-  const cta = seats.full ? "Join the waitlist" : "Continue to payment · $5";
+  const cta = seats.full
+    ? "Join the waitlist"
+    : seats.payments
+      ? "Continue to payment · $5"
+      : "Claim my seat";
 
   return (
     <main className="hk-su">
@@ -194,16 +204,33 @@ export function Signup() {
         <p className="hk-su__lede">
           {EVENT.dateLong} at {EVENT.venue}.{" "}
           {seats.full ? (
-            <>All {seats.capacity} seats are taken. The waitlist is free, and we
-              will write to you in order if a seat opens.</>
-          ) : (
+            <>All {seats.capacity} seats are taken. Join the waitlist: seats
+              that are not paid for by the deadline go to the waitlist in
+              order.</>
+          ) : seats.payments ? (
             <>
               <strong>{seats.left}</strong> of {seats.capacity} seats left. It is
               $5 to register, paid through Stripe, and your ticket appears the
               moment you have paid.
             </>
+          ) : (
+            <>
+              <strong>{seats.left}</strong> of {seats.capacity} seats left, and
+              your ticket appears the moment you sign up.
+            </>
           )}
         </p>
+        {!seats.payments ? (
+          <p className="hk-su__fee">
+            <span className="hk-su__fee-tag">$5 FEE</span>
+            <span>
+              HACK1984 costs <strong>$5 per student</strong>. Nothing is
+              charged today: we collect it before the event and will tell you
+              how. A seat that is still unpaid at the deadline goes to the
+              next person on the waitlist.
+            </span>
+          </p>
+        ) : null}
       </header>
 
       {resumeId ? (
@@ -212,12 +239,20 @@ export function Signup() {
           <p className="hk-su__resume-text">
             {seats.full
               ? "Seats filled up. You can still join the waitlist with what you sent."
-              : "Payment wasn't finished. Pick up where you left off — nothing to fill in again."}
+              : seats.payments
+                ? "Payment wasn't finished. Pick up where you left off — nothing to fill in again."
+                : "Your sign-up wasn't finished. Pick up where you left off — nothing to fill in again."}
           </p>
           {general ? <p className="hk-su__error" role="alert">{general}</p> : null}
           <div className="hk-su__resume-actions">
             <BracketButton onClick={onResume} disabled={busy}>
-              {busy ? step || "Working…" : seats.full ? "Join the waitlist" : "Pay $5 and get my ticket"}
+              {busy
+                ? step || "Working…"
+                : seats.full
+                  ? "Join the waitlist"
+                  : seats.payments
+                    ? "Pay $5 and get my ticket"
+                    : "Claim my seat"}
             </BracketButton>
             <button type="button" className="hk-su__link" onClick={startOver} disabled={busy}>
               Start over
@@ -302,7 +337,13 @@ export function Signup() {
               {busy ? step || "Working…" : cta}
             </BracketButton>
             <p className="hk-su__status" aria-live="polite">
-              {busy ? `> ${step}` : seats.full ? "> No payment for the waitlist." : "> Payment is handled by Stripe. We never see your card."}
+              {busy
+                ? `> ${step}`
+                : seats.full
+                  ? "> Nothing to pay to join the waitlist."
+                  : seats.payments
+                    ? "> Payment is handled by Stripe. We never see your card."
+                    : "> Nothing to pay today. $5 is due before the event."}
             </p>
           </div>
         </form>

@@ -10,7 +10,16 @@
  * the session is paid, it settles it here. The webhook is the backstop for
  * someone who closes the tab before the redirect lands.
  */
-import { UUID, configured, json, notConfigured, rpc, settle, stripe } from "../lib/hackathon.mjs";
+import {
+  UUID,
+  configured,
+  json,
+  notConfigured,
+  rpc,
+  settle,
+  stripe,
+  stripeConfigured,
+} from "../lib/hackathon.mjs";
 
 const SESSION = /^cs_(test|live)_[A-Za-z0-9]{10,200}$/;
 
@@ -34,6 +43,7 @@ export default async (req) => {
       const known = await rpc("hackathon_by_session", { p_session: sessionId });
       if (!known.ok) return json(404, known);
       if (known.ticket) return json(200, known.ticket);
+      if (!stripeConfigured()) return notConfigured();
 
       const session = await stripe("GET", `checkout/sessions/${sessionId}`);
       if (session.payment_status !== "paid") {

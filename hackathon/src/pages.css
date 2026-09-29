@@ -26,6 +26,11 @@
   padding: 96px 0 88px;
 }
 
+.hk-chip--red {
+  background: var(--red-900);
+  color: var(--red-chip-text);
+}
+
 .hk-sp__eyebrow {
   background: var(--red-900);
   color: var(--red-chip-text);
@@ -483,6 +488,37 @@
 
 .hk-su__grid {
   display: block;
+}
+
+/* The fee, said once and plainly, above the form. */
+.hk-su__fee {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  max-width: 40em;
+  margin: 4px 0 0;
+  padding: 14px 18px;
+  border: 1px dashed var(--accent);
+  background: var(--accent-soft);
+  font-size: 15px;
+  line-height: 23px;
+  color: var(--ink-body);
+  text-align: left;
+}
+
+.hk-su__fee strong {
+  color: var(--ink);
+}
+
+.hk-su__fee-tag {
+  flex: none;
+  padding: 3px 8px;
+  background: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--on-accent);
 }
 
 .hk-su__grid[hidden] {
@@ -1067,7 +1103,7 @@ textarea.hk-su__input {
 
 .hk-ticket__when {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.3fr) minmax(0, 0.9fr);
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr) minmax(0, 0.9fr) minmax(0, 0.8fr);
   gap: 12px 24px;
   margin: 0;
   padding-top: 14px;
@@ -1078,6 +1114,34 @@ textarea.hk-su__input {
 
 .hk-ticket__when dd {
   color: var(--ink-body);
+}
+
+/* Owed is the accent; paid goes quiet. */
+.hk-ticket__when .hk-ticket__fee {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.hk-ticket__when .hk-ticket__fee.is-paid {
+  color: var(--ink);
+}
+
+/* The waitlist line under the name: the ticket must not be mistaken for a
+   seat, so this is the loudest thing after the name. */
+.hk-ticket__notice {
+  display: inline-block;
+  margin: 12px 0 0;
+  padding: 5px 10px;
+  border: 1px solid var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--red-chip-text);
+}
+
+.hk-ticket--waitlist .hk-seats__figure {
+  color: var(--ascii-3);
 }
 
 /* The stub. A perforation and nothing else on the seam. */
@@ -1134,9 +1198,10 @@ textarea.hk-su__input {
   color: var(--ink-faint);
 }
 
-/* Narrower: details go two up, the strip three up still fits to 760. */
+/* Narrower: details and the strip go two up. */
 @media (max-width: 1000px) {
-  .hk-ticket__fields {
+  .hk-ticket__fields,
+  .hk-ticket__when {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -1155,10 +1220,6 @@ textarea.hk-su__input {
   .hk-ticket__main > * {
     padding-left: 20px;
     padding-right: 20px;
-  }
-
-  .hk-ticket__when {
-    grid-template-columns: minmax(0, 1fr);
   }
 
   .hk-ticket__stub {

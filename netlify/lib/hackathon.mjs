@@ -20,10 +20,17 @@
  *                              for /hackathon/api/stripe-webhook (whsec_…).
  *   SUPABASE_URL               Optional; falls back to VITE_SUPABASE_URL,
  *                              which the site already has.
+ *   HACKATHON_PAYMENTS         "stripe" to charge the $5 at signup through
+ *                              Stripe Checkout. Anything else, including
+ *                              unset, is FREE MODE: the first 100 are seated
+ *                              with the fee owed and the rest waitlisted, and
+ *                              the two Stripe keys are not needed. Free mode
+ *                              is the default because Northeastern does not
+ *                              currently let the club take payments online.
  *
- * Without the first two the endpoints answer 503 "not configured", and the
- * signup page says registration is not open yet, rather than taking a form it
- * cannot store.
+ * Without the Supabase key (and, in Stripe mode, the Stripe key) the endpoints
+ * answer 503 "not configured", and the signup page says registration is not
+ * open yet, rather than taking a form it cannot store.
  */
 import { createHmac, timingSafeEqual } from "node:crypto";
 
@@ -38,7 +45,14 @@ const SUPABASE_URL = (env("SUPABASE_URL") || env("VITE_SUPABASE_URL")).replace(/
 const SERVICE_KEY = env("SUPABASE_SERVICE_ROLE_KEY");
 const STRIPE_KEY = env("STRIPE_SECRET_KEY");
 
-export const configured = () => Boolean(SUPABASE_URL && SERVICE_KEY && STRIPE_KEY);
+/** Whether signup charges through Stripe. See HACKATHON_PAYMENTS above. */
+export const paymentsOn = () => env("HACKATHON_PAYMENTS").toLowerCase() === "stripe";
+
+export const configured = () =>
+  Boolean(SUPABASE_URL && SERVICE_KEY && (!paymentsOn() || STRIPE_KEY));
+
+/** For the Stripe-only paths (a returning checkout, the webhook). */
+export const stripeConfigured = () => Boolean(STRIPE_KEY);
 
 /**
  * The site's own origin, for Stripe's return URLs. Netlify sets URL to the

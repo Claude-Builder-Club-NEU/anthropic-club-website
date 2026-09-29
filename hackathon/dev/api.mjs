@@ -11,10 +11,10 @@
  *         code that deploys, against your Supabase project and Stripe test
  *         mode.
  *
- *   MOCK  otherwise. An in-memory stand-in with the same responses, so the
- *         form, the uploads, the "payment" and the ticket can all be clicked
- *         through with no keys at all. Checkout skips Stripe and goes straight
- *         to the ticket. HACKATHON_MOCK_TAKEN=100 starts it full, to see the
+ *   MOCK  otherwise. An in-memory stand-in with the same responses, in free
+ *         mode (no payment), so the form, the uploads and the ticket can all
+ *         be clicked through with no keys at all. HACKATHON_MOCK_TAKEN=100
+ *         starts it full, or POST /hackathon/api/_full fills it, to see the
  *         waitlist.
  */
 import { readdirSync } from "node:fs";
@@ -60,7 +60,13 @@ function mockBackend() {
     const url = new URL(req.url);
     const path = url.pathname.replace(/^\/hackathon\/api\//, "");
 
-    if (path === "seats") return reply(200, { ok: true, capacity, taken });
+    if (path === "seats") return reply(200, { ok: true, capacity, taken, payments: false });
+
+    // Dev only: POST /hackathon/api/_full fills the room, to see the waitlist.
+    if (path === "_full") {
+      taken = capacity;
+      return reply(200, { ok: true, taken });
+    }
 
     if (path.startsWith("_upload/")) {
       files.add(path.slice("_upload/".length));
@@ -96,15 +102,16 @@ function mockBackend() {
       if (!files.has(`${id}/resume.pdf`) || !files.has(`${id}/headshot`)) {
         return reply(422, { ok: false, reason: "files_missing" });
       }
+      // Free mode, like hackathon_claim(): a seat with the fee owed, or the
+      // waitlist once the room is full.
       if (row.status === "pending") {
         if (taken >= capacity) {
           row.status = "waitlist";
           row.waitlist_position = ++waitlist;
-          return reply(200, { ok: true, token: row.token });
+        } else {
+          row.status = "seated";
+          row.spot = ++taken;
         }
-        // "Stripe": straight to the ticket, as if paid.
-        row.session = `cs_test_mock${id.replace(/-/g, "")}`;
-        return reply(200, { ok: true, checkout: `/hackathon/ticket/?session_id=${row.session}` });
       }
       return reply(200, { ok: true, token: row.token });
     }
@@ -131,6 +138,8 @@ function mockBackend() {
         capacity,
         token: row.token,
         refunded: false,
+        fee_cents: 500,
+        fee_paid: false,
       });
     }
 

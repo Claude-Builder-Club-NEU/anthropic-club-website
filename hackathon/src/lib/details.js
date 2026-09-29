@@ -31,6 +31,6 @@ export const DETAILS = [
   {
     icon: "cost",
     title: "Cost",
-    body: "$5 per student. Food, Wi-Fi and swag are covered.",
+    body: "$5 per student, collected before the event, not at signup. Food, Wi-Fi and swag are covered.",
   },
 ];

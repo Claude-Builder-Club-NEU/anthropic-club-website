@@ -57,7 +57,8 @@ export function Footer() {
         <div className="hk-footer__col">
           <h2 className="hk-footer__head">Get involved</h2>
           <p className="hk-footer__line">
-            Claim a seat for $5 and get your ticket straight away.
+            Claim a seat now and get your ticket straight away. The $5 fee is
+            collected before the event.
           </p>
           <BracketButton href={withBase(LINKS.signUp)}>Sign up</BracketButton>
         </div>

@@ -27,16 +27,25 @@
 --
 -- WHAT "ONE SEAT" MEANS
 --
--- A seat is a row with status 'paid'. The meter on the page, the capacity
--- check and the spot number on the ticket all count exactly that. A 'pending'
--- row is someone who filled in the form and has not paid, and it holds
--- nothing: otherwise a script could fill the room by abandoning checkouts.
+-- A seat is a row with status 'seated'. The meter on the page, the capacity
+-- check and the spot number on the ticket all count exactly that. A
+-- 'pending' row is someone who filled in the form but has not finished, and
+-- it holds nothing.
 --
--- The cost of not holding seats is a race at seat 100. Two people can both
--- open a checkout at 99, and both can pay. hackathon_confirm() settles it
--- under a lock: the first payment gets seat 100, the second is moved to the
--- waitlist with `refund_state = 'due'`, and the Netlify function refunds it
--- through Stripe. Refunding the rare loser is better than locking seats.
+-- PAYMENT IS OFF FOR NOW (Northeastern's limits on student-org payments).
+-- The first 100 people to finish the form are seated for free with the $5
+-- fee OWED (fee_paid_at is null); everyone after that joins the waitlist,
+-- free. An officer marks a fee paid with hackathon_mark_fee_paid(email), and
+-- at the payment deadline hackathon_release_unpaid() takes back every seat
+-- still unpaid and hands each one, same seat number, to the next person on
+-- the waitlist. See the officer section at the foot of this file.
+--
+-- The Stripe path is still here and still tested (hackathon_confirm, the
+-- webhook, refunds). It is switched on per deploy with the Netlify variable
+-- HACKATHON_PAYMENTS=stripe, and then a seat is only given once Stripe says
+-- the $5 is paid: fee_paid_at is set at the same moment as the seat. The race
+-- for the last seat is settled under a lock in hackathon_confirm(), and the
+-- loser is waitlisted and refunded.
 
 create extension if not exists "pgcrypto";  -- gen_random_uuid()
 create extension if not exists "citext";    -- case-insensitive email column
@@ -59,14 +68,14 @@ as $fn$ select 100 $fn$;
 create table if not exists public.hackathon_registrations (
   id                    uuid        primary key default gen_random_uuid(),
 
-  -- pending   filled in the form, has not paid (or never will)
-  -- paid      has a seat; `spot` is their number
-  -- waitlist  the room was full; either joined the waitlist for free, or paid
-  --           in the race for the last seat and was refunded
-  -- duplicate paid a second time for an email that already had a seat;
-  --           refunded, and the original seat is untouched
-  status                text        not null default 'pending'
-                          check (status in ('pending', 'paid', 'waitlist', 'duplicate')),
+  -- pending   filled in the form, has not finished
+  -- seated    has a seat; `spot` is their number
+  -- waitlist  the room was full; `waitlist_position` is their place
+  -- duplicate paid a second time for an email that already had a place
+  --           (Stripe mode only); refunded, the original untouched
+  -- released  gave up or lost their seat or waitlist place, usually for not
+  --           paying by the deadline
+  status                text        not null default 'pending',
 
   name                  text        not null,
   email                 citext      not null,
@@ -99,10 +108,36 @@ create table if not exists public.hackathon_registrations (
   -- a refund to issue by hand in the Stripe dashboard.
   refund_state          text        check (refund_state in ('due', 'done')),
 
+  -- When the $5 was received, by Stripe or recorded by an officer. Null
+  -- means the fee is still owed.
+  fee_paid_at           timestamptz,
+  released_at           timestamptz,
+
   created_at            timestamptz not null default now(),
   updated_at            timestamptz not null default now(),
   paid_at               timestamptz
 );
+
+-- ---------------------------------------------------------------------------
+-- Migration from the first version of this file, where a seat was status
+-- 'paid'. Safe to run again: every step is a no-op the second time. The
+-- constraint and index that name the old status are dropped BEFORE the
+-- update, because the update would violate them, and recreated below.
+-- ---------------------------------------------------------------------------
+
+alter table public.hackathon_registrations add column if not exists fee_paid_at timestamptz;
+alter table public.hackathon_registrations add column if not exists released_at timestamptz;
+alter table public.hackathon_registrations drop constraint if exists hackathon_registrations_status_check;
+alter table public.hackathon_registrations drop constraint if exists hk_paid_has_spot;
+drop index if exists public.hk_one_per_email;
+
+update public.hackathon_registrations
+   set status = 'seated', fee_paid_at = coalesce(fee_paid_at, paid_at)
+ where status = 'paid';
+
+alter table public.hackathon_registrations drop constraint if exists hk_status_values;
+alter table public.hackathon_registrations add constraint hk_status_values
+  check (status in ('pending', 'seated', 'waitlist', 'duplicate', 'released'));
 
 alter table public.hackathon_registrations drop constraint if exists hk_name_shape;
 alter table public.hackathon_registrations add constraint hk_name_shape
@@ -130,9 +165,9 @@ alter table public.hackathon_registrations drop constraint if exists hk_dietary_
 alter table public.hackathon_registrations add constraint hk_dietary_shape
   check (dietary is null or length(dietary) <= 300);
 
-alter table public.hackathon_registrations drop constraint if exists hk_paid_has_spot;
-alter table public.hackathon_registrations add constraint hk_paid_has_spot
-  check ((status = 'paid') = (spot is not null));
+alter table public.hackathon_registrations drop constraint if exists hk_seated_has_spot;
+alter table public.hackathon_registrations add constraint hk_seated_has_spot
+  check ((status = 'seated') = (spot is not null));
 
 -- ---------------------------------------------------------------------------
 -- Indexes
@@ -142,7 +177,7 @@ alter table public.hackathon_registrations add constraint hk_paid_has_spot
 -- repeat: someone who abandons checkout and comes back gets a fresh row.
 create unique index if not exists hk_one_per_email
   on public.hackathon_registrations (email)
-  where status in ('paid', 'waitlist');
+  where status in ('seated', 'waitlist');
 
 create unique index if not exists hk_spot_key
   on public.hackathon_registrations (spot)
@@ -204,7 +239,35 @@ stable
 security definer
 set search_path = public
 as $fn$
-  select count(*)::int from public.hackathon_registrations where status = 'paid';
+  select count(*)::int from public.hackathon_registrations where status = 'seated';
+$fn$;
+
+-- The lowest seat number not in use. Numbers are handed out in order, and a
+-- seat taken back from someone who did not pay keeps its number for whoever
+-- gets it next, so no ticket ever reads "seat 104 of 100". Called only under
+-- the hackathon_seats advisory lock.
+create or replace function public.hackathon_next_spot()
+returns integer
+language sql
+stable
+security definer
+set search_path = public
+as $fn$
+  select min(n)::int
+    from generate_series(1, public.hackathon_capacity()) n
+   where not exists (
+     select 1 from public.hackathon_registrations r
+      where r.spot = n and r.status = 'seated');
+$fn$;
+
+create or replace function public.hackathon_next_waitlist()
+returns integer
+language sql
+stable
+security definer
+set search_path = public
+as $fn$
+  select coalesce(max(waitlist_position), 0) + 1 from public.hackathon_registrations;
 $fn$;
 
 -- What a ticket shows. One place, so the three functions that return a
@@ -227,6 +290,8 @@ as $fn$
     'capacity',          public.hackathon_capacity(),
     'token',             r.ticket_token,
     'refunded',          r.refund_state is not null,
+    'fee_cents',         500,
+    'fee_paid',          r.fee_paid_at is not null,
     'paid_at',           r.paid_at,
     'created_at',        r.created_at
   );
@@ -253,7 +318,7 @@ $fn$;
 -- hackathon_register(): the form. Validates, then inserts a PENDING row.
 --
 -- Returns { ok, id, resume_path, headshot_path, full } or { ok: false, reason }.
--- `full` tells the page whether the next step is Stripe or the waitlist.
+-- `full` tells the page whether the next step is a seat or the waitlist.
 --
 -- It DOES say when an email already has a seat ('already_registered'), which
 -- signups.sql's no-oracle rule forbids for the club roster. The trade is
@@ -348,7 +413,7 @@ begin
 
   if exists (
     select 1 from public.hackathon_registrations
-    where email = v_email and status in ('paid', 'waitlist')
+    where email = v_email and status in ('seated', 'waitlist')
   ) then
     return jsonb_build_object('ok', false, 'reason', 'already_registered');
   end if;
@@ -398,7 +463,7 @@ as $fn$
               'already_registered', exists (
                  select 1 from public.hackathon_registrations o
                  where o.email = r.email and o.id <> r.id
-                   and o.status in ('paid', 'waitlist')))
+                   and o.status in ('seated', 'waitlist')))
        from public.hackathon_registrations r
       where r.id = p_id),
     jsonb_build_object('ok', false, 'reason', 'not_found'));
@@ -463,7 +528,7 @@ begin
   -- Paid twice for one email: keep the first seat, refund this one.
   if exists (
     select 1 from public.hackathon_registrations
-    where email = v_row.email and id <> v_row.id and status in ('paid', 'waitlist')
+    where email = v_row.email and id <> v_row.id and status in ('seated', 'waitlist')
   ) then
     update public.hackathon_registrations
        set status = 'duplicate', refund_state = 'due',
@@ -480,8 +545,7 @@ begin
     -- Lost the race for the last seat. Waitlist, and refund.
     update public.hackathon_registrations
        set status = 'waitlist', refund_state = 'due',
-           waitlist_position = (select coalesce(max(waitlist_position), 0) + 1
-                                  from public.hackathon_registrations),
+           waitlist_position = public.hackathon_next_waitlist(),
            stripe_payment_intent = p_payment_intent, amount_cents = p_amount_cents,
            paid_at = now(), updated_at = now()
      where id = p_id
@@ -489,14 +553,12 @@ begin
     return public.hackathon_ticket_json(v_row);
   end if;
 
-  -- Seat numbers are handed out in order and never reused, so a ticket's
-  -- number is a real "you were the 37th". If someone is later removed by
-  -- hand, their number is simply skipped.
+  -- The lowest free seat number; see hackathon_next_spot().
   update public.hackathon_registrations
-     set status = 'paid',
-         spot = (select coalesce(max(spot), 0) + 1 from public.hackathon_registrations),
+     set status = 'seated',
+         spot = public.hackathon_next_spot(),
          stripe_payment_intent = p_payment_intent, amount_cents = p_amount_cents,
-         paid_at = now(), updated_at = now()
+         paid_at = now(), fee_paid_at = now(), updated_at = now()
    where id = p_id
   returning * into v_row;
 
@@ -516,11 +578,15 @@ as $fn$
 $fn$;
 
 -- ---------------------------------------------------------------------------
--- hackathon_join_waitlist(): the room is full, and this person would like to
--- hear if a seat opens. Free: nobody is charged for a waitlist place.
+-- hackathon_claim(): finish a registration WITHOUT payment, which is how
+-- signup works while HACKATHON_PAYMENTS is off. A free seat if there is one,
+-- with the $5 owed; otherwise the next place on the waitlist.
+--
+-- Idempotent like confirm: a second call for a row that is already settled
+-- returns the same ticket.
 -- ---------------------------------------------------------------------------
 
-create or replace function public.hackathon_join_waitlist(p_id uuid)
+create or replace function public.hackathon_claim(p_id uuid)
 returns jsonb
 language plpgsql
 security definer
@@ -539,27 +605,150 @@ begin
     return public.hackathon_ticket_json(v_row);
   end if;
 
-  -- Seats are open again: they should pay for one, not queue for one.
-  if public.hackathon_taken() < public.hackathon_capacity() then
-    return jsonb_build_object('ok', false, 'reason', 'seats_open');
-  end if;
-
   if exists (
     select 1 from public.hackathon_registrations
-    where email = v_row.email and id <> v_row.id and status in ('paid', 'waitlist')
+    where email = v_row.email and id <> v_row.id and status in ('seated', 'waitlist')
   ) then
     return jsonb_build_object('ok', false, 'reason', 'already_registered');
   end if;
 
-  update public.hackathon_registrations
-     set status = 'waitlist',
-         waitlist_position = (select coalesce(max(waitlist_position), 0) + 1
-                                from public.hackathon_registrations),
-         updated_at = now()
-   where id = p_id
-  returning * into v_row;
+  if public.hackathon_taken() < public.hackathon_capacity() then
+    update public.hackathon_registrations
+       set status = 'seated', spot = public.hackathon_next_spot(), updated_at = now()
+     where id = p_id
+    returning * into v_row;
+  else
+    update public.hackathon_registrations
+       set status = 'waitlist', waitlist_position = public.hackathon_next_waitlist(),
+           updated_at = now()
+     where id = p_id
+    returning * into v_row;
+  end if;
 
   return public.hackathon_ticket_json(v_row);
+end;
+$fn$;
+
+drop function if exists public.hackathon_join_waitlist(uuid);
+
+-- ---------------------------------------------------------------------------
+-- OFFICER TOOLS. Run these in the SQL editor; none is callable from the site.
+--
+--   select public.hackathon_mark_fee_paid('someone@northeastern.edu');
+--     Record that their $5 arrived (Venmo, cash, whatever the club uses).
+--
+--   select public.hackathon_release('someone@northeastern.edu');
+--     Take back one person's seat or waitlist place. A freed seat goes, same
+--     number, to the first person on the waitlist. Returns who was released
+--     and who was promoted, so the organizers know whom to tell.
+--
+--   select public.hackathon_release_unpaid();
+--     THE DEADLINE. Releases every seated person whose fee is still unpaid,
+--     in seat order, promoting from the waitlist for each. People promoted in
+--     this run start with the fee owed and are NOT released by it; run it
+--     again at their deadline.
+--
+-- A promoted person's ticket link keeps working and now shows their seat.
+-- Nothing emails anyone: tell them yourself, their email and phone are in the
+-- results.
+-- ---------------------------------------------------------------------------
+
+create or replace function public.hackathon_mark_fee_paid(p_email text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $fn$
+declare
+  v_row public.hackathon_registrations;
+begin
+  update public.hackathon_registrations
+     set fee_paid_at = coalesce(fee_paid_at, now()), updated_at = now()
+   where email = lower(btrim(p_email))::citext and status in ('seated', 'waitlist')
+  returning * into v_row;
+  if not found then
+    return jsonb_build_object('ok', false, 'reason', 'not_found');
+  end if;
+  return jsonb_build_object('ok', true, 'name', v_row.name, 'status', v_row.status,
+                            'spot', v_row.spot, 'fee_paid_at', v_row.fee_paid_at);
+end;
+$fn$;
+
+create or replace function public.hackathon_release(p_email text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $fn$
+declare
+  v_row      public.hackathon_registrations;
+  v_next     public.hackathon_registrations;
+  v_spot     integer;
+  v_promoted boolean := false;
+begin
+  perform pg_advisory_xact_lock(hashtext('hackathon_seats'));
+
+  select * into v_row from public.hackathon_registrations
+   where email = lower(btrim(p_email))::citext and status in ('seated', 'waitlist')
+   for update;
+  if not found then
+    return jsonb_build_object('ok', false, 'reason', 'not_found');
+  end if;
+
+  v_spot := v_row.spot;
+  update public.hackathon_registrations
+     set status = 'released', spot = null, waitlist_position = null,
+         released_at = now(), updated_at = now()
+   where id = v_row.id;
+
+  if v_spot is null then
+    return jsonb_build_object('ok', true,
+      'released', jsonb_build_object('name', v_row.name, 'email', v_row.email::text, 'was', 'waitlist'),
+      'promoted', null);
+  end if;
+
+  -- The seat, same number, to the front of the waitlist.
+  select * into v_next from public.hackathon_registrations
+   where status = 'waitlist'
+   order by waitlist_position
+   limit 1
+   for update;
+
+  if found then
+    v_promoted := true;
+    update public.hackathon_registrations
+       set status = 'seated', spot = v_spot, waitlist_position = null, updated_at = now()
+     where id = v_next.id;
+  end if;
+
+  return jsonb_build_object('ok', true,
+    'released', jsonb_build_object('name', v_row.name, 'email', v_row.email::text, 'was', 'seat ' || v_spot),
+    'promoted', case when v_promoted then
+      jsonb_build_object('name', v_next.name, 'email', v_next.email::text,
+                         'phone', v_next.phone, 'spot', v_spot) end);
+end;
+$fn$;
+
+create or replace function public.hackathon_release_unpaid()
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $fn$
+declare
+  v_email text;
+  v_out   jsonb := '[]'::jsonb;
+begin
+  -- The list is taken first, so people promoted during this run are not
+  -- released by it.
+  for v_email in
+    select email::text from public.hackathon_registrations
+     where status = 'seated' and fee_paid_at is null
+     order by spot
+  loop
+    v_out := v_out || jsonb_build_array(public.hackathon_release(v_email));
+  end loop;
+  return v_out;
 end;
 $fn$;
 
@@ -621,7 +810,9 @@ begin
     'public.hackathon_attach_session(uuid,text)',
     'public.hackathon_confirm(uuid,text,text,integer)',
     'public.hackathon_mark_refunded(uuid)',
-    'public.hackathon_join_waitlist(uuid)',
+    'public.hackathon_claim(uuid)',
+    'public.hackathon_next_spot()',
+    'public.hackathon_next_waitlist()',
     'public.hackathon_ticket(uuid)',
     'public.hackathon_by_session(text)'
   ] loop
@@ -630,19 +821,32 @@ begin
       execute format('grant execute on function %s to service_role', f);
     end if;
   end loop;
+
+  -- Officer tools: the SQL editor only. Not even the Netlify functions.
+  foreach f in array array[
+    'public.hackathon_mark_fee_paid(text)',
+    'public.hackathon_release(text)',
+    'public.hackathon_release_unpaid()'
+  ] loop
+    execute format('revoke execute on function %s from public, anon, authenticated', f);
+    if exists (select 1 from pg_roles where rolname = 'service_role') then
+      execute format('revoke execute on function %s from service_role', f);
+    end if;
+  end loop;
 end $$;
 
 -- ---------------------------------------------------------------------------
 -- Officer queries. Paste into the SQL editor.
 --
---   -- The roster, in seat order.
---   select spot, name, email, phone, class_year, college, linkedin_url, dietary, paid_at
+--   -- The roster, in seat order, with who still owes the $5.
+--   select spot, name, email, phone, (fee_paid_at is not null) as fee_paid,
+--          class_year, college, linkedin_url, dietary
 --   from public.hackathon_registrations
---   where status = 'paid'
+--   where status = 'seated'
 --   order by spot;
 --
 --   -- The waitlist, in order.
---   select waitlist_position, name, email, phone, refund_state
+--   select waitlist_position, name, email, phone, (fee_paid_at is not null) as fee_paid
 --   from public.hackathon_registrations
 --   where status = 'waitlist'
 --   order by waitlist_position;

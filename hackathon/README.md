@@ -100,7 +100,7 @@ only generator left; the detail icons are hand-written vector.
 | `src/lib/pages.js` + `src/App.jsx` | The four pages and the shell around them |
 | `src/pages/Sponsor.jsx` + `src/lib/sponsorship.js` | `/sponsor/`, the one-pager as a page |
 | `src/pages/Signup.jsx` + `src/lib/signup.js` | `/signup/`, the form and its three-step submit |
-| `src/pages/Ticket.jsx` + `src/components/TicketCard.jsx` | `/ticket/`: the ticket and the check-in steps |
+| `src/pages/Ticket.jsx` + `src/components/TicketCard.jsx` | `/ticket/`: the ticket (seat, fee owed or paid, or WAITLIST) and the check-in steps |
 | `src/lib/seats.js` | The live seat count every button and the meter share |
 | `src/pages.css` | Styles for the three pages above |
 | `dev/api.mjs` | `/api/*` in `npm run dev`: the real functions with keys, a mock without |
@@ -207,8 +207,11 @@ links point at `/hackathon/#tracks` rather than a bare `#tracks`.
 **Signing up** is three calls behind one button. `/api/register` stores a
 *pending* row and returns two one-time upload URLs; the browser uploads the
 resume and headshot straight to the private Supabase bucket; `/api/finish`
-creates a $5 Stripe Checkout Session (or, when the room is full, a free
-waitlist place). Stripe returns to `/ticket/?session_id=…`, which settles the
+gives them a seat with the $5 owed, or a waitlist place once 100 are seated.
+That is **free mode**, the default while Northeastern does not let the club
+take payments online. With `HACKATHON_PAYMENTS=stripe` set on Netlify,
+`/api/finish` creates a $5 Stripe Checkout Session instead, and the rest of
+this paragraph applies. Stripe returns to `/ticket/?session_id=…`, which settles the
 payment without waiting for the webhook and swaps the URL for `?t=<token>`, the
 ticket's own address. The webhook settles it for anyone who closes the tab
 first. Leaving checkout returns to `/signup/?resume=<id>`, which offers the

@@ -365,11 +365,21 @@ cd hackathon && npm install && npm run dev
 #### Registration, payment and the seat count
 
 `/hackathon/signup/` takes a name, Northeastern email, phone, year, college,
-LinkedIn, resume and headshot, charges **$5 through Stripe Checkout**, and
-lands on a ticket at `/hackathon/ticket/` with the person's seat number. The
-seats-left meter on `/hackathon/` counts paid registrations live, and at 100
-every sign-up button becomes **Join the waitlist**, which is free.
-`/hackathon/sponsor/` is the sponsor one-pager.
+LinkedIn, resume and headshot, and lands on a ticket at `/hackathon/ticket/`
+with the person's seat number. The seats-left meter on `/hackathon/` counts
+seated registrations live, and at 100 every sign-up button becomes **Join the
+waitlist**, and the ticket says WAITLIST. `/hackathon/sponsor/` is the sponsor
+one-pager.
+
+**Payment is off for now** (Northeastern's limits on student-org payments).
+The first 100 are seated free with the **$5 fee owed**, which the form and the
+ticket both say plainly. Officers record fees with
+`hackathon_mark_fee_paid(email)` and, at the deadline, run
+`hackathon_release_unpaid()`, which takes back every unpaid seat and gives it,
+same number, to the next person on the waitlist. Those functions and the
+queries to use them are at the foot of `supabase/hackathon.sql`. Stripe
+Checkout is still built in and tested: set `HACKATHON_PAYMENTS=stripe` in
+Netlify to charge the $5 at signup instead.
 
 | Piece | Where |
 |---|---|
@@ -379,15 +389,16 @@ every sign-up button becomes **Join the waitlist**, which is free.
 
 Unlike every other Supabase table here, **nothing is granted to anon**. The
 browser only ever talks to the Netlify functions, which hold the service role
-key and the Stripe key as Netlify environment variables. A seat is a row
-Stripe has confirmed as paid; there is no way to mark one paid from the
-browser. Resumes and headshots go into a private bucket through one-time
+key and the Stripe key as Netlify environment variables. Nothing on the site
+can mark a fee paid or release a seat; those are SQL-editor-only officer
+tools. Resumes and headshots go into a private bucket through one-time
 signed upload URLs.
 
 **Environment variables** (Netlify → Site configuration → Environment
-variables): `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`,
-`STRIPE_WEBHOOK_SECRET`. Without the first two the API answers 503 and the
-form says registration is not open yet. The Stripe webhook endpoint is
+variables): `SUPABASE_SERVICE_ROLE_KEY` always; `STRIPE_SECRET_KEY`,
+`STRIPE_WEBHOOK_SECRET` and `HACKATHON_PAYMENTS=stripe` only to take payment
+online. Without the Supabase key the API answers 503 and the form says
+registration is not open yet. The Stripe webhook endpoint is
 `https://claudeneu.com/hackathon/api/stripe-webhook`, listening for
 `checkout.session.completed` and `checkout.session.async_payment_succeeded`.
 

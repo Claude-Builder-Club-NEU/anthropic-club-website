@@ -163,11 +163,67 @@ function Issued({ ticket }) {
     );
   }
 
+  // Taken back by an officer, usually for not paying by the deadline; see
+  // hackathon_release() in supabase/hackathon.sql.
+  if (ticket.status === "released") {
+    return (
+      <section className="hk-tk__msg">
+        <span className="hk-chip">RELEASED</span>
+        <h1 className="hk-tk__title">This registration was released.</h1>
+        <p className="hk-tk__text">
+          The seat or waitlist place for {ticket.name} has been given up,
+          usually because the $5 fee wasn&rsquo;t paid by the deadline. If
+          that&rsquo;s a mistake, email the organizers. You can also sign up
+          again for the next open seat or the waitlist.
+        </p>
+        <BracketButton href={withBase(LINKS.signUp)}>Sign up again</BracketButton>
+      </section>
+    );
+  }
+
   const waitlist = ticket.status === "waitlist";
+  const owes = !waitlist && !ticket.fee_paid;
   const headline = waitlist
     ? `You're #${ticket.waitlist_position} on the waitlist.`
     : `You're in. Seat ${ticket.spot} of ${ticket.capacity}.`;
   const seat = padSeat(ticket.spot);
+
+  let lede;
+  if (waitlist && ticket.refunded) {
+    lede = "The last seat went while you were paying, so your $5 has been refunded. You're on the waitlist instead.";
+  } else if (waitlist) {
+    lede = "The room is full, so this is a waitlist ticket, not a seat. Seats that aren't paid for by the deadline go to the waitlist in order. If one comes to you, this same link will show your seat number, and we'll let you know.";
+  } else if (owes) {
+    lede = "Your seat is held. HACK1984 is $5 per student, collected before the event: we'll tell you how to pay. If it's still unpaid at the deadline, the seat goes to the next person on the waitlist.";
+  } else {
+    lede = "Your seat is held and your $5 is paid. This page is your ticket: bookmark it, print it or screenshot it.";
+  }
+
+  // Numbered from the data, so the pay step can come and go without
+  // renumbering anything by hand.
+  const steps = [
+    owes && {
+      head: "Pay the $5 before the deadline.",
+      text: "We'll email you how, before the event. Unpaid seats go to the waitlist.",
+    },
+    {
+      head: `Come to ${EVENT.venue}.`,
+      text: `Check-in opens ${checkInTime()}, with dinner. Come any time before the opening ceremony.`,
+    },
+    {
+      head: "Give the desk your seat number.",
+      text: (
+        <>
+          Yours is <strong className="hk-checkin__seat">{seat}</strong>. That is
+          all we need to find you: no email, no QR code.
+        </>
+      ),
+    },
+    {
+      head: "Show your Northeastern ID.",
+      text: `The name on it should match the one on this ticket: ${ticket.name}. Then find your team and start building.`,
+    },
+  ].filter(Boolean);
 
   async function copyLink() {
     try {
@@ -182,15 +238,11 @@ function Issued({ ticket }) {
   return (
     <section className="hk-tk__issued" aria-labelledby="tk-h">
       <div className="hk-tk__head">
-        <span className="hk-chip">{waitlist ? "WAITLIST" : "TICKET"}</span>
+        <span className={waitlist ? "hk-chip hk-chip--red" : "hk-chip"}>
+          {waitlist ? "WAITLIST" : "TICKET"}
+        </span>
         <h1 id="tk-h" className="hk-tk__title">{headline}</h1>
-        <p className="hk-tk__text">
-          {waitlist && ticket.refunded
-            ? "The last seat went while you were paying, so your $5 has been refunded. We'll write to you in order if a seat opens."
-            : waitlist
-              ? "We'll write to you in order if a seat opens. There's nothing to pay unless one does."
-              : "This page is your ticket. Bookmark it, print it or screenshot it."}
-        </p>
+        <p className="hk-tk__text">{lede}</p>
       </div>
 
       <TicketCard
@@ -204,6 +256,7 @@ function Issued({ ticket }) {
         waitlistPosition={ticket.waitlist_position}
         capacity={ticket.capacity}
         token={ticket.token}
+        feePaid={ticket.fee_paid}
       />
 
       <div className="hk-tk__actions">
@@ -219,40 +272,19 @@ function Issued({ ticket }) {
       {!waitlist ? (
         <section className="hk-checkin" aria-labelledby="checkin-h">
           <h2 id="checkin-h" className="hk-checkin__title">
-            <span className="hk-chip">ON THE DAY</span>
+            <span className="hk-chip">BEFORE AND ON THE DAY</span>
             Checking in
           </h2>
           <ol className="hk-checkin__steps">
-            <li>
-              <span className="hk-checkin__n">01</span>
-              <div>
-                <p className="hk-checkin__head">Come to {EVENT.venue}.</p>
-                <p className="hk-checkin__text">
-                  Check-in opens {checkInTime()}, with dinner. Come any time
-                  before the opening ceremony.
-                </p>
-              </div>
-            </li>
-            <li>
-              <span className="hk-checkin__n">02</span>
-              <div>
-                <p className="hk-checkin__head">Give the desk your seat number.</p>
-                <p className="hk-checkin__text">
-                  Yours is <strong className="hk-checkin__seat">{seat}</strong>.
-                  That is all we need to find you: no email, no QR code.
-                </p>
-              </div>
-            </li>
-            <li>
-              <span className="hk-checkin__n">03</span>
-              <div>
-                <p className="hk-checkin__head">Show your Northeastern ID.</p>
-                <p className="hk-checkin__text">
-                  The name on it should match the one on this ticket:{" "}
-                  {ticket.name}. Then find your team and start building.
-                </p>
-              </div>
-            </li>
+            {steps.map((step, i) => (
+              <li key={step.head}>
+                <span className="hk-checkin__n">{String(i + 1).padStart(2, "0")}</span>
+                <div>
+                  <p className="hk-checkin__head">{step.head}</p>
+                  <p className="hk-checkin__text">{step.text}</p>
+                </div>
+              </li>
+            ))}
           </ol>
         </section>
       ) : null}

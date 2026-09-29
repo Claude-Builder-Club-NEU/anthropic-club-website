@@ -14,7 +14,14 @@
  * parsed JSON never reproduces Stripe's bytes exactly, and the check would
  * fail on every event.
  */
-import { configured, json, notConfigured, settle, verifyStripeSignature } from "../lib/hackathon.mjs";
+import {
+  configured,
+  json,
+  notConfigured,
+  settle,
+  stripeConfigured,
+  verifyStripeSignature,
+} from "../lib/hackathon.mjs";
 
 const HANDLED = new Set([
   "checkout.session.completed",
@@ -23,7 +30,9 @@ const HANDLED = new Set([
 
 export default async (req) => {
   const secret = (process.env.STRIPE_WEBHOOK_SECRET || "").trim();
-  if (!configured() || !secret) return notConfigured();
+  // Checked even in free mode: a checkout opened before payments were
+  // switched off can still complete, and it must still become a seat.
+  if (!configured() || !stripeConfigured() || !secret) return notConfigured();
 
   const raw = await req.text();
   if (!verifyStripeSignature(raw, req.headers.get("stripe-signature"), secret)) {

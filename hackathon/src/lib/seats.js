@@ -23,7 +23,9 @@ import { withBase } from "./base";
 
 const REFRESH_MS = 30_000;
 
-let state = { capacity: SEATS.capacity, taken: SEATS.seatsTaken, live: false };
+// `payments` is false until the endpoint says otherwise: free mode is the
+// default (see HACKATHON_PAYMENTS in netlify/lib/hackathon.mjs).
+let state = { capacity: SEATS.capacity, taken: SEATS.seatsTaken, live: false, payments: false };
 const listeners = new Set();
 let timer = null;
 let inflight = null;
@@ -41,7 +43,7 @@ export async function refreshSeats() {
       if (!res.ok) return state;
       const data = await res.json();
       if (Number.isFinite(data.capacity) && Number.isFinite(data.taken)) {
-        publish({ capacity: data.capacity, taken: data.taken, live: true });
+        publish({ capacity: data.capacity, taken: data.taken, live: true, payments: data.payments === true });
       }
     } catch {
       // Offline, or the functions are not deployed (a plain `vite preview`).
@@ -72,12 +74,13 @@ function onVisible() {
   if (document.visibilityState === "visible") refreshSeats();
 }
 
-/** { capacity, taken, left, full, live } */
+/** { capacity, taken, left, full, live, payments } */
 export function useSeats() {
   const [seats, setSeats] = useState(() => ({
     capacity: SEATS.capacity,
     taken: SEATS.seatsTaken,
     live: false,
+    payments: false,
   }));
 
   useEffect(() => {
@@ -92,5 +95,12 @@ export function useSeats() {
 
   const capacity = seats.capacity;
   const taken = Math.max(0, Math.min(capacity, seats.taken));
-  return { capacity, taken, left: capacity - taken, full: taken >= capacity, live: seats.live };
+  return {
+    capacity,
+    taken,
+    left: capacity - taken,
+    full: taken >= capacity,
+    live: seats.live,
+    payments: seats.payments,
+  };
 }

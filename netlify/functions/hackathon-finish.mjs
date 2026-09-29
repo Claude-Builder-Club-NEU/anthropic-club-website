@@ -1,11 +1,14 @@
 /**
  * POST /hackathon/api/finish  { id }
  *
- * Step three. The files are up; now either:
+ * Step three. The files are up; now:
  *
- *   - seats are open → a Stripe Checkout Session for $5, and the browser is
- *     sent to it: { ok, checkout: url }
- *   - the room is full → a free waitlist place: { ok, token }
+ *   - FREE MODE (the default; see HACKATHON_PAYMENTS in ../lib/hackathon.mjs)
+ *     → hackathon_claim(): a seat with the $5 owed, or the next waitlist
+ *     place if the room is full: { ok, token }
+ *   - Stripe mode, seats open → a Stripe Checkout Session for $5, and the
+ *     browser is sent to it: { ok, checkout: url }
+ *   - Stripe mode, room full → a free waitlist place: { ok, token }
  *
  * The id is the pending row's uuid from /register. Knowing it lets someone
  * pay for that registration and nothing else.
@@ -22,6 +25,7 @@ import {
   json,
   listFolder,
   notConfigured,
+  paymentsOn,
   rpc,
   settle,
   siteOrigin,
@@ -59,11 +63,12 @@ export default async (req) => {
       return json(422, { ok: false, reason: "files_missing" });
     }
 
-    if (row.full) {
-      const ticket = await rpc("hackathon_join_waitlist", { p_id: id });
+    // Free mode, or a full room in Stripe mode: nobody is charged. Claim
+    // decides seat or waitlist under the same lock that numbers the seats.
+    if (!paymentsOn() || row.full) {
+      const ticket = await rpc("hackathon_claim", { p_id: id });
       if (ticket.ok) return json(200, { ok: true, token: ticket.token, status: ticket.status });
-      if (ticket.reason !== "seats_open") return json(422, ticket);
-      // A seat opened between the two queries. Fall through to payment.
+      return json(422, ticket);
     }
 
     if (row.stripe_session_id) {

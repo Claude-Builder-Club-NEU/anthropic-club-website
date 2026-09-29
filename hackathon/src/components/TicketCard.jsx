@@ -14,6 +14,11 @@ import { COLLEGES, YEARS, formatPhone, labelFor, padSeat } from "../lib/signup";
  * seat number in the same blocks as the seats-left figure on the home page,
  * because that number is what someone reads out at the check-in desk.
  *
+ * A WAITLIST ticket says so three times — the chip, a line under the name,
+ * and the stub — because the one mistake it must never allow is someone
+ * turning up believing they have a seat. The FEE cell says whether the $5 is
+ * still owed.
+ *
  * Below 760px it stacks, and the details drop to two columns.
  *
  * The barcode is decoration drawn from the ticket's token. Nothing scans it.
@@ -55,6 +60,7 @@ export function TicketCard({
   waitlistPosition,
   capacity = 100,
   token,
+  feePaid = false,
 }) {
   const waitlist = status === "waitlist";
   const number = waitlist ? padSeat(waitlistPosition, 2) : padSeat(spot);
@@ -77,6 +83,11 @@ export function TicketCard({
         <div className="hk-ticket__holder">
           <p className="hk-ticket__label">ISSUED TO</p>
           <p className="hk-ticket__name">{name}</p>
+          {waitlist ? (
+            <p className="hk-ticket__notice">
+              WAITLIST #{number} · NOT A SEAT YET · THIS TICKET UPDATES IF ONE OPENS
+            </p>
+          ) : null}
         </div>
 
         <dl className="hk-ticket__fields">
@@ -111,13 +122,19 @@ export function TicketCard({
             <dt>CHECK-IN</dt>
             <dd>Fri from {checkInTime({ long: false })}</dd>
           </div>
+          <div>
+            <dt>FEE</dt>
+            <dd className={feePaid ? "hk-ticket__fee is-paid" : "hk-ticket__fee"}>
+              {feePaid ? "$5 · PAID" : waitlist ? "$5 · IF SEATED" : "$5 · DUE"}
+            </dd>
+          </div>
         </dl>
       </div>
 
       <div className="hk-ticket__stub">
-        <span className="hk-ticket__stub-label">{waitlist ? "IN LINE" : "SEAT"}</span>
+        <span className="hk-ticket__stub-label">{waitlist ? "WAITLIST" : "SEAT"}</span>
         <SeatFigure value={number} />
-        <span className="hk-ticket__stub-of">{waitlist ? "WAITLIST" : `OF ${capacity}`}</span>
+        <span className="hk-ticket__stub-of">{waitlist ? "IN LINE" : `OF ${capacity}`}</span>
         <Barcode seed={token} />
         {token ? <span className="hk-ticket__code">{token.slice(0, 8).toUpperCase()}</span> : null}
       </div>
