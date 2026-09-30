@@ -6,6 +6,7 @@
   "scripts": {
     "tokens": "node scripts/build-tokens.mjs",
     "ics": "node scripts/build-ics.mjs",
+    "icons": "node scripts/build-icons.mjs",
     "dev": "npm run tokens && npm run ics && vite",
     "prebuild": "node scripts/build-tokens.mjs && node scripts/build-ics.mjs",
     "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.mjs",

@@ -4,6 +4,7 @@ import { EVENT } from "../lib/event";
 import { ORGANIZERS } from "../lib/organizers";
 import { SPONSOR_TIERS } from "../lib/sponsors";
 import { TRACKS } from "../lib/tracks";
+import { HACK_WINDOW } from "../lib/schedule";
 import {
   BENEFITS,
   CONTACTS,
@@ -40,13 +41,13 @@ export function Sponsor() {
           using it.
         </h1>
         <ul className="hk-sp__facts">
-          <li>36 hours</li>
+          <li>{HACK_WINDOW ? `${HACK_WINDOW.hours} hours of hacking` : "One weekend"}</li>
           <li>{EVENT.dateLong}</li>
           <li>{EVENT.venue}</li>
           <li>100 builders</li>
         </ul>
         <p className="hk-sp__lede">
-          100 Northeastern students build privacy-first products in 36 hours.
+          100 Northeastern students build privacy-first products over one weekend.
           Sponsors mentor, judge, run challenges on their own tools, and meet
           the co-op and new-grad talent Boston hires from.
         </p>
@@ -178,12 +179,10 @@ export function Sponsor() {
                   className="hk-sp__logo hk-sp__logo--wide"
                   src={withBase(logo.src)}
                   alt={logo.alt}
+                  style={{ height: logo.height }}
                 />
               </li>
             ))}
-            <li>
-              <span className="hk-sp__wordmark">TAVILY</span>
-            </li>
           </ul>
         </div>
       </section>

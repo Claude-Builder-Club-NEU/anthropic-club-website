@@ -1,7 +1,7 @@
 import { SeatFigure } from "./SeatFigure";
 import { WordmarkBlocks } from "./WordmarkBlocks";
 import { EVENT } from "../lib/event";
-import { checkInTime } from "../lib/schedule";
+import { checkInDay, checkInTime } from "../lib/schedule";
 import { COLLEGES, YEARS, formatPhone, labelFor, padSeat } from "../lib/signup";
 
 /**
@@ -120,7 +120,7 @@ export function TicketCard({
           </div>
           <div>
             <dt>CHECK-IN</dt>
-            <dd>Fri from {checkInTime({ long: false })}</dd>
+            <dd>{checkInDay()} from {checkInTime({ long: false })}</dd>
           </div>
           <div>
             <dt>FEE</dt>

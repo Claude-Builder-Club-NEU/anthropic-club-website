@@ -1,6 +1,7 @@
 import { AsciiPanel } from "./AsciiPanel";
 import { SectionHeading } from "./SectionHeading";
 import { TRACKS, TRACK_COUNT } from "../lib/tracks";
+import { withBase } from "../lib/base";
 
 /**
  * Three ways to win.
@@ -20,8 +21,8 @@ export function Tracks() {
     <section id="tracks" aria-labelledby="tracks-h" className="hk-section">
       <SectionHeading id="tracks-h" chip="TRACKS" title="Three ways to win">
         A main track for software that protects the people using it, one prize
-        for the idea most likely to become a company, and a sponsor track from
-        Tavily with three places.
+        for the most fundable idea, and a sponsor track from Tavily with three
+        places. More tracks will be announced as sponsors join.
       </SectionHeading>
 
       <div className="hk-tracks">
@@ -66,13 +67,14 @@ function Track({ track, lead }) {
 
         {track.sponsor ? (
           <div className="hk-track__sponsor">
-            {/* The square is the drawing, not an icon with meaning. */}
-            <span className="hk-track__swatch" aria-hidden="true">
-              <span />
-            </span>
-            <span className="hk-track__sponsor-label">
-              SPONSORED BY {track.sponsor}
-            </span>
+            <span className="hk-track__sponsor-label">SPONSORED BY</span>
+            <img
+              className="hk-track__sponsor-logo"
+              src={withBase(track.sponsor.logo)}
+              alt={track.sponsor.name}
+              height="30"
+              loading="lazy"
+            />
           </div>
         ) : null}
       </div>

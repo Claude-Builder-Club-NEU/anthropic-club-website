@@ -104,6 +104,7 @@ only generator left; the detail icons are hand-written vector.
 | `src/lib/seats.js` | The live seat count every button and the meter share |
 | `src/pages.css` | Styles for the three pages above |
 | `dev/api.mjs` | `/api/*` in `npm run dev`: the real functions with keys, a mock without |
+| `scripts/build-icons.mjs` → `public/favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`, `og.png` | The tab icon and the link preview, drawn from the block mark. Run `npm run icons` by hand and commit the output |
 | `src/ascii/` + `src/lib/ascii.js` | The four track banners |
 | `tools/ascii_scenes.py` | The generator for the banners |
 
@@ -243,12 +244,14 @@ Every one of these is marked `PLACEHOLDER` at the point it occurs.
 - [ ] **Prize amounts.** The three ways to win in `src/lib/tracks.js` say
       what each pays in places ("1st, 2nd and 3rd place", "One prize"), not in
       dollars. Add figures once they are confirmed.
-- [ ] **Event date.** The sponsor one-pager says Nov 7–8; this site says
-      Fri Nov 6 – Sun Nov 8 (`EVENT` in `src/lib/event.js`). The sponsor page
-      reads `EVENT`, so fix the one that is wrong.
-- [ ] **Tavily logo.** The sponsor page credits Tavily as text. Drop a white
-      logo into `public/logos/` and add it to `SPONSOR_TIERS` to show it on the
-      home page too.
+- [ ] **Times.** Sat Nov 7 – Sun Nov 8: doors 9 AM, hacking noon Saturday
+      to 1 PM Sunday (25 hours), done by 5. Waiting on the backup room
+      bookings. The times live in `EVENT` (`src/lib/event.js`, drives the
+      .ics) and `SCHEDULE` (`src/lib/schedule.js`, drives the timeline, the
+      ticket's check-in time and the "25 hours" labels). Move both together,
+      then run `npm run icons` so the link preview's date matches.
+- [ ] **"36 hours".** The sponsor one-pager still says 36 hours; the site no
+      longer does, since the hacking window is now 25.
 - [ ] **Confirm which logo is Rev.** `public/logos/rev.png` is the four-pointed
       star from the supplied set, assigned by elimination — the lightbulb with a
       neural net in it is clearly AINU and the other two are unambiguous. The

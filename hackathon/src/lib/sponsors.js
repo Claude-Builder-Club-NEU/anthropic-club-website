@@ -12,13 +12,18 @@
  * artwork) with its fill switched to white, like the organizer logos. It is
  * 20px and not 28–32 because it is all capitals at 8.7:1 — every pixel of its
  * height is cap height, so 20 sits level with a 30px mark that has a symbol.
+ *
+ * Tavily is the artwork Tavily supplied (the "tavily by NEBIUS" lockup),
+ * converted to white with the shape in the alpha channel, so the icon's arrows
+ * are knocked out to the page behind them. 32px, because it is two lines and
+ * carries a symbol.
  */
 export const SPONSOR_TIERS = [
   {
     label: "BACKED BY",
     logos: [
       { src: "logos/anthropic.svg", alt: "Anthropic", height: 20 },
-      null,
+      { src: "logos/tavily.png", alt: "Tavily by Nebius", height: 32 },
       null,
     ],
   },

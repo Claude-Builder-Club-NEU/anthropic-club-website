@@ -961,6 +961,9 @@ button:focus-visible,
   display: flex;
   align-items: center;
   gap: 16px;
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px dashed var(--chip-bg);
 }
 
 /* The 36px square with a 6px accent square centred in it. Its border is the
@@ -980,6 +983,12 @@ button:focus-visible,
   width: 6px;
   height: 6px;
   background: var(--accent);
+}
+
+.hk-track__sponsor-logo {
+  display: block;
+  height: 30px;
+  width: auto;
 }
 
 .hk-track__sponsor-label {

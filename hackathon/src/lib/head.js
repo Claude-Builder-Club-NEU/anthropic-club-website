@@ -9,6 +9,15 @@ import { PAGES } from "./pages.js";
 export const SITE_ORIGIN = "https://claudeneu.com";
 export const SITE_PATH = "/hackathon/";
 
+/**
+ * The link preview (iMessage, Slack, LinkedIn, Discord) and the tab icon.
+ * All four are drawn by scripts/build-icons.mjs from the hero's block mark,
+ * and committed in public/. og:image has to be an ABSOLUTE url: the apps that
+ * fetch it do not resolve a relative one against the page.
+ */
+const IMAGE = `${SITE_ORIGIN}${SITE_PATH}og.png`;
+const IMAGE_ALT = `${EVENT.name}: a hackathon for software that doesn't watch you. ${EVENT.dateLong}, ${EVENT.venue}.`;
+
 const BASE_TITLE = `${EVENT.name} — ${EVENT.dateRange}, Boston`;
 
 /**
@@ -21,7 +30,7 @@ const META = {
   sponsor: {
     title: `Sponsor ${EVENT.name} — ${EVENT.dateRange}, Boston`,
     description:
-      "100 Northeastern students build privacy-first products in 36 hours. Sponsors mentor, judge, run challenges on their own tools, and meet the co-op and new-grad talent Boston hires from.",
+      "100 Northeastern students build privacy-first products over one weekend. Sponsors mentor, judge, run challenges on their own tools, and meet the co-op and new-grad talent Boston hires from.",
   },
   signup: {
     title: `Sign up — ${EVENT.name}`,
@@ -54,7 +63,16 @@ export function headFor(page) {
     <meta property="og:title" content="${escape(title)}" />
     <meta property="og:description" content="${escape(description)}" />
     <meta property="og:url" content="${url}" />
-    <meta name="twitter:card" content="summary_large_image" />`;
+    <meta property="og:site_name" content="${EVENT.name}" />
+    <meta property="og:image" content="${IMAGE}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="${escape(IMAGE_ALT)}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="${IMAGE}" />
+    <link rel="icon" href="${SITE_PATH}favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="${SITE_PATH}favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="${SITE_PATH}apple-touch-icon.png" sizes="180x180" />`;
 }
 
 /** The home page's head, kept under its old name for anything importing it. */

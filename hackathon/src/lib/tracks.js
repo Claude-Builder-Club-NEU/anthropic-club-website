@@ -15,7 +15,11 @@
  * `facts` is the spec list under the body: what a team would build, what the
  * judges look at, and what it pays.
  *
- * PLACEHOLDER: the prize amounts. None is confirmed, so none is printed.
+ * More tracks are coming; add them here and the page, the sponsor page and
+ * the "01 / 0N" counters all follow.
+ *
+ * PLACEHOLDER: the prize amounts. None is confirmed, so none is printed. The
+ * Most Startup-able prize is meant to come from a venture fund sponsor.
  */
 export const TRACKS = [
   {
@@ -25,18 +29,18 @@ export const TRACKS = [
     title: "Privacy-First",
     description: "Software that protects its users by design.",
     body:
-      "Build something people would actually use: a messenger, a study tool, a health tracker, a browser extension, a device. Then make protecting the person using it the architecture, not a toggle in settings. Collect less, keep it on the device, encrypt whatever has to leave, and be able to show exactly where the data goes.",
+      "Build software that keeps people's data theirs: local AI that never phones home, tools that anonymize data before anyone else sees it, healthcare software that treats patient records like they matter. Make protecting the person using it the architecture, not a toggle in settings. More details on the track are coming closer to the event.",
     pitch: "Software that protects its users by design.",
     facts: [
       {
         key: "BUILD",
-        value: "Local-first apps. On-device AI. End-to-end encryption. Analytics that forget. A client that leaks nothing.",
+        value: "Local AI. Anonymization software. Healthcare software. Anything local-first, encrypted, or built to collect less.",
       },
       {
         key: "JUDGED ON",
         value: "What leaves the device, who can read it, and can you prove it? Then: would anyone use it?",
       },
-      { key: "PRIZE", value: "The main prizes of the weekend" },
+      { key: "PRIZE", value: "The main prizes of the weekend, announced soon" },
     ],
     sponsor: null,
   },
@@ -47,7 +51,7 @@ export const TRACKS = [
     title: "Most Startup-able",
     description: "The idea most likely to become a company.",
     body:
-      "One prize for the team with the clearest path from a Sunday demo to a real company: a real problem, someone who would pay to have it solved, and a reason you are the team to solve it. Privacy counts here too. A company that never holds its users' data has one less thing to lose.",
+      "A standalone prize for the most fundable idea in the room: a real problem, someone who would pay to have it solved, and a reason you are the team to solve it. The prize is meant to come from one of the venture funds sponsoring the weekend; details to come.",
     pitch: "The idea most likely to become a company.",
     facts: [
       {
@@ -56,9 +60,9 @@ export const TRACKS = [
       },
       {
         key: "JUDGED ON",
-        value: "Who is it for, would they pay, and why is this team the one to build it?",
+        value: "How fundable is it? Who is it for, would they pay, and why is this team the one to build it?",
       },
-      { key: "PRIZE", value: "One prize" },
+      { key: "PRIZE", value: "One prize, to be announced" },
     ],
     sponsor: null,
   },
@@ -82,7 +86,7 @@ export const TRACKS = [
       },
       { key: "PRIZE", value: "1st, 2nd and 3rd place" },
     ],
-    sponsor: "TAVILY",
+    sponsor: { name: "Tavily", logo: "logos/tavily.png" },
   },
 ];
 

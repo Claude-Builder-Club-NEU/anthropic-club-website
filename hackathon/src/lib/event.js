@@ -13,41 +13,37 @@ export const EVENT = {
   // but still the page's one-sentence description, so it is what the meta
   // description and the .ics both use.
   tagline:
-    "Every tool you opened today is watching you. Spend 36 hours building the ones that don't.",
+    "Every tool you opened today is watching you. Spend a weekend building the ones that don't.",
 
   // SPEC §3.2 meta line, and the footer's date range.
   venue: "300 Massachusetts Ave, Boston",
-  dateRange: "NOV 6–8, 2026",
+  dateRange: "NOV 7–8, 2026",
   // The same range spelled out, for the line under the hero wordmark. Two
   // strings for one fact is a hazard, so: IF ONE MOVES, MOVE THE OTHER. They
   // are written next to each other for exactly that reason.
-  dateLong: "Fri Nov 6 – Sun Nov 8, 2026",
+  dateLong: "Sat Nov 7 – Sun Nov 8, 2026",
 
   /**
-   * PLACEHOLDER (SPEC §5, "Doors time"). Fri Nov 6, 2026, 6:00 PM ET.
+   * PLACEHOLDER until the backup room bookings are confirmed. Doors Sat Nov 7,
+   * 2026 at 9:00 AM ET; hacking from noon Saturday to 1:00 PM Sunday; judging
+   * and pitching after, done by 5:00 PM.
    *
-   * This one string drives three things that must never disagree: the
-   * countdown target, the countdown paragraph, and the .ics file. -05:00 is
-   * Eastern Standard Time; US DST ends Nov 1 2026, so November 6 is EST and
-   * not EDT. Written as a fixed offset rather than a floating local time so
-   * the countdown is the same number of seconds for a visitor in any timezone.
+   * These drive the .ics file (scripts/build-ics.mjs). -05:00 is Eastern
+   * Standard Time: US DST ends Nov 1 2026, so November 7 is EST, not EDT.
+   * Written as a fixed offset so the calendar entry is the same moment in
+   * every timezone. The on-page schedule is src/lib/schedule.js; IF THESE
+   * MOVE, MOVE THAT TOO.
    */
-  doorsISO: "2026-11-06T18:00:00-05:00",
-  doorsLabel: "Fri Nov 6 at [6:00 PM] ET",
-
-  /**
-   * PLACEHOLDER (SPEC §5, "Schedule"). The moment the clock starts, used for
-   * the "Hacking starts" calendar file. 21:00 Fri to 09:00 Sun is the 36 hours
-   * the name promises; if either end moves, both move.
-   */
-  hackingStartISO: "2026-11-06T21:00:00-05:00",
-  hackingEndISO: "2026-11-08T09:00:00-05:00",
+  doorsISO: "2026-11-07T09:00:00-05:00",
+  doorsLabel: "Sat Nov 7 at [9:00 AM] ET",
+  hackingStartISO: "2026-11-07T12:00:00-05:00",
+  hackingEndISO: "2026-11-08T13:00:00-05:00",
 };
 
 /**
  * Capacity, and how much of it is gone, BEFORE the live count arrives.
  *
- * The real number comes from /hackathon/api/seats, which counts paid
+ * The real number comes from /hackathon/api/seats, which counts seated
  * registrations in Supabase; see src/lib/seats.js. These two values are only
  * what the prerendered HTML shows for the moment before that request lands,
  * and what stays on screen if the endpoint is not reachable.

@@ -13,14 +13,14 @@ import { withBase } from "../lib/base";
  * 3.6 Schedule, as an interactive timeline.
  *
  * IT IS TO SCALE. Every marker sits at its real position between check-in on
- * Friday and prizes on Sunday, so the two hours before the opening ceremony
- * and the eleven overnight hours look like what they are. A list of nine rows
+ * Saturday morning and prizes on Sunday afternoon, so the three hours before
+ * hacking starts and the long night look like what they are. A list of nine rows
  * told you the order; this tells you the shape of the weekend, which is the
  * thing someone deciding whether to come is actually asking about.
  *
- * THE 36 HOURS ARE A SPAN, NOT A ROW. The hacking window is drawn as a lit
- * segment of the rail between its two ends, labelled with its own length. The
- * section is called "36 hours, start to finish" and now the graphic says so.
+ * THE HACKING WINDOW IS A SPAN, NOT A ROW. It is drawn as a lit segment of
+ * the rail between its two ends, labelled with its own length in hours, which
+ * is computed from the data rather than typed, so it cannot drift.
  *
  * INTERACTION: this is the tablist pattern, because that is exactly what it
  * is — a row of selectors over one panel. Click or arrow-key between markers;
@@ -84,7 +84,7 @@ export function Schedule() {
       <SectionHeading
         id="schedule-h"
         chip="SCHEDULE"
-        title="36 hours, start to finish"
+        title="One weekend, start to finish"
       >
         All times Eastern. The schedule is tentative until the week of the
         event.

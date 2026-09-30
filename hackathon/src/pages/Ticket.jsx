@@ -208,7 +208,7 @@ function Issued({ ticket }) {
     },
     {
       head: `Come to ${EVENT.venue}.`,
-      text: `Check-in opens ${checkInTime()}, with dinner. Come any time before the opening ceremony.`,
+      text: `Check-in opens ${checkInTime()}, with breakfast. Come before the opening ceremony; hacking starts at noon.`,
     },
     {
       head: "Give the desk your seat number.",
