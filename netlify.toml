@@ -171,7 +171,18 @@
 
     # Nothing here uses a camera, a microphone, a location or a payment handler.
     # Denying them outright means a future dependency cannot quietly start.
-    Permissions-Policy = "accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), xr-spatial-tracking=()"
+    #
+    # Three are granted to ONE origin, youtube-nocookie.com, for the click-to-play
+    # videos in blog posts (src/components/PostVideo.jsx): autoplay, so the
+    # player starts on the press that loaded it instead of needing a second
+    # one; fullscreen, for the player's own button; and encrypted-media, which
+    # YouTube's player requests. They are scoped to that origin and to self, so
+    # no other frame or script gets them. It matches frame-src below.
+    #
+    # A literal (single-quoted) TOML string, so the origins can carry the double
+    # quotes the header syntax requires.
+    Permissions-Policy = 'accelerometer=(), autoplay=(self "https://www.youtube-nocookie.com"), camera=(), display-capture=(), encrypted-media=(self "https://www.youtube-nocookie.com"), fullscreen=(self "https://www.youtube-nocookie.com"), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), xr-spatial-tracking=()'
+
 
     # Content Security Policy. Derived from what the built output actually
     # requests, not from a template:
@@ -202,10 +213,14 @@
     #                inline style attributes. Style injection cannot execute
     #                script, and the alternative is rewriting every style prop
     #                in the codebase to buy very little.
-    #   frame-src / object-src  nothing is embedded, so both are shut off.
+    #   frame-src    youtube-nocookie.com only, YouTube's privacy-enhanced
+    #                player, framed by a blog post's ::video once a reader
+    #                presses play and never before. Named host, not *.youtube.com:
+    #                the same reason connect-src names the Supabase project.
+    #   object-src   nothing is embedded as an object, so it is shut off.
     #   frame-ancestors  the modern replacement for X-Frame-Options above,
     #                which is kept for older browsers.
-    Content-Security-Policy = "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com https://rdbyncjtnmjqgncrauwl.supabase.co https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; form-action 'self'; frame-src 'none'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com https://rdbyncjtnmjqgncrauwl.supabase.co https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; form-action 'self'; frame-src https://www.youtube-nocookie.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
 
 # Events come from a Google Calendar read at BUILD time, so the site only
 # refreshes when it rebuilds. That is automated in

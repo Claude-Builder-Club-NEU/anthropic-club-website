@@ -1,5 +1,10 @@
 import { Link } from "react-router-dom";
+import { ArrowRightIcon } from "./Icons";
+import PhotoStrip from "./PhotoStrip";
+import PostChart from "./PostChart";
 import PostImage from "./PostImage";
+import PostVideo from "./PostVideo";
+import SlideDeck from "./SlideDeck";
 import {
   FIGURE_SIZES,
   FIGURE_WIDTHS,
@@ -127,6 +132,34 @@ const Figure = ({ block, slug, priority }) => {
   );
 };
 
+/**
+ * `::button[Label](href)`: the one link in a post set as a button, for the
+ * thing the post most wants a reader to do. It is the site's filled coral
+ * action, the one the header's "Join the club" uses, one size up. An outside
+ * link opens in a new tab with the arrow the RSVP links on /events carry.
+ */
+const PostButton = ({ href, label }) => {
+  const external = !href.startsWith("/");
+  return (
+    <p className="postcta">
+      {external ? (
+        <a
+          className="btn btn--coral postcta__btn"
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {label} <ArrowRightIcon width={18} height={18} />
+        </a>
+      ) : (
+        <Link className="btn btn--coral postcta__btn" to={href}>
+          {label} <ArrowRightIcon width={18} height={18} />
+        </Link>
+      )}
+    </p>
+  );
+};
+
 const Block = ({ block, slug, priority }) => {
   switch (block.type) {
     case "heading":
@@ -193,6 +226,40 @@ const Block = ({ block, slug, priority }) => {
 
     case "figure":
       return <Figure block={block} slug={slug} priority={priority} />;
+
+    // Names are checked by lib/blog.js at build time, so anything reaching the
+    // default below is a draft on the dev server.
+    case "gallery":
+      if (block.kind === "slides") {
+        return (
+          <SlideDeck
+            items={block.items}
+            slug={slug}
+            captions={block.items.map((item) =>
+              item.caption ? <Inline nodes={item.caption} /> : null
+            )}
+          />
+        );
+      }
+      return block.kind === "photos" ? (
+        <PhotoStrip items={block.items} slug={slug} />
+      ) : null;
+
+    case "embed":
+      if (block.name === "button") {
+        return <PostButton href={block.href} label={block.label} />;
+      }
+      if (block.name === "video") {
+        return (
+          <PostVideo
+            href={block.href}
+            title={block.label}
+            poster={block.poster}
+            slug={slug}
+          />
+        );
+      }
+      return block.name === "chart" ? <PostChart id={block.arg} /> : null;
 
     default:
       return null;

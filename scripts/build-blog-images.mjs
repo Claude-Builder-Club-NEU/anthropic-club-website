@@ -33,6 +33,13 @@
  * filename, because they are small and because "the thumbnail silently did not
  * build" is a worse failure than nine extra files. The width ladders and the
  * matching `sizes` strings live together in src/lib/blog.js.
+ *
+ * PHOTO STRIPS are the exception. Masters in `blog-src/<slug>/photos/` are
+ * shown in a `:::photos` strip a few hundred pixels tall and never as a figure
+ * or a card, so they get one small ladder and nothing else:
+ *   photos/<name>-{320,480,720}.{avif,webp,jpg}
+ * Resize those masters to about 1080px on the long edge before committing;
+ * 720 is the widest rung, so anything bigger is bytes nobody is served.
  */
 
 import { readdirSync, existsSync, mkdirSync, statSync } from "node:fs";
@@ -47,6 +54,9 @@ const OUT_DIR = resolve(__dirname, "../public/blog-img");
 const FIGURE_WIDTHS = [848, 1272, 1696];
 const CARD_WIDTHS = [480, 720, 1024];
 const CARD_RATIO = 16 / 9;
+/** Kept in step with STRIP_WIDTHS in src/lib/blog.js. */
+const STRIP_WIDTHS = [320, 480, 720];
+const STRIP_DIR = "photos";
 
 const SOURCE_EXT = /\.(jpe?g|png)$/i;
 
@@ -86,9 +96,43 @@ async function main() {
   let bytes = 0;
   let sources = 0;
 
+  // One master, every derivative it needs, skipping any that are already newer
+  // than the master.
+  const build = async (src, jobs) => {
+    const srcTime = statSync(src).mtimeMs;
+    sources += 1;
+    for (const job of jobs) {
+      for (const { ext, apply } of FORMATS) {
+        const out = `${job.out}.${ext}`;
+        if (existsSync(out) && statSync(out).mtimeMs >= srcTime) continue;
+
+        await apply(job.resize(sharp(src).rotate())).toFile(out);
+        made += 1;
+        bytes += statSync(out).size;
+      }
+    }
+  };
+
   for (const slug of slugs) {
     const inDir = join(SRC_DIR, slug);
     const outDir = join(OUT_DIR, slug);
+
+    const stripIn = join(inDir, STRIP_DIR);
+    if (existsSync(stripIn)) {
+      const stripOut = join(outDir, STRIP_DIR);
+      mkdirSync(stripOut, { recursive: true });
+      for (const file of readdirSync(stripIn).filter((f) => SOURCE_EXT.test(f))) {
+        const name = basename(file, extname(file));
+        await build(
+          join(stripIn, file),
+          STRIP_WIDTHS.map((w) => ({
+            out: join(stripOut, `${name}-${w}`),
+            resize: (p) => p.resize({ width: w, withoutEnlargement: true }),
+          }))
+        );
+      }
+    }
+
     const files = readdirSync(inDir).filter((f) => SOURCE_EXT.test(f));
     if (files.length === 0) continue;
 
@@ -97,8 +141,6 @@ async function main() {
     for (const file of files) {
       const name = basename(file, extname(file));
       const src = join(inDir, file);
-      const srcTime = statSync(src).mtimeMs;
-      sources += 1;
 
       const jobs = [
         // Figures keep the master's own shape. The box they sit in carries the
@@ -122,17 +164,7 @@ async function main() {
         })),
       ];
 
-      for (const job of jobs) {
-        for (const { ext, apply } of FORMATS) {
-          const out = `${job.out}.${ext}`;
-          // Skip work when the derivative is newer than its source.
-          if (existsSync(out) && statSync(out).mtimeMs >= srcTime) continue;
-
-          await apply(job.resize(sharp(src).rotate())).toFile(out);
-          made += 1;
-          bytes += statSync(out).size;
-        }
-      }
+      await build(src, jobs);
     }
   }
 

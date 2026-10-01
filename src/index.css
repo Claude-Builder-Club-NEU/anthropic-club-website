@@ -98,6 +98,17 @@
      depend on it: the poll ballot and the join form. */
   --coral-tint: #f6e7e0; /* ink 15.30:1 · gray-text 4.81:1 · coral-text 4.88:1 */
 
+  /* The ordinal ramp for blog charts (components/PostChart.jsx), strongest
+     first: first pick, second, third; definitely, maybe, not for me. One hue,
+     dark to light, because the series are ordered and not categories. Passes
+     the dataviz validator's ordinal checks on paper: monotone lightness, a
+     visible step between neighbours, hue spread 3 degrees. Labels set INSIDE
+     a segment are paper on step 1 (5.58:1) and ink on 2 and 3 (5.90:1 and
+     up); a label beside a bar is always ink, never the bar's colour. */
+  --chart-1: var(--coral-text);
+  --chart-2: var(--coral);
+  --chart-3: #e49a7d;
+
   /* --- Type ------------------------------------------------------------ */
   --font-display: "Poppins", Arial, system-ui, sans-serif;
   --font-body: "Lora", Georgia, "Times New Roman", serif;
@@ -4417,6 +4428,476 @@ textarea.pf-input {
   font-size: var(--step-meta);
   line-height: 1.5;
   color: var(--gray-text);
+}
+
+/* --- Slide deck (:::slides) -------------------------------------------- */
+
+/* The stage is a figure box at 16:9, the shape of a slide, with a hairline:
+   about half the deck is paper-coloured slides, and those would otherwise sit
+   on the page with no edge at all. */
+.postdeck__stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--gray-light);
+  /* A vertical drag still scrolls the page; a sideways one reaches the
+     pointer handlers as a swipe. */
+  touch-action: pan-y;
+  user-select: none;
+}
+
+/* Every slide in the DOM is stacked in the same box and only the current one
+   is visible. `visibility`, not `display`: a hidden neighbour still has a box,
+   so its lazy image loads before it is needed and the swap does not flash. */
+.postdeck__slide {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+}
+
+.postdeck__slide[data-active="true"] {
+  visibility: visible;
+}
+
+.postdeck__slide picture,
+.postdeck__slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* contain, not cover: a slide is text to the edge and must never be cropped.
+   The PDF's page is 959 by 540, a hair off 16:9, so the letterbox is under a
+   pixel and the grey behind it never shows. */
+.postdeck__slide img {
+  object-fit: contain;
+  -webkit-user-drag: none;
+}
+
+/* One button on each side of the slide, centred on its height. A paper square
+   with a hairline in the .btn--secondary vocabulary, so it reads on the ink
+   slides and the paper ones alike; the ink arrow inside is what carries the
+   contrast. 44px is the touch target floor. The hover is an instant tone
+   change: a sweep here would put the highlighter on a control it is not
+   sanctioned for. */
+.postdeck__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  transform: translateY(-50%);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.postdeck__arrow[data-side="prev"] {
+  left: var(--space-2);
+}
+
+.postdeck__arrow[data-side="next"] {
+  right: var(--space-2);
+}
+
+@media (min-width: 40rem) {
+  .postdeck__arrow[data-side="prev"] {
+    left: var(--space-4);
+  }
+
+  .postdeck__arrow[data-side="next"] {
+    right: var(--space-4);
+  }
+}
+
+/* The class sets display, which beats the UA's [hidden] rule, so a hidden
+   arrow (PhotoStrip.jsx, at the end it cannot scroll past) is restated. */
+.postdeck__arrow[hidden] {
+  display: none;
+}
+
+.postdeck__arrow:hover {
+  background: var(--gray-light);
+  border-color: var(--gray-mid);
+}
+
+.postdeck__caption {
+  margin-top: var(--space-3);
+}
+
+/* The chart legend is a list inside .postprose, whose ul rule restores
+   bullets, an indent and a gap above every item. Those are prose rules and the
+   legend is UI, so they are undone here at the specificity they were set at. */
+.postprose .postchart__legend {
+  list-style: none;
+  padding-left: 0;
+}
+
+.postprose .postchart__legend li + li {
+  margin-top: 0;
+}
+
+/* --- Call to action (::button) ----------------------------------------- */
+
+/* One step up from .btn in size, because it is the single action a post asks
+   for and has to win against a page of prose. Full width on a phone, where it
+   is a thumb target first; its own width from 640px. */
+.postprose > .postcta {
+  margin-top: var(--space-8);
+}
+
+.postcta__btn {
+  width: 100%;
+  font-size: var(--step-body);
+  padding: 1.125rem var(--space-8);
+}
+
+@media (min-width: 40rem) {
+  .postcta__btn {
+    width: auto;
+  }
+}
+
+/* A bleed figure pulls its caption back onto the prose column. Inside a deck
+   the caption belongs to the slide instead, so it sits flush with it. Same
+   specificity as that rule and later in the file, so this wins. */
+.postfigure.postdeck .postdeck__caption {
+  margin-inline: 0;
+}
+
+/* --- Photo strip (:::photos) ------------------------------------------- */
+
+/* One row at a fixed height, every photo at its own shape, scrolling sideways
+   inside its own box so the page never does. 12rem on a phone and 15rem from
+   640px: stripSizes() in lib/blog.js computes the image widths from these two
+   heights, so CHANGE BOTH TOGETHER. */
+.poststrip {
+  --strip-h: 12rem;
+  position: relative;
+}
+
+@media (min-width: 40rem) {
+  .poststrip {
+    --strip-h: 15rem;
+  }
+}
+
+/* No scrollbar: the arrows, a trackpad, a swipe and the arrow keys all move
+   it, and a bar under a row of photos reads as a broken layout. Proximity
+   snapping lets a flick settle on a photo's edge without fighting a slow
+   drag. */
+.poststrip__track {
+  position: relative;
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  border-radius: var(--radius-lg);
+}
+
+.poststrip__track::-webkit-scrollbar {
+  display: none;
+}
+
+/* The track is a list inside .postprose, whose ul rules restore bullets, an
+   indent and a gap above every item; undone at the specificity they were set
+   at, the way the chart legend does it. */
+.postprose .poststrip__track {
+  list-style: none;
+  padding-left: 0;
+}
+
+.postprose .poststrip__track li + li {
+  margin-top: 0;
+}
+
+.poststrip__photo {
+  flex: 0 0 auto;
+  height: var(--strip-h);
+  aspect-ratio: var(--photo-ratio);
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--gray-light);
+  scroll-snap-align: start;
+}
+
+.poststrip__photo picture,
+.poststrip__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Video (::video) --------------------------------------------------- */
+
+/* Ink under the poster, because that is what the player's own letterbox is,
+   so the swap from poster to player does not flash a lighter box. */
+.postvideo__box {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--ink);
+}
+
+.postvideo__box iframe,
+.postvideo__play {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.postvideo__play {
+  display: block;
+}
+
+.postvideo__play picture,
+.postvideo__play img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The box clips, so the global ring's 3px outset would be cut off; it is
+   drawn inside instead, at the box's own radius. */
+.postvideo__play:focus-visible {
+  outline-offset: -5px;
+  border-radius: var(--radius-lg);
+}
+
+/* Coral with an ink mark, 5.90:1, the site's filled action. Pressing anywhere
+   on the poster plays, so this is the target the eye looks for rather than
+   the only one the hand can hit. Hover deepens it as .btn--coral does, as an
+   instant change rather than a sweep. */
+.postvideo__icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 54px;
+  transform: translate(-50%, -50%);
+  border-radius: var(--radius-lg);
+  background: var(--coral);
+  color: var(--ink);
+}
+
+.postvideo__play:hover .postvideo__icon,
+.postvideo__play:focus-visible .postvideo__icon {
+  background: var(--coral-text);
+  color: var(--paper);
+}
+
+/* --- Charts (::chart) -------------------------------------------------- */
+
+/* A hairline frame at the figure width, so a chart reads as one object with
+   its title and legend, and not as more lines of prose. Flat, like
+   everything else here: tone and a hairline, no shadow. */
+.postchart {
+  position: relative;
+  padding: var(--space-6);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+}
+
+@media (max-width: 39.99rem) {
+  .postchart {
+    padding: var(--space-4);
+  }
+}
+
+.postchart__head {
+  display: grid;
+  gap: var(--space-1);
+}
+
+/* Weights are stated because Poppins ships at 500 and 600 only and body sets
+   font-synthesis-weight: none; see .postfigure__caption. */
+.postchart__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--step-body);
+  line-height: 1.4;
+}
+
+.postchart__note {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--step-meta);
+  line-height: 1.5;
+  color: var(--gray-text);
+}
+
+.postchart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin-top: var(--space-4);
+  list-style: none;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--step-meta);
+  color: var(--gray-text);
+}
+
+.postchart__legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.postchart__legend i {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.postchart__rows {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+/* Label above the bar on a phone, beside it from 640px. The label column is
+   fixed so every bar in a chart starts from the same baseline. */
+.postchart__row {
+  display: grid;
+  gap: var(--space-1) var(--space-4);
+  align-items: center;
+}
+
+@media (min-width: 40rem) {
+  .postchart__row {
+    grid-template-columns: minmax(0, 13rem) minmax(0, 1fr);
+  }
+}
+
+.postchart__label {
+  display: grid;
+  min-width: 0;
+}
+
+.postchart__name {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--step-small);
+  line-height: 1.35;
+}
+
+.postchart__name[data-strong="true"],
+.postchart__val[data-strong="true"] {
+  font-weight: 600;
+}
+
+.postchart__sub {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--step-meta);
+  line-height: 1.4;
+  color: var(--gray-text);
+}
+
+/* The right margin is the room the tip label lives in, sized for the widest
+   one, "54%". A split row is full width and carries no tip label. */
+.postchart__plot {
+  position: relative;
+  height: 20px;
+  margin-right: 3rem;
+}
+
+.postchart__plot[data-kind="split"] {
+  margin-right: 0;
+}
+
+/* The 2px gap between segments is paper showing through, never a stroke
+   drawn round a mark. Square at the baseline, a 4px round on the data end. */
+.postchart__bar {
+  display: flex;
+  gap: 2px;
+  height: 100%;
+}
+
+.postchart__seg {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.postchart__bar > .postchart__seg:last-child {
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.postchart [data-step="1"] {
+  --step-fill: var(--chart-1);
+}
+.postchart [data-step="2"] {
+  --step-fill: var(--chart-2);
+}
+.postchart [data-step="3"] {
+  --step-fill: var(--chart-3);
+}
+
+.postchart__seg,
+.postchart__legend i {
+  background: var(--step-fill);
+}
+
+.postchart__seg[data-step="1"] {
+  color: var(--paper);
+}
+
+.postchart__val {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--step-meta);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+/* Fixed to the viewport and positioned by PostChart.jsx from the pointer. An
+   ink slip, the one inverted surface small enough not to outweigh the page. */
+.postchart__tip {
+  position: fixed;
+  z-index: 20;
+  max-width: 18rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  white-space: pre-line;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
 }
 
 /* --- Article footer ---------------------------------------------------- */

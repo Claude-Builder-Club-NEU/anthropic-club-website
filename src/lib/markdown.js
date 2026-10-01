@@ -25,6 +25,12 @@
  *     a line that is exactly an image, `![alt](file.jpg "caption")`, is a figure
  *     `---` alone on a line is a paragraph break and renders nothing: the
  *          design system has no horizontal rule inside prose
+ *     `::chart <id>` alone on a line is a chart from lib/postCharts.js
+ *     `::button[Label](href)` alone on a line is a large call-to-action link
+ *     `::video[Title](youtube link "poster.jpg")` is a click-to-play video
+ *     `:::slides` or `:::photos` opens a run of image lines that render as
+ *          one object, a click-through deck or a photo grid, and a line that
+ *          is exactly `:::` closes it. See Directives below.
  *
  *   Inline, inside paragraphs, headings, list items and quotes
  *     `**bold**`, `*italic*`, `` `code` ``, `[text](href)`
@@ -216,6 +222,39 @@ function figureFrom(match) {
 }
 
 /* ------------------------------------------------------------------------ *
+ * Directives
+ *
+ * Two shapes, both from the generic directives proposal that remark-directive
+ * implements, so the syntax is a known one rather than a house invention:
+ *
+ *   ::chart workshops        a LEAF, one line, one registered block
+ *   ::button[RSVP](https://…) a leaf carrying a label and a link, the one
+ *                            place a link is set as a button instead of text
+ *   ::video[Title](https://youtu.be/… "poster.jpg")
+ *                            a YouTube video that loads only when played; the
+ *                            quoted part is a picture to show until then
+ *
+ *   :::slides                a CONTAINER, a run of figure lines rendered as
+ *   ![Alt](slide-01.png)     one object, closed by a line that is exactly
+ *   ![Alt](slide-02.png)     three colons
+ *   :::
+ *
+ * The parser only reads the shape. Which names exist is decided in lib/blog.js,
+ * which knows the chart registry and fails the build on a name it does not
+ * recognise, so a typo cannot ship as a silently missing chart.
+ *
+ * A container holds images and nothing else, and an unclosed one is an error
+ * rather than something that runs to the end of the file. The fence comment
+ * below records what a block that swallows the rest of a post costs: every
+ * heading after it vanished with a clean build.
+ * ------------------------------------------------------------------------ */
+
+const LEAF = /^::([a-z][a-z0-9-]*)(?:\s+([a-z0-9-]+))?$/;
+const LEAF_LINK = /^::([a-z][a-z0-9-]*)\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)$/;
+const CONTAINER = /^:::\s*([a-z][a-z0-9-]*)$/;
+const CONTAINER_END = /^:::$/;
+
+/* ------------------------------------------------------------------------ *
  * Blocks
  * ------------------------------------------------------------------------ */
 
@@ -258,7 +297,10 @@ export function parseMarkdown(src) {
     BREAK.test(line.trim()) ||
     BULLET.test(line) ||
     NUMBER.test(line) ||
-    FIGURE.test(line.trim());
+    FIGURE.test(line.trim()) ||
+    LEAF.test(line.trim()) ||
+    LEAF_LINK.test(line.trim()) ||
+    CONTAINER.test(line.trim());
 
   while (i < lines.length) {
     const line = lines[i];
@@ -301,6 +343,58 @@ export function parseMarkdown(src) {
         type: "heading",
         level: heading[1].length >= 3 ? 3 : 2,
         children: parseInline(heading[2].trim()),
+      });
+      i += 1;
+      continue;
+    }
+
+    const container = CONTAINER.exec(line.trim());
+    if (container) {
+      const kind = container[1];
+      const opened = i + 1;
+      const items = [];
+      i += 1;
+      while (i < lines.length && !CONTAINER_END.test(lines[i].trim())) {
+        const inner = lines[i].trim();
+        const image = FIGURE.exec(inner);
+        if (image) {
+          items.push(figureFrom(image));
+        } else if (inner !== "") {
+          throw new Error(
+            `[markdown] line ${i + 1}: a :::${kind} block holds images only, ` +
+              `one per line. Found: ${inner}`
+          );
+        }
+        i += 1;
+      }
+      if (i >= lines.length) {
+        throw new Error(
+          `[markdown] line ${opened}: :::${kind} is never closed. ` +
+            `End it with a line that is exactly :::`
+        );
+      }
+      i += 1; // the closing :::
+      blocks.push({ type: "gallery", kind, items });
+      continue;
+    }
+
+    const leaf = LEAF.exec(line.trim());
+    if (leaf) {
+      blocks.push({ type: "embed", name: leaf[1], arg: leaf[2] || null });
+      i += 1;
+      continue;
+    }
+
+    const linked = LEAF_LINK.exec(line.trim());
+    if (linked) {
+      blocks.push({
+        type: "embed",
+        name: linked[1],
+        arg: null,
+        label: linked[2],
+        href: linked[3],
+        // The link-title slot, which a video uses for its poster image.
+        poster: linked[4] || null,
       });
       i += 1;
       continue;

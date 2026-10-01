@@ -64,6 +64,21 @@ export const ArrowRightIcon = (props) => (
   </svg>
 );
 
+export const ArrowLeftIcon = (props) => (
+  <svg {...base} {...props}>
+    <line x1="20" y1="12" x2="5" y2="12" />
+    <polyline points="11,6 5,12 11,18" />
+  </svg>
+);
+
+/** Filled, unlike the rest of the set: a play mark drawn as an outline reads
+    as a "next" chevron at small sizes. */
+export const PlayIcon = (props) => (
+  <svg {...base} {...props}>
+    <path d="M8 5.5v13l10.5-6.5z" fill="currentColor" />
+  </svg>
+);
+
 export const ExternalIcon = (props) => (
   <svg {...base} width={14} height={14} {...props}>
     <path d="M14 4h6v6" />

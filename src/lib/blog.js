@@ -37,6 +37,15 @@
  *      fine, and an `?inset` or portrait figure is fine anywhere at all. This is
  *      written down rather than thrown, because the parser has no notion of the
  *      page's layout and a hard error would also block a legitimate inset opener.
+ *      The same goes for a slide deck, a photo grid and a chart, which all take
+ *      the figure's width.
+ *   5. A slide deck is a `:::slides` block of image lines, a photo grid is the
+ *      same with `:::photos`, a chart is `::chart <id>` with the id from
+ *      lib/postCharts.js, a big link button is `::button[Label](href)`, and a
+ *      YouTube video is `::video[Title](link "poster.jpg")`. A `:::photos`
+ *      strip reads its pictures from `blog-src/<slug>/photos/`.
+ *      The masters go in `blog-src/<slug>/` like any other picture.
+ *      lib/markdown.js has the syntax.
  *
  * TO PARK AN UNFINISHED ONE
  *   Put it in `src/content/blog/drafts/` instead. It renders on the dev server
@@ -73,6 +82,7 @@
  */
 
 import { BOARD } from "./board";
+import { findChart } from "./postCharts";
 import {
   parseFrontmatter,
   parseMarkdown,
@@ -161,6 +171,67 @@ function assertDate(slug, field, value, required) {
   }
 }
 
+/**
+ * The parser reads a directive's shape and nothing else; the names are checked
+ * here, where the chart registry is in reach. PostBody renders an unknown name
+ * as nothing, so without this a misspelt `::chart workshop` would publish a
+ * post with a hole where its chart should be and a clean build.
+ */
+const GALLERY_KINDS = new Set(["slides", "photos"]);
+
+function assertDirectives(slug, blocks) {
+  for (const block of blocks) {
+    if (block.type === "gallery") {
+      if (!GALLERY_KINDS.has(block.kind)) {
+        throw new Error(
+          `[blog] ${slug}: :::${block.kind} is not a block this blog has. ` +
+            `Use :::slides or :::photos.`
+        );
+      }
+      if (block.items.length === 0) {
+        throw new Error(`[blog] ${slug}: :::${block.kind} has no images in it`);
+      }
+    }
+    if (block.type === "embed" && block.name === "button") {
+      // A button whose link is still a placeholder must never deploy, so
+      // anything that is not a real https:// address or a site path fails the
+      // production build. The dev server lets it through so the post can be
+      // previewed while the link is being made.
+      const real = /^https:\/\/[^/\s]+\.[^/\s]+/.test(block.href || "") ||
+        /^\/(?!\/)/.test(block.href || "");
+      if (!block.label || (!real && !import.meta.env.DEV)) {
+        throw new Error(
+          `[blog] ${slug}: ::button[${block.label ?? ""}] needs a real link, ` +
+            `got ${block.href ?? "none"}`
+        );
+      }
+      continue;
+    }
+    if (block.type === "embed" && block.name === "video") {
+      // YouTube only, because it is the one player the CSP in netlify.toml
+      // lets the page frame. Anything else would build and then be blocked
+      // in the browser, which looks like a broken embed and is not.
+      if (!youtubeId(block.href)) {
+        throw new Error(
+          `[blog] ${slug}: ::video needs a YouTube link, got ${block.href}`
+        );
+      }
+      continue;
+    }
+    if (block.type === "embed") {
+      if (block.name !== "chart") {
+        throw new Error(`[blog] ${slug}: ::${block.name} is not a block this blog has`);
+      }
+      if (!findChart(block.arg)) {
+        throw new Error(
+          `[blog] ${slug}: ::chart ${block.arg ?? ""} names no chart in ` +
+            `lib/postCharts.js`
+        );
+      }
+    }
+  }
+}
+
 function toPost(path, raw) {
   // "../content/blog/september2026.md" -> "september2026"
   const filename = path.slice(path.lastIndexOf("/") + 1).replace(/\.md$/, "");
@@ -190,7 +261,13 @@ function toPost(path, raw) {
     );
   }
 
-  const blocks = parseMarkdown(body);
+  let blocks;
+  try {
+    blocks = parseMarkdown(body);
+  } catch (err) {
+    throw new Error(`[blog] ${slug}: ${err.message}`);
+  }
+  assertDirectives(slug, blocks);
 
   return {
     slug,
@@ -380,6 +457,31 @@ export const INSET_FIGURE_SIZES =
  */
 export const PORTRAIT_FIGURE_SIZES =
   "(min-width: 34rem) 486px, calc(100vw - 48px)";
+
+/**
+ * A photo in a `:::photos` strip is drawn at a fixed HEIGHT, so its width is
+ * that height times its own ratio. 15rem (240px) tall from 640px and 12rem
+ * (192px) below, matching .poststrip in index.css: a 3:2 shot is 360px wide
+ * and a 2:3 one 160px, so 720 covers the widest at 2x and 320 the narrowest.
+ * Masters live in `blog-src/<slug>/photos/` and get only this ladder.
+ */
+export const STRIP_WIDTHS = [320, 480, 720];
+export const STRIP_DIR = "photos";
+
+/** `ratio` is the figure's CSS form, "2 / 3". */
+export function stripSizes(ratio) {
+  const [w, h] = String(ratio || "3 / 2").split("/").map(Number);
+  const r = w / h;
+  return `(min-width: 40rem) ${Math.round(240 * r)}px, ${Math.round(192 * r)}px`;
+}
+
+/** The YouTube id in a youtu.be, watch?v= or /embed/ link, or null. */
+export function youtubeId(href) {
+  const match = String(href || "").match(
+    /^https:\/\/(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([A-Za-z0-9_-]{11})(?:[?&].*)?$/
+  );
+  return match ? match[1] : null;
+}
 
 /** "hero.jpg" -> "/blog-img/september2026/hero". */
 export function imageBase(slug, file) {
