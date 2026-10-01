@@ -64,7 +64,7 @@ click through them.
 ![Section two: what a semester looks like.](slide-08.png)
 ![Workshops: we teach it, you build it, you show it off. Labeled beginner, intermediate or advanced, with industry leaders and Anthropic employees every semester, every other week.](slide-09.png)
 ![Workshop 1, Introduction to Claude, Code and Cowork: what AI is and how it works, then build a dashboard with Canvas and Google connections, then show off your work.](slide-10.png)
-![Interested in a hackathon? A two hour mini hackathon on Thursday, October 29, and Northeastern's biggest hackathon on November 6 to 8 with ACM, AINU and REV.](slide-11.png)
+![Interested in a hackathon? A two hour mini hackathon on Thursday, October 29, and Northeastern's biggest hackathon with ACM, AINU and REV.](slide-11.png)
 ![What's your skill level? If you've never built, leave the first workshop with something that works. If you've built a few, get recognized at claudeneu.com/featureme. If you already ship, teach one at claudeneu.com/events/pitch.](slide-12.png)
 ![Section three: your turn!](slide-13.png)
 ![Ballot one: pick three workshops from a list of ten, each labeled by level. Workshop 1 is locked, so these fill slots two, three and four.](slide-14.png)
@@ -111,7 +111,7 @@ what you made at the end. No coding experience needed.
 **Mini hackathon, October 29.** Two hours, one theme: Money Moves. More details
 soon.
 
-**Save the date: November 6–8.** Our hackathon with our partner clubs ACM, AINU,
+**Save the date: November 7–8.** Our hackathon with our partner clubs ACM, AINU,
 and REV.
 
 Everything lives on our [events page](/events), with the room and an RSVP button
