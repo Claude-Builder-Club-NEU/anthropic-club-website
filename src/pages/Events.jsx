@@ -2,7 +2,15 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import MonthGrid from "../components/MonthGrid";
 import EventTile from "../components/EventTile";
-import { upcoming, kindOf, KINDS, KIND_ORDER, statusOf } from "../lib/events";
+import {
+  upcoming,
+  past,
+  kindOf,
+  formatEventDate,
+  KINDS,
+  KIND_ORDER,
+  statusOf,
+} from "../lib/events";
 import { CALENDAR_ICS, hasCalendar } from "../lib/links";
 import { ArrowRightIcon, CalendarIcon } from "../components/Icons";
 
@@ -27,16 +35,35 @@ import { ArrowRightIcon, CalendarIcon } from "../components/Icons";
  * not something this site does.
  */
 const Events = () => {
-  // Memoised because upcoming() builds a fresh array on every call. Without
-  // this, `all` changes identity each render, so every downstream useMemo and
-  // effect keyed on it re-runs every render too.  Events come from a
-  // build-time JSON import and cannot change during a session.
-  const all = useMemo(() => upcoming(), []);
+  // Memoised because upcoming() and past() build fresh arrays on every call.
+  // Without this, `all` changes identity each render, so every downstream
+  // useMemo and effect keyed on it re-runs every render too. Events come from
+  // a build-time JSON import and cannot change during a session. Both are cut
+  // at the same instant, so an event is in exactly one of them.
+  const { all, done } = useMemo(() => {
+    const now = new Date();
+    return { all: upcoming(now), done: past(now) };
+  }, []);
   const [kind, setKind] = useState("ALL");
 
   const events = useMemo(
     () => (kind === "ALL" ? all : all.filter((e) => kindOf(e) === kind)),
     [all, kind]
+  );
+  const pastEvents = useMemo(
+    () => (kind === "ALL" ? done : done.filter((e) => kindOf(e) === kind)),
+    [done, kind]
+  );
+
+  /**
+   * The calendar keeps everything, past included, oldest first. A session that
+   * has happened still happened on that day, and the month it sat in should
+   * not turn blank the moment it ends. MonthGrid opens on the month of the
+   * next one coming up, and marks the ones behind it as past.
+   */
+  const calendarEvents = useMemo(
+    () => [...pastEvents].reverse().concat(events),
+    [pastEvents, events]
   );
 
   const hasAny = all.length > 0;
@@ -68,10 +95,14 @@ const Events = () => {
         ? `No ${KINDS[kind]?.plural.toLowerCase() ?? "events"} coming up.`
         : "No events planned at this time! Check back at a later date.";
 
-  // Only offer a filter for a kind that actually appears on the calendar.
+  // Only offer a filter for a kind that actually appears on the calendar,
+  // which now includes the events that are over.
   const availableKinds = useMemo(
-    () => KIND_ORDER.filter((k) => all.some((e) => kindOf(e) === k)),
-    [all]
+    () =>
+      KIND_ORDER.filter((k) =>
+        [...all, ...done].some((e) => kindOf(e) === k)
+      ),
+    [all, done]
   );
 
   return (
@@ -172,9 +203,9 @@ const Events = () => {
       >
         <h2 id="calendar-heading">Calendar</h2>
 
-        <MonthGrid events={events} />
+        <MonthGrid events={calendarEvents} />
 
-        {hasAny && (
+        {all.length + done.length > 0 && (
           <ul className="legend" aria-label="Event kinds">
             {KIND_ORDER.map((k) => (
               <li key={k} className="legend__item" data-kind={k}>
@@ -200,6 +231,52 @@ const Events = () => {
           </p>
         )}
       </section>
+
+      {/* Everything that has already happened, newest first. The same events
+          stay on the calendar above; this is the list of them, so a session is
+          still findable after its tile has left the Upcoming row. No RSVP on
+          any of them, since there is nothing left to sign up for. Follows the
+          filter like everything else on the page. Not rendered at all until
+          the club has a past. */}
+      {done.length > 0 && (
+        <section
+          aria-labelledby="past-heading"
+          className="mx-auto w-full max-w-6xl px-6 pb-16 sm:px-10 sm:pb-24 lg:px-16"
+        >
+          <h2 id="past-heading">Past events</h2>
+
+          {pastEvents.length > 0 ? (
+            <ul className="past-events">
+              {pastEvents.map((event) => {
+                const k = kindOf(event);
+                return (
+                  <li key={event.id} className="past-event">
+                    <p className="meta" style={{ maxWidth: "none" }}>
+                      {formatEventDate(event)}
+                    </p>
+                    <h3 className="past-event__title">{event.title}</h3>
+                    <p className="past-event__meta">
+                      <span className="past-event__kind" data-kind={k}>
+                        <span className="kind-swatch" aria-hidden="true" />
+                        {KINDS[k].label}
+                      </span>
+                      {event.location && (
+                        <span className="past-event__where">
+                          {event.location}
+                        </span>
+                      )}
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className="mt-6 text-gray-text">
+              No past {KINDS[kind]?.plural.toLowerCase() ?? "events"} yet.
+            </p>
+          )}
+        </section>
+      )}
 
       {/* The "Other ways to get involved" heading was removed; the band keeps
           its two columns. With no heading above them the columns are no longer

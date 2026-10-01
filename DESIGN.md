@@ -447,6 +447,15 @@ fill, under the 3:1 floor for a graphic that means something.
   is what lets the pointer cross the gap between chip and card. Clicking pins
   it, and pinning is the only case that moves focus, since stealing focus on
   hover would be hostile. Escape closes it.
+- **Past events.** An event that has ended stays on the month grid, because it
+  still happened on that day, but gives up its kind fill: a paper chip with a
+  Pale Clay edge and Stone Gray words, the same move a full session makes on
+  the homepage, where prominence changes and legibility does not. Its card says
+  "This event has passed" in an inert outline where the RSVP would be. The grid
+  opens on the month of the next event still to come, or today's month when
+  nothing is. Below the calendar, a "Past events" list repeats them newest
+  first, each with its date, kind and room and no action. It follows the filter
+  chips like the rest of the page and is not rendered until something is over.
 - **Legend.** Three swatch-and-label rows under the grid.
 
 > **Approved exception 5 — the reveal.** Both hover details animate: a short

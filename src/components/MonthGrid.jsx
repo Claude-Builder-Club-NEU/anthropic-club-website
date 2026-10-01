@@ -31,6 +31,13 @@ import { ArrowRightIcon } from "./Icons";
  * keyboard, and pinning is also the only case that moves focus: stealing focus
  * on hover would be hostile.
  *
+ * PAST EVENTS STAY ON THE GRID. The events page hands this every event, the
+ * finished ones included, oldest first. It opens on the month of the next
+ * event still to come, or on today's month when nothing is, and a finished
+ * event is drawn as a quiet paper chip whose card says it has passed in place
+ * of an RSVP. Like the month cursor, "past" is only ever worked out in the
+ * browser: the grid renders nothing but its skeleton on the server.
+ *
  * The grid stays a <table>. The design uses CSS grid; a real table lets a
  * screen reader announce the weekday for a given cell and navigate by row and
  * column, which a grid of divs does not.
@@ -64,8 +71,9 @@ const MonthGrid = ({ events = [] }) => {
   const closeTimer = useRef(null);
 
   useEffect(() => {
-    const anchor = events.length ? new Date(events[0].start) : new Date();
-    setCursor(startOfMonth(anchor));
+    const now = new Date();
+    const next = events.find((e) => new Date(e.end || e.start) >= now);
+    setCursor(startOfMonth(next ? new Date(next.start) : now));
     // Events come from a build-time JSON import, so this runs once.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -178,7 +186,10 @@ const MonthGrid = ({ events = [] }) => {
   }
 
   const shown = pop ? events.find((e) => e.id === pop.id) : null;
-  const isCurrentMonth = sameMonth(cursor, new Date());
+  const now = new Date();
+  const isCurrentMonth = sameMonth(cursor, now);
+  /* Over once it has ended, the same cut lib/events.js upcoming() makes. */
+  const isPast = (e) => new Date(e.end || e.start) < now;
   const countLabel =
     count === 0
       ? "Nothing scheduled"
@@ -265,6 +276,7 @@ const MonthGrid = ({ events = [] }) => {
                                 type="button"
                                 className="cal-chip"
                                 data-kind={kind}
+                                data-past={isPast(e) ? "true" : undefined}
                                 aria-expanded={pop?.id === e.id}
                                 aria-controls="cal-pop"
                                 onMouseEnter={(ev) =>
@@ -289,6 +301,7 @@ const MonthGrid = ({ events = [] }) => {
                                 </span>
                                 <span className="sr-only">
                                   , {KINDS[kind].label}
+                                  {isPast(e) ? ", past event" : ""}
                                 </span>
                               </button>
                             );
@@ -339,7 +352,12 @@ const MonthGrid = ({ events = [] }) => {
               <p className="cal-pop__blurb">{shown.description}</p>
             )}
 
-            {(shown.rsvpUrl || LUMA_URL) && (
+            {/* Nothing to sign up for once it is over. Said in place of the
+                button, in the inert style a full session uses on the
+                homepage, so the card does not just end abruptly. */}
+            {isPast(shown) ? (
+              <p className="cal-pop__past">This event has passed</p>
+            ) : (shown.rsvpUrl || LUMA_URL) && (
               <a
                 className="cal-pop__rsvp"
                 href={shown.rsvpUrl || LUMA_URL}
