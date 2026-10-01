@@ -31,5 +31,16 @@
     "rsvpUrl": "https://docs.google.com/forms/d/e/1FAIpQLSc7uJWcelHB4jCX0_YcW8uy3Wo-JeJ7-rwR7H0DN3-hzsB6aA/viewform",
     "url": null,
     "allDay": false
+  },
+  {
+    "id": "1m01n2v9s1mdctik3ukfvlos6q@google.com",
+    "title": "Introduction to Claude, Code and Cowork",
+    "start": "2026-10-15T22:00:00.000Z",
+    "end": "2026-10-15T23:00:00.000Z",
+    "location": null,
+    "description": "Bring a laptop. We'll cover what AI is, how it works, and the basics of working with Claude. Then you'll build a dashboard connected to Canvas and Google that manages your schedule and runs locally on your device, and share what you made at the end. No coding experience needed.",
+    "rsvpUrl": "https://luma.com/1zbtefzs",
+    "url": null,
+    "allDay": false
   }
 ]
