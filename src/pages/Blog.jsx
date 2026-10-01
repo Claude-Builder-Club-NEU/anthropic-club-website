@@ -10,6 +10,7 @@ import {
   CARD_SIZES,
   CARD_SUFFIX,
   CARD_WIDTHS,
+  FIGURE_WIDTHS,
   LEAD_CARD_SIZES,
   formatPostDate,
   imageBase,
@@ -163,10 +164,13 @@ const PostCard = ({ post, feature = false }) => {
     <article className="postcard" data-feature={feature ? "true" : undefined}>
       <div className="postcard__art">
         {post.thumb ? (
+          /* The feature takes the uncropped figure ladder, not the card crop:
+             its column is tall, so the picture is drawn far wider than the
+             column. LEAD_CARD_SIZES in lib/blog.js has the arithmetic. */
           <PostImage
             base={imageBase(post.slug, post.thumb)}
-            widths={CARD_WIDTHS}
-            suffix={CARD_SUFFIX}
+            widths={feature ? FIGURE_WIDTHS : CARD_WIDTHS}
+            suffix={feature ? "" : CARD_SUFFIX}
             sizes={feature ? LEAD_CARD_SIZES : CARD_SIZES}
             alt={post.thumbAlt}
             /* The feature's panel is the LCP element on this page. Every card

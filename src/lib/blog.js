@@ -427,11 +427,19 @@ export const CARD_SIZES =
   "(min-width: 900px) 500px, (min-width: 640px) calc(100vw - 80px), calc(100vw - 48px)";
 
 /**
- * The feature card's panel is a fixed 320px column beside the copy above 900px,
- * and a full-width band on top below it.
+ * The feature card's panel is a 320px column beside the copy above 900px, and
+ * a full-width 16:9 band on top below it.
+ *
+ * The column is TALLER than it is wide, so the picture is not drawn 320px
+ * wide: object-fit: cover scales it to the column's height, about 376px with a
+ * three-line title, and a 16:9 picture at that height is about 670px wide. The
+ * size below states that drawn width, not the column's, or the browser picks a
+ * rung half the size it needs and the picture is upscaled and soft. For the
+ * same reason the feature uses the uncropped FIGURE_WIDTHS ladder rather than
+ * the card crops: the card ladder tops out at 1024, short of 2x at 670.
  */
 export const LEAD_CARD_SIZES =
-  "(min-width: 900px) 320px, (min-width: 640px) calc(100vw - 80px), calc(100vw - 48px)";
+  "(min-width: 900px) 680px, (min-width: 640px) calc(100vw - 80px), calc(100vw - 48px)";
 
 /**
  * A figure that breaks out sits on the shell's edges, 846px, but only at 58rem

@@ -3769,6 +3769,16 @@ textarea.pf-input {
   }
 }
 
+/* A picture fills the whole panel. The panel centres its children, which is
+   right for the spark tile and wrong for a <picture>: centred, it shrinks to
+   the image's own 16:9 box, which left coral bars above and below it in the
+   feature's tall column. Absolute fill takes it out of the centring, and
+   object-fit on the img does the framing. */
+.postcard__art picture {
+  position: absolute;
+  inset: 0;
+}
+
 .postcard__art img {
   display: block;
   width: 100%;
