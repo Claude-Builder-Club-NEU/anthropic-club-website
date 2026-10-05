@@ -242,10 +242,9 @@ a hairline. Reaching for `box-shadow` means the tonal step was not doing its job
 Corners are nearly sharp: 4px as the default, 8px on large panels. The system
 reads as printed matter, and printed matter does not have soft corners.
 
-Board cards are the one deliberate exception, at 14px with a 10px photo slot
-inside. They are portrait objects rather than sheets of paper, and the softer
-corner is what makes them read as cards rather than cropped panels. Nothing
-else on the site uses those two steps.
+Board headshots take the 8px panel corner. They used to be the one exception,
+14px dark cards with a 10px photo slot, until the board moved to the light grid
+described under Components.
 
 Borders are 1px Hairline; no colored left-borders, no thick rules. Images sit in
 fixed aspect-ratio containers so the page never reflows as they load.
@@ -300,21 +299,42 @@ inverted full-width band and its only textured surface.
   only monospace on the site, and the only place a system face is used, since
   self-hosting a mono for one label is not worth the weight.
 
-### Board cards
-The one inverted surface in the system. A Near-Black Ink card, 14px corners,
-with a light photo slot at the top that resolves into the ink base before any
-text begins. The blend is confined to the photo region on purpose: running it
-across the whole card puts the role label on a mid-tone band where Claude Coral
-fails contrast.
+### Board
+A light grid on the Oat band: four across from 768px, two below, eight
+people filling both evenly. No card surface and no inverted panel. Each member
+is a square headshot at 8px corners with the type hanging underneath, so the
+photo is the object. Chosen on 2026-10-05 from ten local variations, replacing
+the dark ink cards.
 
-- **Role:** the anchor of the card. Uppercase, tracked +0.12em, in Claude Coral,
-  set above the name. Coral measures 5.90:1 on ink, so on this surface, and only
-  on this surface, the accent may carry text.
-- **Name:** Lora 600 at title size in Warm Paper.
-- **Photo slot:** 4:5, 10px corners, dashed hairline while empty, holding the
-  member's initials. The box is identical whether or not a photo exists, so
-  adding one shifts nothing.
-- **Hover:** the card border takes Claude Coral. Nothing lifts.
+- **Name:** Poppins 600, one line. Up to 18px, sized by `cqi` against the
+  card's own width so the longest name on the roster still holds one line on
+  a 320px phone, never under 12px.
+- **Role:** under the name, uppercase, tracked +0.12em, in Burnt Terracotta
+  (4.70:1 on Oat). Coral cannot carry it here; it could only on the old ink
+  card.
+- **Detail lines:** affiliation, optional second affiliation, then the major,
+  one per line, in Stone Gray Poppins 500 (4.64:1 on Oat).
+- **Social marks:** 16px glyphs in 32px targets, Stone Gray, Burnt Terracotta
+  on hover and focus.
+- **Photo slot:** 1:1, holding the member's initials while empty. The box is
+  identical whether or not a photo exists, so adding one shifts nothing.
+- **Claude Ambassador tag:** a paper label floating 8px into the headshot's
+  top left corner: the Claude Spark, unrecoloured, and "Ambassador" in ink
+  (17.50:1 on paper), Poppins 600 at 11px, uppercase, +0.06em, at the 4px
+  corner. It is the one chip on the site, asked for by the club. On a photo
+  under 150px it steps down to 10px so it clears the right edge. The visible
+  tag is `aria-hidden`; "Claude Ambassador" follows the heading as visually
+  hidden text.
+- **Order:** as the build brief set it, except that Oliver precedes Lucas so
+  the two Claude Ambassadors sit side by side.
+
+### About photos
+The group photo opens `/about` under the standfirst at the full content width,
+and four candids run as one row of 3:2 boxes (two across below 1024px) after
+the two text columns. They are kept apart deliberately: four small pictures
+directly under a large one read as a gallery's thumbnails, and these do not
+swap anything. Same box as a blog figure: 8px corners, an Oat ground while
+loading, the ratio set on the box so nothing reflows.
 
 ### Navigation
 Poppins 500 at 15px, Ink, no underline at rest. Hover and focus draw the
@@ -385,8 +405,8 @@ swatches carry a hairline because Claude Coral is 2.96:1 against paper as a bare
 fill, under the 3:1 floor for a graphic that means something.
 
 - **Feature tiles.** Up to three upcoming events above the calendar. Oat panels
-  on a hairline; the next event up is the one inverted tile, the same emphasis
-  device the board cards use, which keeps coral to the small accent the system
+  on a hairline; the next event up is the one inverted tile, an emphasis device
+  that keeps coral to the small accent the system
   budgets for. The handoff fills tiles one, two and three dark, coral, light
   regardless of content; that is dropped.
 

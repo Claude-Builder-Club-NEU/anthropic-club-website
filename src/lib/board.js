@@ -1,5 +1,7 @@
 /**
- * Executive board. Order is intentional and matches the build brief.
+ * Executive board. Order is intentional and matches the build brief, with
+ * one change asked for by the club on 2026-10-05: Oliver now precedes Lucas,
+ * so the two Claude Ambassadors sit side by side at the head of the grid.
  *
  * Two Vice Presidents is intentional, not a typo.
  *
@@ -37,6 +39,12 @@
  * placeholder to the real image. Every member now has a master, so no card
  * shows an initials tile; the fallback stays for the next person to join.
  *
+ * `ambassador: true` pins a paper tag, the Claude Spark and "Ambassador", in
+ * the top left corner of a member's headshot, for whoever holds that title
+ * alongside their board role.
+ * Jackson and Oliver do, per the club. The full title, read out to screen
+ * readers, lives in AMBASSADOR_TITLE below, once.
+ *
  * TYPO CORRECTED: Lucas's address was supplied as "salzgeber.l@northesatern.edu".
  * The domain is misspelt ("northesatern"), which would bounce, so it is stored
  * here as northeastern.edu. Worth confirming.
@@ -50,9 +58,21 @@ export const BOARD = [
     affiliation: "Founder @ Logicull",
     major: "BA, Entrepreneurial Startups",
     photo: true,
+    ambassador: true,
     linkedin: "https://www.linkedin.com/in/jacksonlamoureux/",
     email: "lamoureux.ja@northeastern.edu",
     github: "https://github.com/lamouro",
+  },
+  {
+    slug: "oliver-ward",
+    name: "Oliver Ward",
+    role: "Vice President",
+    affiliation: "Founder @ RUSH Focus Energy",
+    major: "BA, Entrepreneurial Startups + AI",
+    photo: true,
+    ambassador: true,
+    linkedin: "https://www.linkedin.com/in/oliver-ward-4929222bb/",
+    email: "ward.ol@northeastern.edu",
   },
   {
     slug: "lucas-salzgeber",
@@ -63,16 +83,6 @@ export const BOARD = [
     photo: true,
     linkedin: "https://www.linkedin.com/in/lucas-salzgeber/",
     email: "salzgeber.l@northeastern.edu",
-  },
-  {
-    slug: "oliver-ward",
-    name: "Oliver Ward",
-    role: "Vice President",
-    affiliation: "Founder @ RUSH Focus Energy",
-    major: "BA, Entrepreneurial Startups + AI",
-    photo: true,
-    linkedin: "https://www.linkedin.com/in/oliver-ward-4929222bb/",
-    email: "ward.ol@northeastern.edu",
   },
   {
     slug: "smyan-sengupta",
@@ -136,6 +146,9 @@ export const BOARD = [
     // ship a dead link with his name on it.
   },
 ];
+
+/** The tag set on a member with `ambassador: true`. */
+export const AMBASSADOR_TITLE = "Claude Ambassador";
 
 /** "Jackson Lamoureux" -> "JL". Drives the placeholder tile. */
 export const initials = (name) =>

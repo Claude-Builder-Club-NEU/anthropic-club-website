@@ -87,8 +87,8 @@
   /* Secondary text on an INK ground, which is the inverse of --gray-text and
      needs its own value: --gray-text is 5.51:1 on paper and only 1.7:1 on ink,
      so reusing it on a dark surface would be unreadable. Used by the board
-     cards, the board link, and the inverted event tile, which is also the card
-     /fallfest leads with. Was repeated as a bare #d8d4cc in four places before
+     link and the inverted event tile, which is also the card /fallfest leads
+     with; the board itself moved to a light grid on 2026-10-05. Was repeated as a bare #d8d4cc in four places before
      it had a name. */
   --ink-text-muted: #d8d4cc; /* 12.47:1 on ink */
 
@@ -879,61 +879,41 @@ a {
 }
 
 /* ==========================================================================
-   Board cards
-   Dark cards: a light photo slot at the top resolving into an ink base that
-   carries the text. Coral measures 5.90:1 on ink, so the role can finally be
-   set in the brand accent and still clear AA.
+   Board
+   Headshots on the oat ground with the type hanging underneath: square photo,
+   name, role, detail lines, social marks. No card surface, no inverted panel;
+   the photo is the object. This replaced the dark ink cards on 2026-10-05.
 
-   NOTE: the vertical blend is a gradient, which §3.3 of the revision brief
-   otherwise prohibits. It is here because the supplied reference image calls
-   for it explicitly. Swap `--board-blend` for a solid to remove it.
+   Contrast on Oat: Burnt Terracotta 4.70:1, Stone Gray 4.64:1, ink 14.73:1.
    ========================================================================== */
 
-/* The card body is solid ink and the blend is confined to the photo region,
-   which resolves to ink before any text starts. Running the gradient across
-   the whole card put the coral role label on a mid-tone band where it failed
-   contrast. */
-/* Seven people in a three-column grid leaves one card alone on the final row,
-   pinned to the left with two empty cells beside it, which reads as a gap
-   rather than a decision. Drop it into the middle column instead.
-   The selector only fires when the last card is genuinely alone in its row
-   (roster length 3n+1), so it does nothing at other counts, and only at the
-   breakpoint where there are three columns. */
-@media (min-width: 1024px) {
-  .board-grid > li:last-child:nth-child(3n + 1) {
-    grid-column: 2;
-  }
-}
-
-/* Two columns: an odd roster leaves one alone, centred the same way. */
-@media (min-width: 640px) and (max-width: 1023px) {
+/* Four across from 768px, two below. Eight people fill both layouts evenly;
+   an odd roster at two columns leaves one alone, so centre it rather than
+   leave a hole beside it. */
+@media (max-width: 767px) {
   .board-grid > li:last-child:nth-child(2n + 1) {
     grid-column: 1 / -1;
-    max-width: calc(50% - var(--space-3));
+    width: calc(50% - var(--space-3));
     margin-inline: auto;
   }
 }
 
-.board-card-inner {
+/* A size container, so the Claude Ambassador tag can answer to the card's own
+   width rather than the viewport's. */
+.board-card {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  border-radius: 14px;
-  overflow: hidden;
-  background: var(--ink);
-  border: 1px solid var(--rule);
-  transition: border-color var(--sweep-duration) var(--sweep-ease);
+  min-width: 0;
+  container-type: inline-size;
 }
 
-/* The photo runs full bleed to the card edges and the gradient sits ON TOP of
-   it, fading the image into the ink body. Previously the image was inset with
-   padding and the gradient lived behind it, which made the photo small and
-   left a visible seam. */
+/* Fixed ratio, so a headshot arriving shifts nothing. */
 .board-media {
   position: relative;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  background: var(--gray-light);
+  border-radius: var(--radius-lg);
+  background: var(--rule);
 }
 
 .board-media img {
@@ -943,63 +923,6 @@ a {
   object-fit: cover;
 }
 
-/* Reaches solid ink at 88%, before the body's -24px overlap begins. If the
-   gradient were still translucent there, the coral role label would sit over
-   raw photo and lose contrast: on a bright headshot background it became
-   unreadable. */
-.board-media__fade {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(20, 20, 19, 0) 38%,
-    rgba(20, 20, 19, 0.5) 62%,
-    rgba(20, 20, 19, 0.92) 79%,
-    var(--ink) 88%
-  );
-}
-
-.board-card:hover .board-card-inner,
-.board-card:focus-within .board-card-inner {
-  border-color: var(--coral);
-}
-
-/* Icon-only social links. No visible label, so each carries an aria-label and
-   the hit area is padded out to a comfortable target rather than the 15px
-   glyph. */
-/* Icon-only, grouped tightly on the card's centre axis. The box stays 34px so
-   the tap target is real even though the glyph is 17px; the tight gap is what
-   makes them read as one cluster rather than three separate controls. */
-.board-socials {
-  display: flex;
-  justify-content: center;
-  gap: 2px;
-}
-
-.board-social {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius);
-  color: var(--ink-text-muted);
-  transition: color var(--sweep-duration) var(--sweep-ease);
-}
-
-.board-social:hover,
-.board-social:focus-visible {
-  color: var(--coral);
-}
-
-/* First name on line one, surname on line two, always. */
-.board-name__surname {
-  display: block;
-}
-
-/* Photo slot. Dashed while empty so it reads as a reserved space rather than
-   a broken image. Fixed ratio, so dropping a headshot in shifts nothing. */
 /* Fallback for a member with no photo yet. Same box, so adding one shifts
    nothing. */
 .board-media__empty {
@@ -1012,47 +935,94 @@ a {
   color: var(--gray-text);
 }
 
-/* Pulled up so the text begins inside the fade's solid-ink tail, which is
-   what closes the gap between photo and body. Centred as a block: role, name,
-   detail and the social marks all share one axis. */
-/* --space-5 and --space-7 do not exist in the scale. Using them made the whole
-   padding declaration invalid at computed-value time, so the body had NO
-   padding at all and the social marks sat flush against the card's bottom
-   edge. These are real tokens. */
-.board-body {
-  padding: 0 var(--space-6) var(--space-8);
-  margin-top: calc(-1 * var(--space-6));
-  position: relative;
-  text-align: center;
+/* Every name on one line. The longest on the roster, "Jackson Lamoureux",
+   measures about 10.2 times its font size, so the size follows the card's own
+   width (9.6cqi, with a little to spare) and caps at 18px: full size on every
+   desktop column, a step smaller on a phone or a narrow four-across window,
+   never under 12px. A longer name than this roster has would wrap rather than
+   overflow. */
+.board-name {
+  margin-top: var(--space-3);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(0.75rem, 9.6cqi, 1.125rem);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+/* Claude Ambassador tag: a paper label floating in the headshot's top left
+   corner, carrying the Claude Spark unrecoloured and "Ambassador" in ink
+   (17.50:1 on paper). Asked for by the club; the one chip on the site. It
+   sits on the photo rather than in the text so the two people who carry it
+   keep the same text rhythm as everyone else in their row. About 118px wide,
+   so it fits the narrowest 152px photo with room either side. */
+.board-badge {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px 5px 6px;
+  border-radius: var(--radius);
+  background: var(--paper);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* Outranks `.board-media img`, which would otherwise stretch the mark to the
+   whole photo slot. */
+.board-media .board-badge img {
+  display: block;
+  flex: none;
+  width: 13px;
+  height: 13px;
+  object-fit: contain;
+}
+
+/* A photo under 150px, a small phone at two across, would put the 116px tag
+   hard against its right edge. A step smaller there, about 95px. */
+@container (max-width: 149px) {
+  .board-badge {
+    top: 6px;
+    left: 6px;
+    gap: 4px;
+    padding: 4px 6px 4px 5px;
+    font-size: 0.625rem;
+    letter-spacing: 0.04em;
+  }
+
+  .board-media .board-badge img {
+    width: 11px;
+    height: 11px;
+  }
 }
 
 .board-role {
+  margin-top: 2px;
   font-family: var(--font-display);
-  font-size: var(--step-meta);
+  font-size: 0.6875rem;
   font-weight: 600;
+  line-height: 1.3;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--coral);
+  color: var(--coral-text);
   max-width: none;
 }
 
-.board-name {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: var(--step-2);
-  line-height: 1.12;
-  color: var(--paper);
-  letter-spacing: -0.015em;
-}
-
 .board-detail {
+  margin-top: 6px;
   font-family: var(--font-display);
-  font-size: var(--step-meta);
+  font-size: 0.78rem;
   font-weight: 500;
-  line-height: 1.5;
-  color: var(--ink-text-muted);
-  max-width: 30ch;
-  margin-inline: auto;
+  line-height: 1.45;
+  color: var(--gray-text);
 }
 
 /* Affiliation and major each own a line. Balanced so a long affiliation wraps
@@ -1062,8 +1032,30 @@ a {
   text-wrap: balance;
 }
 
-.board-detail__line + .board-detail__line {
-  margin-top: 2px;
+/* Icon-only social links, pulled left by their own padding so the first
+   glyph lines up with the text above. The box stays 32px so the tap target is
+   real even though the glyph is 16px. */
+.board-socials {
+  display: flex;
+  gap: 2px;
+  margin-top: var(--space-2);
+  margin-left: -8px;
+}
+
+.board-social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  color: var(--gray-text);
+  transition: color var(--sweep-duration) var(--sweep-ease);
+}
+
+.board-social:hover,
+.board-social:focus-visible {
+  color: var(--coral-text);
 }
 
 .board-link {
@@ -1075,9 +1067,21 @@ a {
   color: var(--paper);
 }
 
-/* The President leads the grid: same card, more room. */
-.board-card--lead .board-name {
-  font-size: var(--step-2);
+/* Team photos on /about. Every master is 3:2, so the box takes that ratio and
+   reserves its space before any bytes arrive. Same treatment as a blog figure:
+   8px corners, an oat ground while it loads. */
+.about-photo {
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--gray-light);
+}
+
+.about-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* Mobile sticky CTA. The matching body padding is what stops it covering the

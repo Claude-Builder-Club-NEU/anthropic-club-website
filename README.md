@@ -323,6 +323,20 @@ Adding someone's photo is two steps and no code:
 Members without a photo get a designed initials placeholder in an identically
 sized box, so adding a picture later shifts nothing on the page.
 
+A member who is also a Claude Ambassador takes `ambassador: true` in
+`src/lib/board.js`, which floats a paper tag, the Claude Spark and
+"Ambassador", in the top left corner of their headshot. The full title for
+screen readers lives once, in `AMBASSADOR_TITLE`.
+
+### Team photos
+
+The group photo that opens `/about` and the row of candids under its two text
+columns follow the same pattern. Masters live in `team-src/` at about 2000px on
+the long edge and are never deployed; `scripts/build-team-photos.mjs` writes
+480 / 960 / 1440 / 2000 widths in AVIF, WebP and JPEG into `public/team/`.
+Each picture's alt text and the `sizes` strings live in `src/lib/team.js`.
+`npm run images` rebuilds them without a full build.
+
 ### Social preview image
 
 `npm run og` generates `public/og.png`, the 1200×630 image that appears when

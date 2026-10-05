@@ -3,6 +3,15 @@ import { BOARD } from "../lib/board";
 import BoardCard from "../components/BoardCard";
 import { INTEREST_FORM } from "../lib/links";
 import { ArrowRightIcon } from "../components/Icons";
+import PostImage from "../components/PostImage";
+import {
+  CANDIDS,
+  CANDID_SIZES,
+  GROUP_PHOTO,
+  GROUP_SIZES,
+  TEAM_WIDTHS,
+  teamImageBase,
+} from "../lib/team";
 
 /**
  * About. Mode: Read, for a prospective member who wants depth before
@@ -16,12 +25,10 @@ import { ArrowRightIcon } from "../components/Icons";
 const About = () => {
   return (
     <>
-      {/* Page header. Title then standfirst, stacked on one left edge.
-
-          The standfirst used to ride in a second column beside the title, which
-          set the two on different left edges and left the title fighting for
-          width. Stacked, the title gets the room to break where its own comma
-          falls and the standfirst reads as a caption under it.
+      {/* Page header. The title, then straight into the group photo. The
+          standfirst under the title ("We are Northeastern's chapter...") was
+          removed on 2026-10-05 at the club's request; the footer's
+          affiliation line still says the same thing on every page.
 
           The top padding absorbs the removed breadcrumb: with the trail gone
           the masthead would otherwise start 40px under the site header, which
@@ -41,10 +48,18 @@ const About = () => {
         >
           A club for building, not watching.
         </h1>
-        <p className="lead mt-8" style={{ maxWidth: "var(--measure-tight)" }}>
-          We are Northeastern&apos;s chapter of Anthropic&apos;s Claude Builder
-          Club program.
-        </p>
+
+        {/* The group photo is the page's main picture and its LCP element, so
+            it is the one eager, high-priority image here. */}
+        <figure className="about-photo mt-12 sm:mt-16">
+          <PostImage
+            base={teamImageBase(GROUP_PHOTO.src)}
+            widths={TEAM_WIDTHS}
+            sizes={GROUP_SIZES}
+            alt={GROUP_PHOTO.alt}
+            priority
+          />
+        </figure>
 
         <div className="mt-16 grid gap-14 border-t border-rule pt-14 lg:grid-cols-2 lg:gap-20">
           <div>
@@ -74,6 +89,22 @@ const About = () => {
             </p>
           </div>
         </div>
+
+        {/* Kept apart from the group photo on purpose: four small pictures
+            directly under a large one read as a gallery's thumbnails, and
+            these do not swap anything. Here they lead into the board. */}
+        <ul className="mt-16 grid list-none grid-cols-2 gap-4 p-0 lg:grid-cols-4">
+          {CANDIDS.map((photo) => (
+            <li key={photo.src} className="about-photo">
+              <PostImage
+                base={teamImageBase(photo.src)}
+                widths={TEAM_WIDTHS}
+                sizes={CANDID_SIZES}
+                alt={photo.alt}
+              />
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section
@@ -86,7 +117,7 @@ const About = () => {
 
           {/* Every card lazy-loads its headshot: the grid sits far below the
               fold, so nothing here is fetched on a normal first visit. */}
-          <ul className="board-grid mt-12 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="board-grid mt-12 grid list-none grid-cols-2 gap-x-6 gap-y-8 p-0 md:grid-cols-4">
             {BOARD.map((member) => (
               <BoardCard key={member.slug} member={member} />
             ))}
