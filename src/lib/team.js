@@ -13,7 +13,7 @@
  */
 
 /** Kept in step with WIDTHS in scripts/build-team-photos.mjs. */
-export const TEAM_WIDTHS = [480, 960, 1440, 2000];
+export const TEAM_WIDTHS = [480, 960, 1440, 1920];
 
 export const GROUP_PHOTO = {
   src: "group",
