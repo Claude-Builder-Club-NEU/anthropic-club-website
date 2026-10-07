@@ -9,6 +9,7 @@ import {
   CANDID_SIZES,
   GROUP_PHOTO,
   GROUP_SIZES,
+  GROUP_WIDTHS,
   TEAM_WIDTHS,
   teamImageBase,
 } from "../lib/team";
@@ -54,7 +55,7 @@ const About = () => {
         <figure className="about-photo mt-12 sm:mt-16">
           <PostImage
             base={teamImageBase(GROUP_PHOTO.src)}
-            widths={TEAM_WIDTHS}
+            widths={GROUP_WIDTHS}
             sizes={GROUP_SIZES}
             alt={GROUP_PHOTO.alt}
             priority

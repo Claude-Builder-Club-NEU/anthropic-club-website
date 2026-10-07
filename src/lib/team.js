@@ -12,7 +12,12 @@
  * in alt text is worse than none.
  */
 
-/** Kept in step with WIDTHS in scripts/build-team-photos.mjs. */
+/**
+ * Kept in step with LADDERS and WIDTHS in scripts/build-team-photos.mjs. The
+ * group photo has its own ladder: its master is 2560px, so it can reach 2048,
+ * exactly 2x its 1024px drawn width; the candids' 2000px masters stop at 1920.
+ */
+export const GROUP_WIDTHS = [640, 1024, 1536, 2048];
 export const TEAM_WIDTHS = [480, 960, 1440, 1920];
 
 export const GROUP_PHOTO = {

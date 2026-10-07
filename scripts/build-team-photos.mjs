@@ -16,22 +16,29 @@
  *   AVIF 62  176 KB  0.980      AVIF 75  246 KB  0.993
  *
  * 70 is where the curve flattens: each step past it buys less fidelity per
- * kilobyte, and 0.99 is past the point a viewer can see. WebP and JPEG are
- * only fallbacks for browsers without AVIF; JPEG 82 is 0.994 at 280 KB.
+ * kilobyte, and 0.99 is past the point a viewer can see. Re-measured at 2048px
+ * on the camera-original master: AVIF 70 is 260 KB at 0.990, the same knee,
+ * more bytes only because there is more real detail to keep. WebP and JPEG
+ * are only fallbacks for browsers without AVIF; JPEG 82 is 0.994 at 322 KB.
  *
  * Masters live in `team-src/` and are never deployed, for the reason
  * board-src/ records: everything in `public/` is copied verbatim into `dist/`.
  * Keep them at about 2000px on the long edge; that is the widest rung, so
  * anything bigger is bytes nobody is served and every clone pays for.
  *
- * One ladder for every master: <name>-{480,960,1440,1920}.{avif,webp,jpg}.
- * The group photo is drawn at up to the 1024px content width, so 1920 covers
- * it at 2x within a few percent; the candid row draws each photo at about
- * 244px, which 480 and 960 cover. 1920 rather than 2000 because the group
- * master is 1938px wide after centring the group, and a rung must never claim
- * more pixels than the file has. Shapes are kept, never cropped: the box on
- * the page carries the aspect ratio and object-fit does the framing. The
- * ladder and the matching `sizes` strings live together in src/lib/team.js.
+ * Two ladders, <name>-<width>.{avif,webp,jpg}:
+ *   group      640 / 1024 / 1536 / 2048. Drawn at up to the 1024px content
+ *              width, so 2048 is exactly 2x. Its master is 2560px wide, from
+ *              the camera original rather than a copy sent through chat,
+ *              which had been shrunk to 2000px and recompressed to about one
+ *              bit per pixel and showed it as blotchy suits.
+ *   the rest   480 / 960 / 1440 / 1920. The candid row draws each photo at
+ *              about 244px, which 480 and 960 cover; their masters are 2000px.
+ * A rung must never claim more pixels than its master has, which is why the
+ * ladders differ rather than sharing the group's. Shapes are kept, never
+ * cropped: the box on the page carries the aspect ratio and object-fit does
+ * the framing. The ladders and the matching `sizes` strings live together in
+ * src/lib/team.js.
  */
 
 import { readdirSync, existsSync, mkdirSync, statSync } from "node:fs";
@@ -42,7 +49,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const SRC_DIR = resolve(__dirname, "../team-src");
 const OUT_DIR = resolve(__dirname, "../public/team");
 
-/** Kept in step with TEAM_WIDTHS in src/lib/team.js. */
+/** Kept in step with GROUP_WIDTHS and TEAM_WIDTHS in src/lib/team.js. */
+const LADDERS = { group: [640, 1024, 1536, 2048] };
 const WIDTHS = [480, 960, 1440, 1920];
 const SOURCE_EXT = /\.(jpe?g|png)$/i;
 
@@ -85,7 +93,7 @@ async function main() {
     const src = join(SRC_DIR, file);
     const srcTime = statSync(src).mtimeMs;
 
-    for (const w of WIDTHS) {
+    for (const w of LADDERS[name] || WIDTHS) {
       for (const { ext, apply } of FORMATS) {
         const out = join(OUT_DIR, `${name}-${w}.${ext}`);
         // Skip work when the derivative is newer than its source.

@@ -331,11 +331,15 @@ screen readers lives once, in `AMBASSADOR_TITLE`.
 ### Team photos
 
 The group photo that opens `/about` and the row of candids under its two text
-columns follow the same pattern. Masters live in `team-src/` at about 2000px on
-the long edge and are never deployed; `scripts/build-team-photos.mjs` writes
-480 / 960 / 1440 / 1920 widths in AVIF, WebP and JPEG into `public/team/`, at
-higher quality than the blog's thumbnails (AVIF 70), because the group photo
-is the page's main picture; the script records the measurements behind that.
+columns follow the same pattern. Masters live in `team-src/` and are never
+deployed; `scripts/build-team-photos.mjs` writes AVIF, WebP and JPEG into
+`public/team/`: 640 / 1024 / 1536 / 2048 for the group photo, whose master is
+2560px, and 480 / 960 / 1440 / 1920 for the candids, whose masters are 2000px.
+They are encoded at higher quality than the blog's thumbnails (AVIF 70),
+because the group photo is the page's main picture; the script records the
+measurements behind that. Make masters from the camera original, not a copy
+sent through a chat app: those arrive shrunk and recompressed, and the group
+photo's first master showed it as blotchy suits.
 Each picture's alt text and the `sizes` strings live in `src/lib/team.js`.
 `npm run images` rebuilds them without a full build.
 
