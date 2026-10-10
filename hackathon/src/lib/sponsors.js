@@ -31,6 +31,12 @@ export const SPONSOR_TIERS = [
     logos: [
       { src: "logos/anthropic.svg", alt: "Anthropic", height: 20 },
       { src: "logos/tavily.png", alt: "Tavily by Nebius", height: 32 },
+      null,
+    ],
+  },
+  {
+    label: "WITH SUPPORT FROM",
+    logos: [
       {
         src: "logos/codecrafters.svg",
         alt: "CodeCrafters",
@@ -38,7 +44,10 @@ export const SPONSOR_TIERS = [
         stacked: true,
         href: "https://codecrafters.io/",
       },
+      null,
+      null,
+      null,
+      null,
     ],
   },
-  { label: "WITH SUPPORT FROM", logos: [null, null, null, null, null] },
 ];

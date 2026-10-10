@@ -60,6 +60,13 @@ export const ORGANIZERS = [
  * `url`: FirstByte's is the site its Khoury College club profile links to.
  * NEU Blockchain's profile links northeasternblockchain.xyz, which no longer
  * resolves, so the cell goes to the club's Instagram until it has a site.
+ * Disrupt's two listed sites have both lapsed (neudisrupt.com is parked for
+ * sale and disruptneu.com does not resolve), so it links the LinkedIn page
+ * Khoury lists for it.
+ *
+ * Disrupt's mark is the plain "Disrupt" wordmark from the club's own logo
+ * file, its dark-text version, cut out and flattened to white; the accent in
+ * the D keeps the hairline gap the artwork gives it, so it still reads.
  */
 export const BACKERS = [
   {
@@ -74,6 +81,13 @@ export const BACKERS = [
     short: "FIRSTBYTE",
     url: "https://www.teachfirstbyte.com/",
     logo: { src: "logos/firstbyte.png", alt: "FirstByte" },
+    wordmark: true,
+  },
+  {
+    name: "Disrupt",
+    short: "DISRUPT",
+    url: "https://www.linkedin.com/company/neudisrupt/",
+    logo: { src: "logos/disrupt.png", alt: "Disrupt" },
     wordmark: true,
   },
 ];

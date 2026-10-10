@@ -919,9 +919,78 @@ button:focus-visible,
   color: var(--ink-body);
 }
 
-/* One line per entry when a fact is a list (the prize places). */
-.hk-track__fact-line {
-  display: block;
+/*
+ * The prize places. A rank chip in the track tag's own recipe (11px mono,
+ * +0.1em, 1px hairline), then what the place wins. First place takes the red
+ * chip colours of the panel's category tag and sets its headline in the
+ * brighter ink, so the top prize is the first thing the eye lands on; second
+ * and third stay in the neutral chip. Ranks share one width so the prizes
+ * align on a single left edge.
+ */
+.hk-prizes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hk-prizes__place {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 12px;
+  align-items: baseline;
+}
+
+/* A single award (Most Startup-able) has no place to rank, so no chip. */
+.hk-prizes__place--unranked {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.hk-prizes__rank {
+  padding: 2px 0;
+  border: 1px solid var(--chip-bg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-align: center;
+  color: var(--ink-faint);
+}
+
+.hk-prizes__place--first .hk-prizes__rank {
+  border-color: var(--red-900);
+  background: var(--red-900);
+  color: var(--red-chip-text);
+}
+
+.hk-prizes__what {
+  display: flex;
+  flex-direction: column;
+}
+
+.hk-prizes__lead {
+  color: var(--ink-body);
+}
+
+.hk-prizes__place--first .hk-prizes__lead {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.hk-prizes__extra {
+  color: var(--ink-body);
+}
+
+.hk-prizes__note {
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px dashed var(--chip-bg);
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--ink-faint);
 }
 
 .hk-track__tags {
@@ -2103,6 +2172,22 @@ button:focus-visible,
 
   .hk-organizers__cell {
     width: auto;
+  }
+
+  /* An odd row (three backers) gives its first cell the whole top row, the
+     same fix the sponsor tiers use, so nothing is left alone at the bottom.
+     The pairs then start at 2, so it is the odd cells that carry the middle
+     rule rather than the even ones. */
+  .hk-organizers__item:first-child:nth-last-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .hk-organizers__item:first-child:nth-last-child(odd) ~ .hk-organizers__item:nth-child(even) {
+    border-left: 0;
+  }
+
+  .hk-organizers__item:first-child:nth-last-child(odd) ~ .hk-organizers__item:nth-child(odd) {
+    border-left: 1px dashed var(--dash);
   }
 }
 

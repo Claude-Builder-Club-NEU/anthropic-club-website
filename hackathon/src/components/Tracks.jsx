@@ -61,15 +61,7 @@ function Track({ track, lead }) {
             <div className="hk-track__fact" key={fact.key}>
               <dt className="hk-track__fact-key">{fact.key}</dt>
               <dd className="hk-track__fact-value">
-                {/* A list value is one fact over several lines: the prize
-                    places, one per line, rather than a run-on sentence. */}
-                {Array.isArray(fact.value)
-                  ? fact.value.map((line) => (
-                      <span className="hk-track__fact-line" key={line}>
-                        {line}
-                      </span>
-                    ))
-                  : fact.value}
+                {fact.places ? <Places places={fact.places} note={fact.note} /> : fact.value}
               </dd>
             </div>
           ))}
@@ -89,5 +81,42 @@ function Track({ track, lead }) {
         ) : null}
       </div>
     </article>
+  );
+}
+
+/**
+ * A track's prizes as a ranked list: a rank chip, then what that place wins.
+ * First place leads with its headline in the brighter ink and carries its
+ * extra on a second line, so the cash reads first and the membership second.
+ * An ordered list, because the places are an order a screen reader should
+ * announce as one.
+ */
+function Places({ places, note }) {
+  return (
+    <>
+      <ol className="hk-prizes">
+        {places.map((place, i) => (
+          <li
+            key={place.rank ?? place.lead}
+            className={[
+              "hk-prizes__place",
+              i === 0 && "hk-prizes__place--first",
+              !place.rank && "hk-prizes__place--unranked",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            {place.rank ? <span className="hk-prizes__rank">{place.rank}</span> : null}
+            <span className="hk-prizes__what">
+              <span className="hk-prizes__lead">{place.lead}</span>
+              {place.extra ? (
+                <span className="hk-prizes__extra">{place.extra}</span>
+              ) : null}
+            </span>
+          </li>
+        ))}
+      </ol>
+      {note ? <p className="hk-prizes__note">{note}</p> : null}
+    </>
   );
 }

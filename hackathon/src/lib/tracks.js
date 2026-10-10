@@ -18,13 +18,23 @@
  * More tracks are coming; add them here and the page, the sponsor page and
  * the "01 / 0N" counters all follow.
  *
- * PRIZES: every track pays First, Second and Third place in CodeCrafters VIP
- * memberships (2 years, 1 year, 6 months), confirmed by the club. A `value`
- * may be a list, which renders one line per entry. Anything not yet confirmed
- * is still not printed: the main track's headline prizes and the Most
- * Startup-able prize, meant to come from a venture fund sponsor, stay "to be
- * announced".
+ * PRIZES: the main track and the Tavily track pay three places, the same
+ * three, from PLACES below: first place a cash prize and a 2-year VIP
+ * CodeCrafters membership, second a 1-year and third a 6-month one, as
+ * confirmed by the club. Most Startup-able is one award, a cash award, and
+ * takes no CodeCrafters places. Cash amounts are not set yet, so they read
+ * "$$$" rather than inventing a figure. A PRIZE fact carries `places` instead
+ * of a `value`, and Tracks.jsx sets it as a ranked list (a place with no
+ * `rank` gets no chip); `note` is a line under it for what is still to come.
  */
+
+/** The three places every track pays. `lead` is the headline of the place. */
+const PLACES = [
+  { rank: "1ST", lead: "$$$ cash prize", extra: "+ 2-year VIP CodeCrafters membership" },
+  { rank: "2ND", lead: "1-year VIP CodeCrafters membership" },
+  { rank: "3RD", lead: "6-month VIP CodeCrafters membership" },
+];
+
 export const TRACKS = [
   {
     index: "01",
@@ -46,12 +56,8 @@ export const TRACKS = [
       },
       {
         key: "PRIZE",
-        value: [
-          "First Prize: 2-year VIP CodeCrafters membership",
-          "Second Prize: 1-year VIP CodeCrafters membership",
-          "Third Prize: 6-month VIP CodeCrafters membership",
-          "Plus the main prizes of the weekend, announced soon",
-        ],
+        places: PLACES,
+        note: "Plus the main prizes of the weekend, announced soon",
       },
     ],
     sponsor: null,
@@ -74,15 +80,8 @@ export const TRACKS = [
         key: "JUDGED ON",
         value: "How fundable is it? Who is it for, would they pay, and why is this team the one to build it?",
       },
-      {
-        key: "PRIZE",
-        value: [
-          "First Prize: 2-year VIP CodeCrafters membership",
-          "Second Prize: 1-year VIP CodeCrafters membership",
-          "Third Prize: 6-month VIP CodeCrafters membership",
-          "Plus one more prize, to be announced",
-        ],
-      },
+      // One award, not three places: a cash award, its amount not set yet.
+      { key: "PRIZE", places: [{ lead: "$$$ cash award" }] },
     ],
     sponsor: null,
   },
@@ -104,14 +103,7 @@ export const TRACKS = [
         key: "JUDGED ON",
         value: "How central Tavily is to what the project does, and how well it works.",
       },
-      {
-        key: "PRIZE",
-        value: [
-          "First Prize: 2-year VIP CodeCrafters membership",
-          "Second Prize: 1-year VIP CodeCrafters membership",
-          "Third Prize: 6-month VIP CodeCrafters membership",
-        ],
-      },
+      { key: "PRIZE", places: PLACES },
     ],
     sponsor: { name: "Tavily", logo: "logos/tavily.png" },
   },
