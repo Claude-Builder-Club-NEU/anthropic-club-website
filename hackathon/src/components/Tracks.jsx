@@ -60,7 +60,17 @@ function Track({ track, lead }) {
           {track.facts.map((fact) => (
             <div className="hk-track__fact" key={fact.key}>
               <dt className="hk-track__fact-key">{fact.key}</dt>
-              <dd className="hk-track__fact-value">{fact.value}</dd>
+              <dd className="hk-track__fact-value">
+                {/* A list value is one fact over several lines: the prize
+                    places, one per line, rather than a run-on sentence. */}
+                {Array.isArray(fact.value)
+                  ? fact.value.map((line) => (
+                      <span className="hk-track__fact-line" key={line}>
+                        {line}
+                      </span>
+                    ))
+                  : fact.value}
+              </dd>
             </div>
           ))}
         </dl>

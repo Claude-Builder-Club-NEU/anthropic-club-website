@@ -55,22 +55,37 @@ function Tier({ tier, first }) {
     <>
       <h2 className={labelClass}>{tier.label}</h2>
       <div className="hk-sponsors__tier">
-        {tier.logos.map((logo, i) => (
+        {tier.logos.map((logo, i) => {
+          const img = logo ? (
+            <img
+              className={`hk-sponsors__logo${logo.stacked ? " hk-sponsors__logo--stacked" : ""}`}
+              src={withBase(logo.src)}
+              alt={logo.alt}
+              height={logo.height}
+            />
+          ) : (
+            <span className="hk-sponsors__placeholder">[SPONSOR LOGO]</span>
+          );
           // The cells are placeholders with nothing to key on yet. The array
-          // is fixed-length and never reordered, so the index is stable.
-          <div className="hk-sponsors__cell" key={logo?.src ?? i}>
-            {logo ? (
-              <img
-                className="hk-sponsors__logo"
-                src={withBase(logo.src)}
-                alt={logo.alt}
-                height={logo.height}
-              />
-            ) : (
-              <span className="hk-sponsors__placeholder">[SPONSOR LOGO]</span>
-            )}
-          </div>
-        ))}
+          // is fixed-length and never reordered, so the index is stable. A
+          // sponsor with an `href` gets the whole cell as its link, the same
+          // generous target the organizer cells give.
+          return logo?.href ? (
+            <a
+              className="hk-sponsors__cell hk-sponsors__cell--link"
+              key={logo.src}
+              href={logo.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {img}
+            </a>
+          ) : (
+            <div className="hk-sponsors__cell" key={logo?.src ?? i}>
+              {img}
+            </div>
+          );
+        })}
       </div>
     </>
   );

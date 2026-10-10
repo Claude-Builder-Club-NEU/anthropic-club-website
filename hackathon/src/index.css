@@ -729,6 +729,25 @@ button:focus-visible,
   object-fit: contain;
 }
 
+/* A stacked lockup, mark over wordmark, may run to 40px so its wordmark is
+   not the smallest name in the row. 40 still leaves 14px above and below in
+   the 68px cell. */
+.hk-sponsors__logo--stacked {
+  max-height: 40px;
+}
+
+/* A sponsor cell that links to the sponsor. Same response as an organizer
+   cell: the ground lifts to the chip grey, nothing moves. */
+.hk-sponsors__cell--link {
+  text-decoration: none;
+  transition: background-color 120ms linear;
+}
+
+.hk-sponsors__cell--link:hover,
+.hk-sponsors__cell--link:focus-visible {
+  background: var(--chip-bg);
+}
+
 .hk-sponsors__cta {
   display: flex;
   flex-wrap: wrap;
@@ -898,6 +917,11 @@ button:focus-visible,
   font-size: 15px;
   line-height: 23px;
   color: var(--ink-body);
+}
+
+/* One line per entry when a fact is a list (the prize places). */
+.hk-track__fact-line {
+  display: block;
 }
 
 .hk-track__tags {
@@ -1322,6 +1346,31 @@ button:focus-visible,
   max-width: 150px;
   width: auto;
   object-fit: contain;
+}
+
+/* A backer's logo is a wordmark with no caption under it, so it can take more
+   of the cell: these are wide lockups, about 3.9:1, which 150px left at 38px
+   tall in a 124px cell. */
+.hk-organizers__logo--wordmark {
+  max-height: 48px;
+  /* Capped by the cell as well, with 14px a side: on a phone a cell is about
+     170px, and a fixed 176px ran the lockup into the dashes and widened the
+     grid past the organizer row above it. */
+  max-width: min(176px, calc(100% - 28px));
+}
+
+/* Also backed by: a second heading and row, 72px under the organizer row,
+   the same gap as between the two sponsor tiers. Full width so the row's
+   ≤1099px grid has something to be 100% of. */
+.hk-organizers__backers {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.hk-organizers__label--second {
+  margin-top: 72px;
 }
 
 .hk-organizers__name {

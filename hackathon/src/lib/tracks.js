@@ -18,8 +18,12 @@
  * More tracks are coming; add them here and the page, the sponsor page and
  * the "01 / 0N" counters all follow.
  *
- * PLACEHOLDER: the prize amounts. None is confirmed, so none is printed. The
- * Most Startup-able prize is meant to come from a venture fund sponsor.
+ * PRIZES: every track pays First, Second and Third place in CodeCrafters VIP
+ * memberships (2 years, 1 year, 6 months), confirmed by the club. A `value`
+ * may be a list, which renders one line per entry. Anything not yet confirmed
+ * is still not printed: the main track's headline prizes and the Most
+ * Startup-able prize, meant to come from a venture fund sponsor, stay "to be
+ * announced".
  */
 export const TRACKS = [
   {
@@ -40,7 +44,15 @@ export const TRACKS = [
         key: "JUDGED ON",
         value: "What leaves the device, who can read it, and can you prove it? Then: would anyone use it?",
       },
-      { key: "PRIZE", value: "The main prizes of the weekend, announced soon" },
+      {
+        key: "PRIZE",
+        value: [
+          "First Prize: 2-year VIP CodeCrafters membership",
+          "Second Prize: 1-year VIP CodeCrafters membership",
+          "Third Prize: 6-month VIP CodeCrafters membership",
+          "Plus the main prizes of the weekend, announced soon",
+        ],
+      },
     ],
     sponsor: null,
   },
@@ -62,7 +74,15 @@ export const TRACKS = [
         key: "JUDGED ON",
         value: "How fundable is it? Who is it for, would they pay, and why is this team the one to build it?",
       },
-      { key: "PRIZE", value: "One prize, to be announced" },
+      {
+        key: "PRIZE",
+        value: [
+          "First Prize: 2-year VIP CodeCrafters membership",
+          "Second Prize: 1-year VIP CodeCrafters membership",
+          "Third Prize: 6-month VIP CodeCrafters membership",
+          "Plus one more prize, to be announced",
+        ],
+      },
     ],
     sponsor: null,
   },
@@ -84,7 +104,14 @@ export const TRACKS = [
         key: "JUDGED ON",
         value: "How central Tavily is to what the project does, and how well it works.",
       },
-      { key: "PRIZE", value: "1st, 2nd and 3rd place" },
+      {
+        key: "PRIZE",
+        value: [
+          "First Prize: 2-year VIP CodeCrafters membership",
+          "Second Prize: 1-year VIP CodeCrafters membership",
+          "Third Prize: 6-month VIP CodeCrafters membership",
+        ],
+      },
     ],
     sponsor: { name: "Tavily", logo: "logos/tavily.png" },
   },

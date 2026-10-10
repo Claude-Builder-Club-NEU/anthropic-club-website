@@ -45,3 +45,35 @@ export const ORGANIZERS = [
     logo: { src: "logos/ainu.png", alt: "AINU" },
   },
 ];
+
+/**
+ * Northeastern clubs backing the event without running it: the "ALSO BACKED
+ * BY" row under the organizers. Neither a sponsor nor an organiser, so it is
+ * its own list and its own row rather than more cells in either.
+ *
+ * Both logos carry their club's name as a wordmark, so `wordmark: true` drops
+ * the caption under the mark (it would print the name twice) and the image's
+ * alt text names the link instead. Same white-on-alpha treatment as the
+ * organizer logos. NEU Blockchain's cube has its three face seams cut out, so
+ * it still reads as a cube once its reds are flattened to one white.
+ *
+ * `url`: FirstByte's is the site its Khoury College club profile links to.
+ * NEU Blockchain's profile links northeasternblockchain.xyz, which no longer
+ * resolves, so the cell goes to the club's Instagram until it has a site.
+ */
+export const BACKERS = [
+  {
+    name: "NEU Blockchain",
+    short: "NEU BLOCKCHAIN",
+    url: "https://www.instagram.com/neublockchain/",
+    logo: { src: "logos/neu-blockchain.png", alt: "NEU Blockchain" },
+    wordmark: true,
+  },
+  {
+    name: "FirstByte",
+    short: "FIRSTBYTE",
+    url: "https://www.teachfirstbyte.com/",
+    logo: { src: "logos/firstbyte.png", alt: "FirstByte" },
+    wordmark: true,
+  },
+];

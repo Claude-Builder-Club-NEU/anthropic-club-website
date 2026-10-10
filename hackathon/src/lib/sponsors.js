@@ -17,6 +17,13 @@
  * converted to white with the shape in the alpha channel, so the icon's arrows
  * are knocked out to the page behind them. 32px, because it is two lines and
  * carries a symbol.
+ *
+ * CodeCrafters is its own white stacked lockup, unmodified: the mark above the
+ * wordmark. `stacked` lets it run to 40px, the one logo past the 32px cap,
+ * because at 32 the wordmark under the mark is 11px tall and reads smaller
+ * than every other sponsor's name.
+ *
+ * `href`, where present, makes the whole cell a link to the sponsor's site.
  */
 export const SPONSOR_TIERS = [
   {
@@ -24,7 +31,13 @@ export const SPONSOR_TIERS = [
     logos: [
       { src: "logos/anthropic.svg", alt: "Anthropic", height: 20 },
       { src: "logos/tavily.png", alt: "Tavily by Nebius", height: 32 },
-      null,
+      {
+        src: "logos/codecrafters.svg",
+        alt: "CodeCrafters",
+        height: 40,
+        stacked: true,
+        href: "https://codecrafters.io/",
+      },
     ],
   },
   { label: "WITH SUPPORT FROM", logos: [null, null, null, null, null] },
