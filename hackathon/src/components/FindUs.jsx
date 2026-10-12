@@ -1,5 +1,5 @@
 import { SocialIcon } from "./SocialIcons";
-import { LINKS, SOCIAL } from "../lib/event";
+import { APPLY, LINKS, SOCIAL } from "../lib/event";
 import { withBase } from "../lib/base";
 
 /**
@@ -15,13 +15,13 @@ import { withBase } from "../lib/base";
  * It is left-aligned like theirs, which also keeps it from reading as another
  * centred row of tiles — the sponsors and the organizers are both already that.
  *
- * The first card is the sign-up, matching claudeneu's "Get updates" slot: it
+ * The first card is the application, matching claudeneu's "Get updates" slot: it
  * is the one thing someone who has just read the date actually wants, and it
  * comes from LINKS so it cannot disagree with the two hero buttons.
  */
 
 const CARDS = [
-  { label: "Sign up", note: "Claim a seat", href: withBase(LINKS.signUp), icon: "mail", internal: true },
+  { label: "Apply", note: `By ${APPLY.deadlineLabel}`, href: withBase(LINKS.signUp), icon: "mail", internal: true },
   ...SOCIAL,
 ];
 

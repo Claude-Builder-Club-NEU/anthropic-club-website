@@ -21,6 +21,7 @@ import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { randomUUID } from "node:crypto";
+import { applicationsOpen } from "../src/lib/event.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FUNCTIONS = join(HERE, "..", "..", "netlify", "functions");
@@ -75,6 +76,7 @@ function mockBackend() {
     }
 
     if (path === "register") {
+      if (!applicationsOpen()) return reply(403, { ok: false, reason: "closed" });
       const b = await req.json();
       if (!/@(northeastern\.edu|husky\.neu\.edu|neu\.edu)$/i.test(b.email || "")) {
         return reply(422, { ok: false, reason: "email_domain" });

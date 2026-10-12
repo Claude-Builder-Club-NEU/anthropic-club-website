@@ -3,17 +3,17 @@ import { BracketButton } from "./BracketButton";
 import { Wordmark } from "./Wordmark";
 import { LINKS, NAV } from "../lib/event";
 import { homeAnchor, withBase } from "../lib/base";
-import { useSeats } from "../lib/seats";
+import { useApplicationsOpen } from "../lib/apply";
 
 /**
  * 3.1 Header.
  *
  * 80px bar: the eye and wordmark on the left, the anchor nav in the middle,
- * [ SIGN UP ] on the right.
+ * [ APPLY ] on the right.
  *
  * THE MENU (SPEC §6).
  *
- * At 640px and below the nav collapses and the wordmark and Sign up stay put.
+ * At 640px and below the nav collapses and the wordmark and Apply stay put.
  * This is the one piece of UI the reference render does not contain, so it is
  * built to the same rules as everything else: a bracket control in Geist Mono,
  * square, no fill, and a panel that is the page's own black with the header's
@@ -28,7 +28,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const toggleRef = useRef(null);
   const navId = useId();
-  const { full } = useSeats();
+  const applying = useApplicationsOpen();
 
   // Escape closes the panel and puts focus back on the control that opened
   // it, which is where a keyboard user expects to land.
@@ -82,8 +82,8 @@ export function Header() {
           {open ? "Close" : "Menu"}
         </BracketButton>
 
-        <BracketButton small href={withBase(LINKS.signUp)}>
-          {full ? "Waitlist" : "Sign up"}
+        <BracketButton small href={applying ? withBase(LINKS.signUp) : homeAnchor("#apply")}>
+          {applying ? "Apply" : "Closed"}
         </BracketButton>
       </div>
     </header>

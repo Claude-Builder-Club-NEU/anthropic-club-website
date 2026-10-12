@@ -9,7 +9,9 @@
  * Step two is the upload; step three is /hackathon/api/finish.
  *
  * All validation that matters is in hackathon_register() in SQL. The checks
- * here are only the ones SQL cannot see: the files.
+ * here are only the ones SQL cannot see: the files, and the application
+ * deadline, which is APPLY.deadlineISO in the hackathon app's event.js so the
+ * page and this function close at the same moment.
  */
 import {
   HEADSHOT_TYPES,
@@ -20,11 +22,13 @@ import {
   rpc,
   signedUploadUrl,
 } from "../lib/hackathon.mjs";
+import { applicationsOpen } from "../../hackathon/src/lib/event.js";
 
 const str = (v, max = 400) => (typeof v === "string" ? v.slice(0, max) : "");
 
 export default async (req) => {
   if (!configured()) return notConfigured();
+  if (!applicationsOpen()) return json(403, { ok: false, reason: "closed" });
 
   let body;
   try {

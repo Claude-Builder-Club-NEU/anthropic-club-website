@@ -118,15 +118,16 @@ const REASONS = {
   headshot_size: ["headshot", "That image is over 5MB."],
   already_registered: [
     "email",
-    "That email already has a ticket or a waitlist place. Lost it? Email the organizers.",
+    "That email has already applied. Lost the link? Email the organizers.",
   ],
 };
 
 const GENERAL = {
-  not_configured: "Registration isn't open yet. Check back soon.",
+  not_configured: "Applications aren't open yet. Check back soon.",
+  closed: "Applications are closed.",
   files_missing: "Your files didn't finish uploading. Try again.",
   rate_limited: "Too many tries in a row. Wait a minute and try again.",
-  not_found: "We couldn't find that registration. Start again below.",
+  not_found: "We couldn't find that application. Start again below.",
 };
 
 export function reasonToError(reason) {
@@ -190,14 +191,15 @@ function safe(fn, fallback = null) {
   }
 }
 
-/** The registration someone filled in but has not paid for yet. */
+/** The application someone filled in but has not finished submitting. */
 export const pending = {
   get: () => safe(() => window.sessionStorage.getItem(PENDING_KEY)),
   set: (id) => safe(() => window.sessionStorage.setItem(PENDING_KEY, id)),
   clear: () => safe(() => window.sessionStorage.removeItem(PENDING_KEY)),
 };
 
-/** The last ticket this browser was shown, so /hackathon/ticket/ finds it. */
+/** The last application or ticket this browser was shown, so
+ *  /hackathon/ticket/ finds it. */
 export const savedTicket = {
   get: () => safe(() => window.localStorage.getItem(TICKET_KEY)),
   set: (token) => safe(() => window.localStorage.setItem(TICKET_KEY, token)),

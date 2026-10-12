@@ -236,6 +236,27 @@ button:focus-visible,
   color: var(--accent);
 }
 
+/*
+ * The one big button: Apply, in the hero and under the dates. A bare bracket
+ * label was too easy to read past for the single action the page exists to
+ * get, so this one is a filled white block, brackets kept. White, not red, for
+ * the reason above: white is the thing you press. It turns accent on hover.
+ */
+.hk-btn.hk-btn--big {
+  min-height: 60px;
+  padding: 0 30px;
+  font-size: clamp(16px, 1.3vw, 19px);
+  font-weight: 700;
+  background: #ffffff;
+  color: var(--ground);
+}
+
+.hk-btn.hk-btn--big:hover,
+.hk-btn.hk-btn--big:focus-visible {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
 /* --------------------------------------------------------------------------
    Shared: gray label chip (SPEC §2).
    -------------------------------------------------------------------------- */
@@ -529,6 +550,19 @@ button:focus-visible,
 
 /* Secondary: same control, quieter, so the primary is unambiguous. */
 .hk-hero__secondary {
+  color: var(--ink-body);
+}
+
+/* The deadline, under the buttons: the where-and-when row's type, one step
+   quieter, with the date itself in the accent. */
+.hk-hero__deadline {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--ink-body);
 }
 
@@ -1094,15 +1128,36 @@ button:focus-visible,
 }
 
 /* --------------------------------------------------------------------------
-   Seats.
+   Apply.
 
-   The meter is a 100-character line, one column per seat. See Seats.jsx.
+   The block figure is the 100 spots, and the ribbon cut through it is a
+   100-character line, one column per spot. The class names are still
+   hk-seats: the ticket stub draws its number with the same figure. See
+   Apply.jsx.
    -------------------------------------------------------------------------- */
 
 .hk-seats {
   display: flex;
   flex-direction: column;
   gap: 40px;
+}
+
+/* The section's heading: the chip over one line of display type, centred
+   over the figure. */
+.hk-apply__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(30px, 3.6vw, 58px);
+  line-height: 1.077;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  text-align: center;
+  text-wrap: balance;
 }
 
 .hk-seats__stage {
@@ -1225,24 +1280,6 @@ button:focus-visible,
   background: #120302;
 }
 
-/* The taken ones, exactly pct% of the track: a wash, not a fill. What reads as
-   "taken" is the character tone above it; this only keeps the filled region
-   off the same ground as the empty one. */
-.hk-seats__fill {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(192, 29, 19, 0.09) 0%,
-    rgba(255, 59, 47, 0.2) 100%
-  );
-  /* The level, as a hairline. Inset rather than a border so it cannot change
-     the width — the width is the number, and it has to stay exact. */
-  box-shadow: inset -2px 0 0 #ffd8d2;
-}
-
 /*
  * 100 characters at 0.6em is 60em, so the type size that makes the ribbon span
  * the stage exactly is its width over 60. One column is one seat.
@@ -1261,35 +1298,8 @@ button:focus-visible,
   white-space: pre;
 }
 
-/*
- * The characters ARE the bar. The travel from dark to light is a gradient
- * clipped to the text rather than painted behind it, which is what keeps this
- * reading as ASCII rather than as a coloured box with a caption on it.
- *
- * The flat colour is the fallback and is not decoration: without
- * background-clip the text would be transparent and the fill would vanish.
- */
-.hk-seats__on {
-  color: var(--accent);
-}
-
-@supports (-webkit-background-clip: text) or (background-clip: text) {
-  .hk-seats__on {
-    background-image: linear-gradient(
-      90deg,
-      #a8150a 0%,
-      #e02419 46%,
-      #ff7a70 78%,
-      #ffe8e4 100%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-}
-
-/* Over the dark slab: a dot per empty seat, and the tick every tenth is what
-   makes the remainder countable rather than just absent. */
+/* Over the dark slab: a dot per spot, and the tick every tenth is what makes
+   the hundred countable. None are lit: nobody is in until decision day. */
 .hk-seats__off {
   color: #7e130c;
 }
@@ -1311,6 +1321,91 @@ button:focus-visible,
   letter-spacing: 0.16em;
   color: var(--ink);
   white-space: nowrap;
+}
+
+/* In the middle of the ribbon rather than at its end: it names the whole
+   row, not a level along it. */
+.hk-seats__pct--mid {
+  right: auto;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0 14px;
+}
+
+/*
+ * The three dates. One row of three on a desktop, a column on a phone; the
+ * page's dashed hairline between them, the date in mono caps on top because
+ * it is what someone is scanning for.
+ */
+.hk-apply__steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px dashed var(--dash);
+}
+
+.hk-apply__step {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 28px 28px 32px;
+}
+
+.hk-apply__step + .hk-apply__step {
+  border-left: 1px dashed var(--dash);
+}
+
+.hk-apply__date {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.hk-apply__n {
+  padding: 4px 8px;
+  background: var(--red-900);
+  color: var(--red-chip-text);
+  letter-spacing: 0.06em;
+}
+
+.hk-apply__head {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(22px, 1.9vw, 28px);
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.hk-apply__text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 25px;
+  color: var(--ink-body);
+  text-wrap: pretty;
+}
+
+/* Three across stops fitting a little under 1000px: "03 BY MON OCT 26"
+   wraps, and the body copy runs to five lines. A column from there down. */
+@media (max-width: 960px) {
+  .hk-apply__steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hk-apply__step + .hk-apply__step {
+    border-left: 0;
+    border-top: 1px dashed var(--dash);
+  }
 }
 
 .hk-seats__cta {
@@ -2298,13 +2393,16 @@ button:focus-visible,
 
 
   /*
-   * No percentage on a phone. The bar is 358px there, and the label is 93 of
-   * them — a quarter of a meter whose whole premise is one column per seat.
-   * The legend directly under it says "32 seats left of 100", which is the
-   * same fact in more useful words.
+   * No label in the ribbon on a phone. The bar is 358px there and about 15px
+   * tall, and the label would cover most of the hundred columns it names.
+   * The heading above already says "100 spots".
    */
   .hk-seats__pct {
     display: none;
+  }
+
+  .hk-apply__step {
+    padding: 22px 18px 24px;
   }
 
   /* The two-up organizer grid is in the ≤1099px block; a phone only makes
@@ -2324,6 +2422,15 @@ button:focus-visible,
   .hk-hero__where li {
     padding: 0;
     border-left: 0;
+  }
+
+  /* The same for the deadline line: a line each, no dot. */
+  .hk-hero__deadline span {
+    display: block;
+  }
+
+  .hk-hero__deadline .hk-hero__deadline-sep {
+    display: none;
   }
 
   /* The key column is a third of a phone screen, so the facts stack. */

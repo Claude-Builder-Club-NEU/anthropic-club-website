@@ -1,4 +1,4 @@
-import { EVENT } from "./event.js";
+import { APPLY, EVENT } from "./event.js";
 import { PAGES } from "./pages.js";
 
 /**
@@ -33,12 +33,12 @@ const META = {
       "100 Northeastern students build privacy-first products over one weekend. Sponsors mentor, judge, run challenges on their own tools, and meet the co-op and new-grad talent Boston hires from.",
   },
   signup: {
-    title: `Sign up — ${EVENT.name}`,
-    description: `Claim one of 100 seats at ${EVENT.name}, ${EVENT.dateLong}, ${EVENT.venue}. $5 per student.`,
+    title: `Apply — ${EVENT.name}`,
+    description: `Apply for one of ${APPLY.spots} spots at ${EVENT.name}, ${EVENT.dateLong}, ${EVENT.venue}. Applications close ${APPLY.deadlineLabel}; decisions ${APPLY.decisionsLabel}. Free to apply, ${APPLY.fee} if accepted.`,
   },
   ticket: {
-    title: `Your ticket — ${EVENT.name}`,
-    description: `Your ${EVENT.name} ticket.`,
+    title: `Your application — ${EVENT.name}`,
+    description: `Your ${EVENT.name} application.`,
     noindex: true,
   },
 };

@@ -41,33 +41,57 @@ export const EVENT = {
 };
 
 /**
- * Capacity, and how much of it is gone, BEFORE the live count arrives.
+ * How getting in works: applications, not first come first served.
  *
- * The real number comes from /hackathon/api/seats, which counts seated
- * registrations in Supabase; see src/lib/seats.js. These two values are only
- * what the prerendered HTML shows for the moment before that request lands,
- * and what stays on screen if the endpoint is not reachable.
+ * Anyone can apply until the deadline. The organizers pick `spots` people and
+ * email every applicant on decision day. Applying is free; the $5 is only
+ * asked of people who are accepted, and a spot that is not paid for by
+ * `payBy` goes to the next person on the waitlist.
  *
- * `capacity` is the real number: 100 builders is the room's limit. The
- * database enforces the same 100 in hackathon_capacity() in
- * supabase/hackathon.sql, and the live endpoint reports that one.
+ * `deadlineISO` is the one date that DOES something: after it the signup page
+ * closes its form, and /api/register refuses new applications
+ * (netlify/functions/hackathon-register.mjs reads it from this file). -04:00
+ * is Eastern Daylight Time, which is still in force in late October. The
+ * labels are only words; IF A DATE MOVES, MOVE ITS LABEL WITH IT.
+ *
+ * `decisionsOut` stays false until the database matches the decisions: the
+ * ticket page then stops saying "application received" and shows each
+ * person's seat or waitlist place, read from their row. Before that, a row's
+ * seat number is only the order it arrived in and means nothing.
  */
-export const SEATS = {
-  capacity: 100,
-  seatsTaken: 0,
+export const APPLY = {
+  spots: 100,
+  fee: "$5",
+  deadlineISO: "2026-10-23T23:59:59-04:00",
+  deadlineLabel: "Fri Oct 23",
+  deadlineShort: "Oct 23",
+  decisionsLabel: "Mon Oct 26",
+  decisionsShort: "Oct 26",
+  payByLabel: "Mon Oct 26",
+  payByShort: "Oct 26",
+  decisionsOut: false,
 };
+
+/** Whether applications are still open at `now` (ms). Pure, so the server
+ *  and the register function can both ask it. */
+export function applicationsOpen(now = Date.now()) {
+  return now <= Date.parse(APPLY.deadlineISO);
+}
 
 /**
  * Where the buttons go. All base-relative, resolved against the mount point by
  * withBase() at render: this file is also read by scripts/build-ics.mjs under
  * bare Node, where import.meta.env does not exist.
  *
- * `signUp` is the registration form at /hackathon/signup/; `sponsor` is the
- * sponsor one-pager at /hackathon/sponsor/; `calendar` is the .ics file
+ * `signUp` is the application form at /hackathon/signup/ (the path kept its
+ * old name so links already shared still work); `ticket` is where someone's
+ * application, and later their ticket, lives; `sponsor` is the sponsor
+ * one-pager at /hackathon/sponsor/; `calendar` is the .ics file
  * scripts/build-ics.mjs generates.
  */
 export const LINKS = {
   signUp: "signup/",
+  ticket: "ticket/",
   sponsor: "sponsor/",
   calendar: "hacking-starts.ics",
 };

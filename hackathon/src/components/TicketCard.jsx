@@ -1,6 +1,6 @@
 import { SeatFigure } from "./SeatFigure";
 import { WordmarkBlocks } from "./WordmarkBlocks";
-import { EVENT } from "../lib/event";
+import { APPLY, EVENT } from "../lib/event";
 import { checkInDay, checkInTime } from "../lib/schedule";
 import { COLLEGES, YEARS, formatPhone, labelFor, padSeat } from "../lib/signup";
 
@@ -18,6 +18,10 @@ import { COLLEGES, YEARS, formatPhone, labelFor, padSeat } from "../lib/signup";
  * and the stub — because the one mistake it must never allow is someone
  * turning up believing they have a seat. The FEE cell says whether the $5 is
  * still owed.
+ *
+ * An APPLICATION (status "applied", before decisions are out) is drawn the
+ * same way as a waitlist ticket, for the same reason: it is not a seat. Its
+ * stub carries decision day instead of a number.
  *
  * Below 760px it stacks, and the details drop to two columns.
  *
@@ -62,28 +66,46 @@ export function TicketCard({
   token,
   feePaid = false,
 }) {
+  const applied = status === "applied";
   const waitlist = status === "waitlist";
-  const number = waitlist ? padSeat(waitlistPosition, 2) : padSeat(spot);
+  // "Oct 26" → "26" and "OCT", for the stub.
+  const decisionDay = APPLY.decisionsShort.replace(/\D/g, "");
+  const decisionMonth = APPLY.decisionsShort.replace(/[^A-Za-z]/g, "").toUpperCase();
+  const number = applied ? decisionDay : waitlist ? padSeat(waitlistPosition, 2) : padSeat(spot);
 
   return (
     <article
-      className={waitlist ? "hk-ticket hk-ticket--waitlist" : "hk-ticket"}
+      className={
+        applied
+          ? "hk-ticket hk-ticket--waitlist hk-ticket--applied"
+          : waitlist
+            ? "hk-ticket hk-ticket--waitlist"
+            : "hk-ticket"
+      }
       aria-label={
-        waitlist
-          ? `Waitlist place ${waitlistPosition} for ${name}`
-          : `Seat ${spot} of ${capacity} for ${name}`
+        applied
+          ? `Application from ${name}`
+          : waitlist
+            ? `Waitlist place ${waitlistPosition} for ${name}`
+            : `Seat ${spot} of ${capacity} for ${name}`
       }
     >
       <div className="hk-ticket__main">
         <header className="hk-ticket__top">
           <WordmarkBlocks className="hk-ticket__mark" />
-          <span className="hk-ticket__admit">{waitlist ? "WAITLIST" : "ADMIT ONE"}</span>
+          <span className="hk-ticket__admit">
+            {applied ? "APPLICATION" : waitlist ? "WAITLIST" : "ADMIT ONE"}
+          </span>
         </header>
 
         <div className="hk-ticket__holder">
-          <p className="hk-ticket__label">ISSUED TO</p>
+          <p className="hk-ticket__label">{applied ? "APPLICANT" : "ISSUED TO"}</p>
           <p className="hk-ticket__name">{name}</p>
-          {waitlist ? (
+          {applied ? (
+            <p className="hk-ticket__notice">
+              RECEIVED · NOT A SEAT YET · DECISIONS {APPLY.decisionsShort.toUpperCase()}
+            </p>
+          ) : waitlist ? (
             <p className="hk-ticket__notice">
               WAITLIST #{number} · NOT A SEAT YET · THIS TICKET UPDATES IF ONE OPENS
             </p>
@@ -125,16 +147,26 @@ export function TicketCard({
           <div>
             <dt>FEE</dt>
             <dd className={feePaid ? "hk-ticket__fee is-paid" : "hk-ticket__fee"}>
-              {feePaid ? "$5 · PAID" : waitlist ? "$5 · IF SEATED" : "$5 · DUE"}
+              {feePaid
+                ? "$5 · PAID"
+                : applied
+                  ? "$5 · IF ACCEPTED"
+                  : waitlist
+                    ? "$5 · IF SEATED"
+                    : "$5 · DUE"}
             </dd>
           </div>
         </dl>
       </div>
 
       <div className="hk-ticket__stub">
-        <span className="hk-ticket__stub-label">{waitlist ? "WAITLIST" : "SEAT"}</span>
+        <span className="hk-ticket__stub-label">
+          {applied ? "DECISIONS" : waitlist ? "WAITLIST" : "SEAT"}
+        </span>
         <SeatFigure value={number} />
-        <span className="hk-ticket__stub-of">{waitlist ? "IN LINE" : `OF ${capacity}`}</span>
+        <span className="hk-ticket__stub-of">
+          {applied ? decisionMonth : waitlist ? "IN LINE" : `OF ${capacity}`}
+        </span>
         <Barcode seed={token} />
         {token ? <span className="hk-ticket__code">{token.slice(0, 8).toUpperCase()}</span> : null}
       </div>

@@ -1,8 +1,8 @@
 import { BracketButton } from "./BracketButton";
 import { WordmarkBlocks } from "./WordmarkBlocks";
-import { EVENT, LINKS } from "../lib/event";
+import { APPLY, EVENT, LINKS } from "../lib/event";
 import { withBase } from "../lib/base";
-import { useSeats } from "../lib/seats";
+import { useApplicationsOpen } from "../lib/apply";
 
 /**
  * Hero.
@@ -25,9 +25,12 @@ import { useSeats } from "../lib/seats";
  * WHEN AND WHERE sit directly under the mark: they are the two facts someone
  * needs before any claim matters, and they come out of EVENT rather than being
  * typed here, so the footer and the details cannot drift away from them.
+ *
+ * THE DEADLINE sits under the buttons: getting in is by application, so the
+ * third fact someone needs is how long they have.
  */
 export function Hero() {
-  const { full } = useSeats();
+  const open = useApplicationsOpen();
   return (
     <section className="hk-hero hk-bleed">
       <h1 className="hk-hero__title">
@@ -40,13 +43,19 @@ export function Hero() {
       </ul>
 
       <div className="hk-hero__actions">
-        <BracketButton href={withBase(LINKS.signUp)}>
-          {full ? "Join the waitlist" : "Sign up"}
+        <BracketButton className={open ? "hk-btn--big" : ""} href={open ? withBase(LINKS.signUp) : "#apply"}>
+          {open ? "Apply" : "Applications closed"}
         </BracketButton>
         <BracketButton className="hk-hero__secondary" href="#tracks">
           See the tracks
         </BracketButton>
       </div>
+
+      <p className="hk-hero__deadline">
+        <span>{open ? `Apply by ${APPLY.deadlineLabel}` : `Applications closed ${APPLY.deadlineLabel}`}</span>
+        <span className="hk-hero__deadline-sep" aria-hidden="true"> · </span>
+        <span>Decisions {APPLY.decisionsLabel}</span>
+      </p>
     </section>
   );
 }

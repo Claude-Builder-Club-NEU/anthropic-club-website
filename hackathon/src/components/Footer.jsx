@@ -1,6 +1,6 @@
 import { BracketButton } from "./BracketButton";
 import { Wordmark } from "./Wordmark";
-import { EVENT, LINKS, NAV, SOCIAL } from "../lib/event";
+import { APPLY, EVENT, LINKS, NAV, SOCIAL } from "../lib/event";
 import { ORGANIZERS } from "../lib/organizers";
 import { homeAnchor, withBase } from "../lib/base";
 
@@ -57,10 +57,11 @@ export function Footer() {
         <div className="hk-footer__col">
           <h2 className="hk-footer__head">Get involved</h2>
           <p className="hk-footer__line">
-            Claim a seat now and get your ticket straight away. The $5 fee is
-            collected before the event.
+            Apply by {APPLY.deadlineLabel}; decisions go out{" "}
+            {APPLY.decisionsLabel}. Applying is free, and the {APPLY.fee} is
+            only due if you&rsquo;re accepted.
           </p>
-          <BracketButton href={withBase(LINKS.signUp)}>Sign up</BracketButton>
+          <BracketButton href={withBase(LINKS.signUp)}>Apply</BracketButton>
         </div>
       </div>
 

@@ -1,3 +1,5 @@
+import { APPLY } from "./event";
+
 /**
  * The six detail cards (SPEC §3.7).
  *
@@ -11,7 +13,7 @@ export const DETAILS = [
   {
     icon: "meal",
     title: "Meals",
-    body: "Dinner, breakfast, lunch and late-night snacks all weekend. Tell us about dietary needs on the signup form.",
+    body: "Dinner, breakfast, lunch and late-night snacks all weekend. Tell us about dietary needs on the application.",
   },
   {
     icon: "venue",
@@ -31,6 +33,6 @@ export const DETAILS = [
   {
     icon: "cost",
     title: "Cost",
-    body: "$5 per student, collected before the event, not at signup. Food, Wi-Fi and swag are covered.",
+    body: `Free to apply. ${APPLY.fee} only if you're accepted, due by ${APPLY.payByLabel} to keep your spot. Food, Wi-Fi and swag are covered.`,
   },
 ];

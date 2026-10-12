@@ -90,18 +90,19 @@ only generator left; the detail icons are hand-written vector.
 | `tokens.json` → `scripts/build-tokens.mjs` → `src/styles/tokens.css` | Colour, type, spacing (generated, gitignored) |
 | `src/index.css` | The whole design system, and the responsive rules |
 | `src/components/` | One component per section, plus the shared pieces |
-| `src/lib/event.js` | Every launch placeholder, in one file |
+| `src/lib/event.js` | Every launch placeholder, in one file, and `APPLY`: the spots, the application deadline, decision day and the pay-by date |
 | `src/lib/tracks.js` `schedule.js` `details.js` `sponsors.js` | Copy and data |
 | `src/components/DetailIcons.jsx` | The five detail-card icons, as vector |
 | `src/components/SocialIcons.jsx` | The four Find us icons, as vector |
 | `src/lib/wordmarkBlocks.js` + `WordmarkBlocks.jsx` | The hero mark, cell by cell |
-| `src/lib/seatDigits.js` + `SeatFigure.jsx` | The seats-left number, block by block |
+| `src/lib/seatDigits.js` + `SeatFigure.jsx` | The block numerals: the 100 spots, and the number on a ticket's stub |
 | `src/lib/organizers.js` | The four orgs running the event, and the clubs backing it (`BACKERS`) |
 | `src/lib/pages.js` + `src/App.jsx` | The four pages and the shell around them |
 | `src/pages/Sponsor.jsx` + `src/lib/sponsorship.js` | `/sponsor/`, the one-pager as a page |
-| `src/pages/Signup.jsx` + `src/lib/signup.js` | `/signup/`, the form and its three-step submit |
-| `src/pages/Ticket.jsx` + `src/components/TicketCard.jsx` | `/ticket/`: the ticket (seat, fee owed or paid, or WAITLIST) and the check-in steps |
-| `src/lib/seats.js` | The live seat count every button and the meter share |
+| `src/components/Apply.jsx` | The home page's application section: 100 spots, the three dates, Apply now |
+| `src/pages/Signup.jsx` + `src/lib/signup.js` | `/signup/`, the application form and its three-step submit (the path kept its old name so shared links work) |
+| `src/pages/Ticket.jsx` + `src/components/TicketCard.jsx` | `/ticket/`: "application received" until decisions are out, then the ticket (seat, fee owed or paid, or WAITLIST) and the check-in steps |
+| `src/lib/apply.js` | `useApplicationsOpen()`, which every Apply button and the form read |
 | `src/pages.css` | Styles for the three pages above |
 | `dev/api.mjs` | `/api/*` in `npm run dev`: the real functions with keys, a mock without |
 | `scripts/build-icons.mjs` → `public/favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`, `og.png` | The tab icon and the link preview, drawn from the block mark. Run `npm run icons` by hand and commit the output |
@@ -168,7 +169,7 @@ did. These are the changes made since, all of them requested.
 | **There is no logo mark, and there is no eye.** | A pixel eye, then a vector eye, then a bracketed `( o )`, then one peeking out of the bottom of the hero — four attempts, all removed. The honest read is that this page does not want a drawn eye anywhere on it. The wordmark carries the brand in the header and footer; the sponsors section gets a fifth ASCII banner where the mark used to be — an aperture on its own 200 × 10 grid, about 11.6:1, running edge to edge with no frame. |
 | **Buttons are white at rest, accent on hover.** | The inverse of what they were. Red buttons on a page whose logo, seconds digit and meter fill are all red made every control look like part of the artwork. |
 | **The detail icons are one colour.** | Each carried a single accent stroke, and five two-tone glyphs in a row read as five unrelated marks rather than a set. |
-| **A Seats section, after Tracks.** | The figure sits behind the meter at poster size, drawn in blocks like the hero wordmark, so the two big numerals on the page are the same kind of object. The meter is **100 characters wide, one column per seat**: capacity is 100, so the bar is a literal count, not a proportion. Two rows, offset along the ramp, with **no background and no border**, so the number shows through the gaps between glyphs and the ribbon runs *through* it rather than sitting on it in a black box — built the same way as the ribbon above the sponsor tiers. `68% FULL` sits at the right-hand end, where the free seats are dim dots and a small pad costs nothing. |
+| **An Apply section, after Tracks (it was Seats).** | Since applications replaced first-come seats, the figure is a fixed **100** (the spots), the ribbon cut through it is the old meter's empty track with nothing lit, and three dated steps sit under it; the notes in this row and the next few are about the meter it was built from. The figure sits behind the meter at poster size, drawn in blocks like the hero wordmark, so the two big numerals on the page are the same kind of object. The meter is **100 characters wide, one column per seat**: capacity is 100, so the bar is a literal count, not a proportion. Two rows, offset along the ramp, with **no background and no border**, so the number shows through the gaps between glyphs and the ribbon runs *through* it rather than sitting on it in a black box — built the same way as the ribbon above the sponsor tiers. `68% FULL` sits at the right-hand end, where the free seats are dim dots and a small pad costs nothing. |
 | **The meter's rectangle is CSS; only its texture is ASCII.** | Three attempts at an all-character bar failed the same way. `@` at 17px does not fill its cell, so any run of them reads as texture rather than as fill, and the block characters that would fill it — U+2588 and the shade blocks — **are not in Geist Mono**: they measure 28.34px against the font's 24px advance at 40px, so they fall back to another face and break the one-column-per-seat arithmetic outright. Verify with `measureText` before reaching for them again. So `.hk-seats__track` is all hundred seats as a near-black slot and `.hk-seats__fill` is the taken ones as a faint wash exactly `pct`% wide with a 2px inset hairline at the level. Between them they draw the rectangle and nothing else. |
 | **The slabs recede; the characters are the bar.** | First pass at the above made the fill a lit slab with light text on it, which read as a coloured box with a caption rather than as ASCII. Now the track is `#120302`, the fill is `rgba(255,59,47,0.09→0.2)`, and everything you actually look at is type: the fill walks the ramp `-=+*#%@` from a third of the way up to full across its width, jittered per row so it has no visible period, under a dark-to-light gradient clipped to the text with `background-clip`. The `@supports` fallback is not decoration — without background-clip the text is transparent and the bar disappears. |
 | **A 3px black rule around the bar.** | `outline`, not `border`: a border would shrink the bar's content box, and the ribbon inside it is sized off the stage — a hundred columns have to stay exactly the stage's width. On black ground the rule is only visible where it matters, which is the few pixels between the bar and the numerals it is cut into. |
@@ -207,12 +208,29 @@ Four pages, each prerendered to its own `index.html` by `scripts/prerender.mjs`:
 to pick which page to hydrate. The header and footer are shared, so their nav
 links point at `/hackathon/#tracks` rather than a bare `#tracks`.
 
-**Signing up** is three calls behind one button. `/api/register` stores a
+**Getting in is by application.** Anyone can apply until `APPLY.deadlineISO`
+in `src/lib/event.js` (Fri Oct 23, 11:59 PM ET); the organizers pick 100 and
+email every applicant on decision day (Mon Oct 26). Applying is free. The $5
+is only asked of people who are accepted, and a spot still unpaid on the
+pay-by date goes to the next person on the waitlist. The dates are written
+once, in `APPLY`, and every page reads them from there.
+
+After the deadline the Apply buttons turn into "Applications closed", the
+form is replaced by a closed notice, and `/api/register` answers 403
+`closed` (it imports the same `applicationsOpen()` from `event.js`, so the page
+and the server close at the same moment).
+
+**Applying** is three calls behind one button. `/api/register` stores a
 *pending* row and returns two one-time upload URLs; the browser uploads the
 resume and headshot straight to the private Supabase bucket; `/api/finish`
-gives them a seat with the $5 owed, or a waitlist place once 100 are seated.
-That is **free mode**, the default while Northeastern does not let the club
-take payments online. With `HACKATHON_PAYMENTS=stripe` set on Netlify,
+files the row. The database still files it as `seated` (first 100) or
+`waitlist` in arrival order. **That order is not a decision**, so while
+`APPLY.decisionsOut` is `false` the ticket page shows every filed row as
+"Application received" and never a seat number. Once the rows have been set
+to match the decisions (accepted → `seated`, everyone else → `waitlist`, in
+the order the waitlist should run), flip it to `true` and the same links show
+seats and waitlist places. That is **free mode**, the default while
+Northeastern does not let the club take payments online. With `HACKATHON_PAYMENTS=stripe` set on Netlify,
 `/api/finish` creates a $5 Stripe Checkout Session instead, and the rest of
 this paragraph applies. Stripe returns to `/ticket/?session_id=…`, which settles the
 payment without waiting for the webhook and swaps the URL for `?t=<token>`, the
@@ -220,14 +238,14 @@ ticket's own address. The webhook settles it for anyone who closes the tab
 first. Leaving checkout returns to `/signup/?resume=<id>`, which offers the
 payment again without the form.
 
-**The meter is live.** `useSeats()` reads `/api/seats` on load and every 30
-seconds while the tab is visible, and every sign-up button on every page reads
-the same store. The prerendered HTML shows 100 seats left for the moment before
-that lands.
+There is **no live seat count** on the page any more: it only ever counted
+down to 00 and read as "closed". `/api/seats` still answers, for anyone who
+wants the number.
 
 **Locally**, `npm run dev` answers `/hackathon/api/*` itself (`dev/api.mjs`).
 With no keys it is an in-memory mock where "checkout" goes straight to the
-ticket; set `HACKATHON_MOCK_TAKEN=100` to see the waitlist. With a service role
+application page. To see the closed state, move `APPLY.deadlineISO` into the
+past (the dev server restarts and the mock refuses `/register` too). With a service role
 key and a Stripe **test** key in `.env.local` it runs the real functions. See
 `.env.example`.
 
