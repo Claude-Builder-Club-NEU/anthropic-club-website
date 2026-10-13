@@ -20,8 +20,8 @@ import { withBase } from "../lib/base";
  *
  * The clubs backing the event get a second row and heading inside the same
  * section, 72px under the first, the gap between the two sponsor tiers. A
- * backer's logo is a wordmark, so its cell drops the caption and the image's
- * alt text names the link.
+ * backer whose logo is a wordmark drops the caption and lets the image's alt
+ * text name the link; a backer whose logo is only a symbol keeps the caption.
  *
  * The logos are monochrome white so different brand palettes read as one row;
  * see src/lib/organizers.js. A cell falls back to the org's name alone if its
@@ -59,14 +59,9 @@ export function Organizers() {
 function CreditRow({ orgs }) {
   return (
     <ul className="hk-organizers__row">
-      {orgs.map((org) => (
-        <li className="hk-organizers__item" key={org.name}>
-          <a
-            className="hk-organizers__cell"
-            href={org.url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+      {orgs.map((org) => {
+        const content = (
+          <>
             {org.logo ? (
               <img
                 className={`hk-organizers__logo${org.wordmark ? " hk-organizers__logo--wordmark" : ""}`}
@@ -78,9 +73,27 @@ function CreditRow({ orgs }) {
             {org.wordmark && org.logo ? null : (
               <span className="hk-organizers__name">{org.short}</span>
             )}
-          </a>
-        </li>
-      ))}
+          </>
+        );
+        // A club with no `url` yet keeps its cell and credit, without the
+        // link or the hover that says it is one.
+        return (
+          <li className="hk-organizers__item" key={org.name}>
+            {org.url ? (
+              <a
+                className="hk-organizers__cell"
+                href={org.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {content}
+              </a>
+            ) : (
+              <div className="hk-organizers__cell">{content}</div>
+            )}
+          </li>
+        );
+      })}
     </ul>
   );
 }

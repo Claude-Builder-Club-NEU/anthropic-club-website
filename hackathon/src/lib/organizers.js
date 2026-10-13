@@ -67,6 +67,15 @@ export const ORGANIZERS = [
  * Disrupt's mark is the plain "Disrupt" wordmark from the club's own logo
  * file, its dark-text version, cut out and flattened to white; the accent in
  * the D keeps the hairline gap the artwork gives it, so it still reads.
+ *
+ * NU Security's and the Investment Banking Club's marks are symbols with no
+ * name in them, so they keep the caption, as the organizers do. Both are cut
+ * from the supplied artwork to white on alpha with a seam wherever two inks
+ * met: NU Security's purple shield against its black swords, and each
+ * building's lit front against its shaded side. Without the seams both would
+ * flatten to a single blob. NU Security has no site, and its Khoury profile
+ * lists the Instagram, so the cell links there. The Investment Banking Club
+ * has no `url` yet, so its cell is not a link.
  */
 export const BACKERS = [
   {
@@ -89,5 +98,17 @@ export const BACKERS = [
     url: "https://www.linkedin.com/company/neudisrupt/",
     logo: { src: "logos/disrupt.png", alt: "Disrupt" },
     wordmark: true,
+  },
+  {
+    name: "NU Security",
+    short: "NU SECURITY",
+    url: "https://www.instagram.com/nusecurity/",
+    logo: { src: "logos/nu-security.png", alt: "NU Security" },
+  },
+  {
+    name: "Investment Banking Club",
+    short: "INVESTMENT BANKING CLUB",
+    url: null,
+    logo: { src: "logos/investment-banking.png", alt: "Investment Banking Club" },
   },
 ];

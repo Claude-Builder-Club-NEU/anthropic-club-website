@@ -23,6 +23,15 @@
  * because at 32 the wordmark under the mark is 11px tall and reads smaller
  * than every other sponsor's name.
  *
+ * Exa is the wordmark from exa.ai's own header (/images/logo/exa-logo-blue.svg),
+ * its blue mark and black letters both filled white. 26px, not 28–32: the
+ * lowercase letters run nearly the mark's full height, so at 26 they stand
+ * about as tall as Anthropic's capitals beside it.
+ *
+ * Elisity is the supplied black lockup, flattened to white the same way as
+ * the organizer logos. 32px, because its capitals are only about half the
+ * height of the mark in front of them.
+ *
  * `href`, where present, makes the whole cell a link to the sponsor's site.
  */
 export const SPONSOR_TIERS = [
@@ -31,7 +40,7 @@ export const SPONSOR_TIERS = [
     logos: [
       { src: "logos/anthropic.svg", alt: "Anthropic", height: 20 },
       { src: "logos/tavily.png", alt: "Tavily by Nebius", height: 32 },
-      null,
+      { src: "logos/exa.svg", alt: "Exa", height: 26, href: "https://exa.ai/" },
     ],
   },
   {
@@ -44,7 +53,12 @@ export const SPONSOR_TIERS = [
         stacked: true,
         href: "https://codecrafters.io/",
       },
-      null,
+      {
+        src: "logos/elisity.png",
+        alt: "Elisity",
+        height: 32,
+        href: "https://www.elisity.com/",
+      },
       null,
       null,
       null,

@@ -1451,16 +1451,21 @@ button:focus-visible,
   margin-bottom: 40px;
 }
 
+/* One line, capped at the column, the way a sponsor tier is. Five backers
+   are 1100px of cells, which fits the column only from about 1340px; below
+   that, down to the ≤1099px grid, wrapping would leave fragments, so the
+   cells shrink instead. */
 .hk-organizers__row {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
+  max-width: 100%;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .hk-organizers__item {
+  min-width: 0;
   border-left: 1px dashed var(--dash);
 }
 
@@ -1477,6 +1482,7 @@ button:focus-visible,
  */
 .hk-organizers__cell {
   width: 220px;
+  max-width: 100%;
   height: 124px;
   display: flex;
   flex-direction: column;
@@ -1487,15 +1493,17 @@ button:focus-visible,
   transition: background-color 120ms linear;
 }
 
-.hk-organizers__cell:hover,
-.hk-organizers__cell:focus-visible {
+/* Only a cell that goes somewhere responds; a club with no link yet is a
+   plain div and should not look clickable. */
+.hk-organizers__cell[href]:hover,
+.hk-organizers__cell[href]:focus-visible {
   background: var(--chip-bg);
 }
 
 /* The logo is white already; the name is the part that has to say "this is a
    link", and it does it the way the rest of the page's links do. */
-.hk-organizers__cell:hover .hk-organizers__name,
-.hk-organizers__cell:focus-visible .hk-organizers__name {
+.hk-organizers__cell[href]:hover .hk-organizers__name,
+.hk-organizers__cell[href]:focus-visible .hk-organizers__name {
   color: var(--accent);
 }
 
