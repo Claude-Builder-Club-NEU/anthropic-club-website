@@ -35,9 +35,10 @@ create extension if not exists "citext";    -- case-insensitive email column
 --
 -- `code` and `code_expires_at` are what stop a code being texted to someone who
 -- did not come: the spec calls for a code that rotates every session and dies
--- shortly after the start. `slot` is the position on the stamp card, so an
--- empty slot can still show its scheduled date, which is what the mockup draws
--- under the unfilled circles.
+-- shortly after the start. `slot` orders the term's sessions. It is not the
+-- position on the stamp card: the card fills from the left in the order a
+-- student attended (toStrip in src/lib/attendance.js), so an event run as two
+-- time slots does not leave a hole.
 create table if not exists public.sessions (
   id              uuid primary key default gen_random_uuid(),
   term            text        not null,

@@ -86,10 +86,8 @@ const StampCard = ({ term, name, email, card = [] }) => {
               <span className="stamp__date">{slot.label || " "}</span>
               <span className="sr-only">
                 {slot.stamped
-                  ? `Session ${slot.slot}, attended${
-                      slot.title ? `, ${slot.title}` : ""
-                    }`
-                  : `Session ${slot.slot}, not yet`}
+                  ? `Stamp ${slot.slot}${slot.title ? `, ${slot.title}` : ""}`
+                  : `Stamp ${slot.slot}, not yet`}
               </span>
             </li>
           ))}

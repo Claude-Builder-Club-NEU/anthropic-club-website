@@ -161,8 +161,8 @@ export function followUpFor(session) {
  * Card shaping
  *
  * check_in() returns one entry per session in the term, stamped or not. The
- * card component wants a fixed-length strip so the empty slots keep their
- * positions, which is what makes "2 sessions to go" legible at a glance.
+ * card component wants a fixed-length strip, filled like a punch card, which
+ * is what makes "2 sessions to go" legible at a glance.
  * -------------------------------------------------------------------------- */
 
 /** Slots drawn on a card. Eight sessions to a card, one card per term. */
@@ -178,19 +178,31 @@ export function stampDate(iso) {
 }
 
 /**
- * Pad the term's sessions out to CARD_SLOTS so the strip is always the same
- * width. A term with only six sessions scheduled still draws eight circles,
- * because the card is a promise about the term rather than a report on what has
- * been scheduled so far.
+ * Lay the term out as a punch card: the sessions this address attended fill
+ * the strip from the left in date order, and the empty circles after them carry
+ * the dates of sessions still to come. A missed session leaves no gap.
+ *
+ * Filling by attendance rather than by each session's slot is what stops one
+ * event run twice from costing a stamp. The September info session was two
+ * rows, a 6pm and a 7pm time slot, so anyone who came to one saw a hole where
+ * the other sat and their next stamp landed third instead of second.
+ *
+ * Always CARD_SLOTS wide. A term with only six sessions scheduled still draws
+ * eight circles, because the card is a promise about the term rather than a
+ * report on what has been scheduled so far.
  */
-export function toStrip(card = []) {
-  const bySlot = new Map(card.map((entry) => [entry.slot, entry]));
+export function toStrip(card = [], now = Date.now()) {
+  const byDate = (a, b) => new Date(a.starts_at) - new Date(b.starts_at);
+  const attended = card.filter((entry) => entry.stamped).sort(byDate);
+  const upcoming = card
+    .filter((entry) => !entry.stamped && new Date(entry.starts_at) > now)
+    .sort(byDate);
   return Array.from({ length: CARD_SLOTS }, (_, i) => {
-    const slot = i + 1;
-    const entry = bySlot.get(slot);
+    const stamped = i < attended.length;
+    const entry = stamped ? attended[i] : upcoming[i - attended.length];
     return {
-      slot,
-      stamped: Boolean(entry?.stamped),
+      slot: i + 1,
+      stamped,
       label: entry ? stampDate(entry.starts_at) : "",
       title: entry?.title || "",
     };
