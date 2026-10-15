@@ -216,6 +216,11 @@ still standing in the room is a typo that costs nothing.
 The room code rotates every session and expires shortly after the start, so it
 cannot usefully be texted to somebody who did not come.
 
+A session can send students on to a form after the stamp. Any session titled
+"Intro to Claude" (or "Introduction to Claude …") redirects to the club's
+Jotform for Anthropic API credits a few seconds after check-in. The list is
+`FOLLOW_UPS` in `src/lib/attendance.js`.
+
 Schema, policies and the six functions the browser may call are in
 `supabase/schema.sql`. The security model is worth reading before changing
 anything there: row-level security is on and **no policy grants the anon role

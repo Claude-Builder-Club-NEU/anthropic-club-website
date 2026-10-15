@@ -3036,6 +3036,36 @@ textarea.pf-input {
   text-align: center;
 }
 
+/* --- Follow-up ----------------------------------------------------------
+   The form some sessions send a student on to. It sits above the card so it
+   is on screen without scrolling on a phone, which is where the redirect
+   happens. */
+
+.checkin__next {
+  margin-top: var(--space-8);
+}
+
+.checkin__next-lead,
+.checkin__next-note {
+  margin-inline: auto;
+  max-width: var(--measure-tight);
+}
+
+.checkin__next-lead {
+  font-size: var(--step-lead);
+  color: var(--ink);
+}
+
+.checkin__next-note {
+  margin-top: var(--space-2);
+  font-size: var(--step-small);
+  color: var(--gray-text);
+}
+
+.checkin__next-btn {
+  margin-top: var(--space-6);
+}
+
 /* --- Stamp card --------------------------------------------------------- */
 
 .stampcard {

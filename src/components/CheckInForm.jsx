@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import {
   CODE_LENGTH,
+  FOLLOW_UP_DELAY_MS,
   checkIn,
   currentSession,
+  followUpFor,
   hasBackend,
   normalizeCode,
   reasonField,
@@ -69,6 +71,19 @@ const CheckInForm = () => {
   useEffect(() => {
     if (status === "done") doneRef.current?.focus();
   }, [status]);
+
+  // A session with a follow-up form sends the student on once they have seen
+  // the stamp. Same tab: a new one opened from a timer is a blocked popup.
+  const followUp = status === "done" ? followUpFor(result?.session) : null;
+  const followUpUrl = followUp?.url;
+  useEffect(() => {
+    if (!followUpUrl) return undefined;
+    const timer = setTimeout(
+      () => window.location.assign(followUpUrl),
+      FOLLOW_UP_DELAY_MS
+    );
+    return () => clearTimeout(timer);
+  }, [followUpUrl]);
 
   // Once the code is complete, reveal the rest and put the caret in it. The
   // latch means it never disappears again.
@@ -157,6 +172,16 @@ const CheckInForm = () => {
         {/* Echo the address back. A typo caught here is caught while the
             student is still in the room, which is the only time it is cheap. */}
         <p className="checkin__saved">Saved to {result.email}</p>
+
+        {followUp && (
+          <div className="checkin__next" role="status">
+            <p className="checkin__next-lead">{followUp.lead}</p>
+            <p className="checkin__next-note">Taking you there in a moment.</p>
+            <a className="btn btn--coral checkin__next-btn" href={followUp.url}>
+              {followUp.action}
+            </a>
+          </div>
+        )}
 
         <StampCard
           term={termLabel(result.session?.term)}

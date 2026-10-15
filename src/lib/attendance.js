@@ -126,6 +126,38 @@ export async function checkIn({ code, name, email }, options) {
 }
 
 /* -------------------------------------------------------------------------- *
+ * After the stamp
+ *
+ * Some sessions hand the student on to a form once they are checked in. The
+ * title is the only thing check_in() returns that says which session this was,
+ * so the match is on that, loose enough to accept "Intro" or "Introduction".
+ * A session with no entry here just shows the card, as before.
+ * -------------------------------------------------------------------------- */
+
+const FOLLOW_UPS = [
+  {
+    // The club's Jotform, where a member claims their Claude Console API
+    // credits. The intro workshop is where most people first need them.
+    match: /^intro(duction)? to claude\b/i,
+    url: "https://form.jotform.com/262505588699173",
+    lead: "Next, request your Anthropic API credits.",
+    action: "Open the credit request form",
+  },
+];
+
+/**
+ * Long enough to read "You're stamped" and see the card, short enough that
+ * nobody closes the tab first. The button covers anyone faster than that.
+ */
+export const FOLLOW_UP_DELAY_MS = 4000;
+
+/** Where to send someone after checking in to `session`, or null. */
+export function followUpFor(session) {
+  const title = (session?.title || "").trim();
+  return FOLLOW_UPS.find((f) => f.match.test(title)) || null;
+}
+
+/* -------------------------------------------------------------------------- *
  * Card shaping
  *
  * check_in() returns one entry per session in the term, stamped or not. The
