@@ -108,9 +108,18 @@ export function Signup() {
       return;
     }
     const { field, message } = reasonToError(done.reason);
-    if (done.reason === "not_found") {
+    if (done.reason === "not_found" || done.reason === "already_registered") {
+      // Show the form again: already_registered is an error on its email
+      // field, which the "pick up where you left off" panel would hide.
       pending.clear();
       setResumeId(null);
+    } else {
+      // The row and files are saved, and finish may even have filed it with
+      // the reply lost on the way back (a dropped phone connection). Offer
+      // to finish THIS row again, which is idempotent and returns the
+      // ticket. Re-submitting the form instead would register a second row
+      // and be refused as "already applied" by the first one.
+      setResumeId(id);
     }
     if (field) setErrors((e) => ({ ...e, [field]: message }));
     setGeneral(field ? "" : message);
