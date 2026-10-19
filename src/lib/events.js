@@ -65,9 +65,11 @@ export const KIND_ORDER = ["info", "workshop", "hackathon"];
  * `athon\b` deliberately catches "Chatathon" and "Datathon" as well as
  * "Hackathon", since the club runs all three under the same banner. It would
  * also catch "Marathon"; if the club ever runs one, rename it or add a rule.
+ * `hack` followed by night, day or a number catches "Hack Night" and
+ * "HACK1984" without catching a workshop called "Hack your workflow".
  */
 const KIND_MATCHERS = [
-  [/athon\b|\bhack\s?night\b/i, "hackathon"],
+  [/athon\b|\bhack\s?(night|day|\d{2,4})\b/i, "hackathon"],
   [/\binfo(rmation)?\s*(session|night)\b|\bintro\b|\borientation\b|\bkick\s?-?off\b|\binterest\s*meeting\b/i, "info"],
 ];
 
