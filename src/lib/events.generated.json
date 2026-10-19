@@ -42,5 +42,27 @@
     "rsvpUrl": "https://luma.com/1zbtefzs",
     "url": null,
     "allDay": false
+  },
+  {
+    "id": "7iieflie9531tqn4tl103ncndb@google.com",
+    "title": "HACK1984",
+    "start": "2026-11-07T14:00:00.000Z",
+    "end": "2026-11-08T04:30:00.000Z",
+    "location": "Horticulture Hall, 300 Massachusetts Ave Fl 1, Boston, MA 02115, USA",
+    "description": "Northeastern's biggest hackathon ever!",
+    "rsvpUrl": "https://claudeneu.com/hackathon/signup/",
+    "url": null,
+    "allDay": false
+  },
+  {
+    "id": "7d9de1l1t6fij02s3u5fu2q14l@google.com",
+    "title": "HACK1984",
+    "start": "2026-11-08T05:00:00.000Z",
+    "end": "2026-11-08T21:00:00.000Z",
+    "location": "Horticulture Hall, 300 Massachusetts Ave Fl 1, Boston, MA 02115, USA",
+    "description": "Northeastern's biggest hackathon ever!",
+    "rsvpUrl": "https://claudeneu.com/hackathon/signup/",
+    "url": null,
+    "allDay": false
   }
 ]
