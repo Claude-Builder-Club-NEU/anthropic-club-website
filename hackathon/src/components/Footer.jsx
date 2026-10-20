@@ -58,8 +58,8 @@ export function Footer() {
           <h2 className="hk-footer__head">Get involved</h2>
           <p className="hk-footer__line">
             Apply by {APPLY.deadlineLabel}; decisions go out{" "}
-            {APPLY.decisionsLabel}. Applying is free, and the {APPLY.fee} is
-            only due if you&rsquo;re accepted.
+            {APPLY.decisionsLabel}. HACK1984 is completely free: no fee to
+            apply or to attend.
           </p>
           <BracketButton href={withBase(LINKS.signUp)}>Apply</BracketButton>
         </div>

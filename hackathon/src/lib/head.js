@@ -34,7 +34,7 @@ const META = {
   },
   signup: {
     title: `Apply — ${EVENT.name}`,
-    description: `Apply for one of ${APPLY.spots} spots at ${EVENT.name}, ${EVENT.dateLong}, ${EVENT.venue}. Applications close ${APPLY.deadlineLabel}; decisions ${APPLY.decisionsLabel}. Free to apply, ${APPLY.fee} if accepted.`,
+    description: `Apply for one of ${APPLY.spots} spots at ${EVENT.name}, ${EVENT.dateLong}, ${EVENT.venue}. Applications close ${APPLY.deadlineLabel}; decisions ${APPLY.decisionsLabel}. Completely free, no fee to apply or attend.`,
   },
   ticket: {
     title: `Your application — ${EVENT.name}`,

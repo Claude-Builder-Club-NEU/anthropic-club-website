@@ -397,8 +397,8 @@ waitlist**, and the ticket says WAITLIST. `/hackathon/sponsor/` is the sponsor
 one-pager.
 
 **Payment is off for now** (Northeastern's limits on student-org payments).
-The first 100 are seated free with the **$5 fee owed**, which the form and the
-ticket both say plainly. Officers record fees with
+**The event is now free:** the $5 fee was dropped, and the form, the ticket
+and every page say so. The fee machinery below is left in place but unused. Officers record fees with
 `hackathon_mark_fee_paid(email)` and, at the deadline, run
 `hackathon_release_unpaid()`, which takes back every unpaid seat and gives it,
 same number, to the next person on the waitlist. Those functions and the

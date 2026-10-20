@@ -1,6 +1,6 @@
 import { BracketButton } from "./BracketButton";
 import { SeatFigure } from "./SeatFigure";
-import { APPLY, LINKS } from "../lib/event";
+import { APPLY, EVENT, LINKS } from "../lib/event";
 import { withBase } from "../lib/base";
 import { useApplicationsOpen } from "../lib/apply";
 
@@ -19,7 +19,7 @@ import { useApplicationsOpen } from "../lib/apply";
  * until decision day.
  *
  * THE DATES ARE THE CONTENT. Three steps on one row, each led by its date in
- * mono caps, because "when do I hear back" and "when do I pay" are the two
+ * mono caps, because "when do I apply by" and "when do I hear back" are the two
  * questions this section exists to answer.
  */
 
@@ -45,9 +45,9 @@ const STEPS = [
     text: `We pick ${APPLY.spots} builders and email every applicant on ${APPLY.decisionsLabel}. Everyone else goes on the waitlist.`,
   },
   {
-    date: `By ${APPLY.payByLabel}`,
-    head: `Confirm with ${APPLY.fee}`,
-    text: `Accepted? Pay the ${APPLY.fee} by ${APPLY.payByLabel} to keep your spot. An unpaid spot goes to the next person on the waitlist.`,
+    date: EVENT.dateRange,
+    head: "Come build, free",
+    text: `Accepted? There's no fee. Bring your laptop and student ID to ${EVENT.venue}; food, Wi-Fi and swag are covered.`,
   },
 ];
 
@@ -99,8 +99,8 @@ export function Apply() {
           <p className="hk-seats__legend" aria-live="polite">
             {open ? (
               <>
-                Free to apply. <strong>{APPLY.fee}</strong> only if you&rsquo;re
-                accepted.
+                <strong>Completely free.</strong> No fee to apply or to
+                attend.
               </>
             ) : (
               <>

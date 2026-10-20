@@ -16,8 +16,8 @@ import { COLLEGES, YEARS, formatPhone, labelFor, padSeat } from "../lib/signup";
  *
  * A WAITLIST ticket says so three times — the chip, a line under the name,
  * and the stub — because the one mistake it must never allow is someone
- * turning up believing they have a seat. The FEE cell says whether the $5 is
- * still owed.
+ * turning up believing they have a seat. The FEE cell says FREE: there is no
+ * fee any more.
  *
  * An APPLICATION (status "applied", before decisions are out) is drawn the
  * same way as a waitlist ticket, for the same reason: it is not a seat. Its
@@ -64,7 +64,6 @@ export function TicketCard({
   waitlistPosition,
   capacity = 100,
   token,
-  feePaid = false,
 }) {
   const applied = status === "applied";
   const waitlist = status === "waitlist";
@@ -146,15 +145,7 @@ export function TicketCard({
           </div>
           <div>
             <dt>FEE</dt>
-            <dd className={feePaid ? "hk-ticket__fee is-paid" : "hk-ticket__fee"}>
-              {feePaid
-                ? "$5 · PAID"
-                : applied
-                  ? "$5 · IF ACCEPTED"
-                  : waitlist
-                    ? "$5 · IF SEATED"
-                    : "$5 · DUE"}
-            </dd>
+            <dd className="hk-ticket__fee is-paid">FREE</dd>
           </div>
         </dl>
       </div>

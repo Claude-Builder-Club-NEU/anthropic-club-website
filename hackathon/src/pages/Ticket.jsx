@@ -202,7 +202,7 @@ function Issued({ ticket }) {
     );
   }
 
-  // Taken back by an officer, usually for not paying by the deadline; see
+  // Taken back by an officer; see
   // hackathon_release() in supabase/hackathon.sql.
   if (ticket.status === "released") {
     return (
@@ -210,9 +210,8 @@ function Issued({ ticket }) {
         <span className="hk-chip">RELEASED</span>
         <h1 className="hk-tk__title">This spot was released.</h1>
         <p className="hk-tk__text">
-          The spot for {ticket.name} has been given up, usually because the{" "}
-          {APPLY.fee} wasn&rsquo;t paid by {APPLY.payByLabel}, and it has gone
-          to the next person on the waitlist. If that&rsquo;s a mistake, email
+          The spot for {ticket.name} has been given up, and it has gone to
+          the next person on the waitlist. If that&rsquo;s a mistake, email
           the organizers.
         </p>
         {open ? <BracketButton href={withBase(LINKS.signUp)}>Apply again</BracketButton> : null}
@@ -244,7 +243,6 @@ function Issued({ ticket }) {
       waitlistPosition={ticket.waitlist_position}
       capacity={ticket.capacity}
       token={ticket.token}
-      feePaid={ticket.fee_paid}
     />
   );
 
@@ -257,7 +255,7 @@ function Issued({ ticket }) {
           <h1 id="tk-h" className="hk-tk__title">Application received.</h1>
           <p className="hk-tk__text">
             We&rsquo;ll email {ticket.email} on {APPLY.decisionsLabel}, whatever
-            the answer. Nothing to pay unless you&rsquo;re accepted. Bookmark
+            the answer. There&rsquo;s nothing to pay: {EVENT.name} is free. Bookmark
             this page: it&rsquo;s your application.
           </p>
         </div>
@@ -274,12 +272,12 @@ function Issued({ ticket }) {
               text: `We pick ${APPLY.spots} builders from every application and email everyone, accepted or not.`,
             },
             {
-              head: `Accepted? Pay the ${APPLY.fee} by ${APPLY.payByLabel}.`,
-              text: "We'll email you how. Paying confirms your spot; a spot that's still unpaid goes to the next person on the waitlist.",
+              head: "Accepted? It's free.",
+              text: "There's no fee. Your seat number goes on this page, and you bring it to check-in.",
             },
             {
               head: "Not this time? You're on the waitlist.",
-              text: "Spots that aren't paid for go to the waitlist in order. If one comes to you, we'll email you and this page will show your seat.",
+              text: "Spots that open up go to the waitlist in order. If one comes to you, we'll email you and this page will show your seat.",
             },
           ]}
         />
@@ -288,7 +286,6 @@ function Issued({ ticket }) {
   }
 
   const waitlist = ticket.status === "waitlist";
-  const owes = !waitlist && !ticket.fee_paid;
   const headline = waitlist
     ? `You're #${ticket.waitlist_position} on the waitlist.`
     : `You're in. Seat ${ticket.spot} of ${ticket.capacity}.`;
@@ -298,20 +295,14 @@ function Issued({ ticket }) {
   if (waitlist && ticket.refunded) {
     lede = "The last seat went while you were paying, so your $5 has been refunded. You're on the waitlist instead.";
   } else if (waitlist) {
-    lede = `This is a waitlist place, not a seat. Seats that aren't paid for by ${APPLY.payByLabel} go to the waitlist in order. If one comes to you, this same link will show your seat number, and we'll let you know.`;
-  } else if (owes) {
-    lede = `You're accepted. ${EVENT.name} is ${APPLY.fee} per student: pay by ${APPLY.payByLabel} to keep your seat, and we'll email you how. If it's still unpaid then, the seat goes to the next person on the waitlist.`;
+    lede = `This is a waitlist place, not a seat. Seats that open up go to the waitlist in order. If one comes to you, this same link will show your seat number, and we'll let you know.`;
   } else {
-    lede = `Your seat is held and your ${APPLY.fee} is paid. This page is your ticket: bookmark it, print it or screenshot it.`;
+    lede = `You're accepted, and ${EVENT.name} is free: there's nothing to pay. This page is your ticket: bookmark it, print it or screenshot it.`;
   }
 
-  // Numbered from the data, so the pay step can come and go without
-  // renumbering anything by hand.
+  // Numbered from the data, so a step can come and go without renumbering
+  // anything by hand.
   const steps = [
-    owes && {
-      head: `Pay the ${APPLY.fee} by ${APPLY.payByLabel}.`,
-      text: "We'll email you how. Unpaid seats go to the next person on the waitlist.",
-    },
     {
       head: `Come to ${EVENT.venue}.`,
       text: `Check-in opens ${checkInTime()}, with breakfast. Come before the opening ceremony; hacking starts at noon.`,

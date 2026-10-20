@@ -30,9 +30,8 @@ import {
  *   2. The resume and headshot go straight to the private Supabase bucket.
  *   3. /api/finish files the application, and they land on its page.
  *
- * NOTHING IS CHARGED HERE. The $5 is only asked of people who are accepted,
- * after decision day, and the page says so plainly, including what happens
- * if it is not paid. (Step 3 still files the row as 'seated' or 'waitlist',
+ * NOTHING IS CHARGED, HERE OR LATER. The event is free (the old $5 fee is
+ * gone), and the page says so plainly. (Step 3 still files the row as 'seated' or 'waitlist',
  * in arrival order; that order means nothing until the organizers set the
  * rows to match their decisions. See APPLY.decisionsOut in event.js.)
  *
@@ -227,12 +226,10 @@ export function Signup() {
           <strong>{APPLY.decisionsLabel}</strong>.
         </p>
         <p className="hk-su__fee">
-          <span className="hk-su__fee-tag">{APPLY.fee} IF ACCEPTED</span>
+          <span className="hk-su__fee-tag">FREE</span>
           <span>
-            Applying is free. If you&rsquo;re accepted, {EVENT.name} is{" "}
-            <strong>{APPLY.fee} per student</strong> and we&rsquo;ll email you how
-            to pay. Pay by {APPLY.payByLabel} to keep your spot; an unpaid spot
-            goes to the next person on the waitlist.
+            {EVENT.name} is <strong>completely free</strong>. There&rsquo;s no
+            fee to apply and no fee if you&rsquo;re accepted.
           </span>
         </p>
       </header>
@@ -332,7 +329,7 @@ export function Signup() {
               {busy ? step || "Working…" : "Submit application"}
             </BracketButton>
             <p className="hk-su__status" aria-live="polite">
-              {busy ? `> ${step}` : `> Free to apply. ${APPLY.fee} only if you're accepted.`}
+              {busy ? `> ${step}` : "> Completely free. No fee to apply or attend."}
             </p>
           </div>
         </form>

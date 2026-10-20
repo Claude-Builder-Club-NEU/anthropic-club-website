@@ -44,9 +44,8 @@ export const EVENT = {
  * How getting in works: applications, not first come first served.
  *
  * Anyone can apply until the deadline. The organizers pick `spots` people and
- * email every applicant on decision day. Applying is free; the $5 is only
- * asked of people who are accepted, and a spot that is not paid for by
- * `payBy` goes to the next person on the waitlist.
+ * email every applicant on decision day. The event is free: there is
+ * no fee to apply and none to attend (the old $5 fee is gone).
  *
  * `deadlineISO` is the one date that DOES something: after it the signup page
  * closes its form, and /api/register refuses new applications
@@ -61,14 +60,11 @@ export const EVENT = {
  */
 export const APPLY = {
   spots: 100,
-  fee: "$5",
   deadlineISO: "2026-10-23T23:59:59-04:00",
   deadlineLabel: "Fri Oct 23",
   deadlineShort: "Oct 23",
   decisionsLabel: "Mon Oct 26",
   decisionsShort: "Oct 26",
-  payByLabel: "Mon Oct 26",
-  payByShort: "Oct 26",
   decisionsOut: false,
 };
 
