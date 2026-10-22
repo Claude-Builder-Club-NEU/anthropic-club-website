@@ -1,8 +1,8 @@
-import { BACKERS, ORGANIZERS } from "../lib/organizers";
+import { BACKERS, ORGANIZERS, TEAM } from "../lib/organizers";
 import { withBase } from "../lib/base";
 
 /**
- * Organized by, and under it, Also backed by.
+ * Organized by, then the organizing team, then Partner organizations.
  *
  * The four student orgs running the event. The footer has always said "BUILT
  * BY FOUR NORTHEASTERN ORGS"; this says which four.
@@ -18,9 +18,13 @@ import { withBase } from "../lib/base";
  * heading, because an organiser is not a sponsor and putting them in one row
  * would say they are.
  *
- * The clubs backing the event get a second row and heading inside the same
- * section, 72px under the first, the gap between the two sponsor tiers. A
- * backer whose logo is a wordmark drops the caption and lets the image's alt
+ * The people running it come next, under their own heading: one grid, four
+ * to a row, each cell a greyscale headshot over a name. Same dashed cells,
+ * taller, and not links.
+ *
+ * The partner organisations get the last row and heading inside the same
+ * section, 72px under the team, the gap between the two sponsor tiers. A
+ * partner whose logo is a wordmark drops the caption and lets the image's alt
  * text name the link; a backer whose logo is only a symbol keeps the caption.
  *
  * The logos are monochrome white so different brand palettes read as one row;
@@ -40,6 +44,20 @@ export function Organizers() {
       <CreditRow orgs={ORGANIZERS} />
 
       <section
+        id="team"
+        aria-labelledby="team-h"
+        className="hk-organizers__backers"
+      >
+        <h2
+          id="team-h"
+          className="hk-chip hk-organizers__label hk-organizers__label--second"
+        >
+          ORGANIZING TEAM
+        </h2>
+        <TeamRow people={TEAM} />
+      </section>
+
+      <section
         id="backers"
         aria-labelledby="backers-h"
         className="hk-organizers__backers"
@@ -48,17 +66,41 @@ export function Organizers() {
           id="backers-h"
           className="hk-chip hk-organizers__label hk-organizers__label--second"
         >
-          ALSO BACKED BY
+          PARTNER ORGANIZATIONS
         </h2>
-        <CreditRow orgs={BACKERS} />
+        <CreditRow orgs={BACKERS} four />
       </section>
     </section>
   );
 }
 
-function CreditRow({ orgs }) {
+function TeamRow({ people }) {
   return (
-    <ul className="hk-organizers__row">
+    <ul className="hk-organizers__row hk-organizers__row--four">
+      {people.map((person) => (
+        <li className="hk-organizers__item" key={person.name}>
+          <div className="hk-organizers__cell hk-team__cell">
+            <img
+              className="hk-team__photo"
+              src={withBase(person.photo)}
+              alt=""
+              width="88"
+              height="88"
+              loading="lazy"
+            />
+            <span className="hk-organizers__name">
+              {person.name.toUpperCase()}
+            </span>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function CreditRow({ orgs, four = false }) {
+  return (
+    <ul className={`hk-organizers__row${four ? " hk-organizers__row--four" : ""}`}>
       {orgs.map((org) => {
         const content = (
           <>

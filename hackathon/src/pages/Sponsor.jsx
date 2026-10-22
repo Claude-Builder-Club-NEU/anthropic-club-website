@@ -152,7 +152,7 @@ export function Sponsor() {
         </div>
       </section>
 
-      <section className="hk-sp__credits" aria-label="Organized by and backed by">
+      <section className="hk-sp__credits" aria-label="Organized by and partner organizations">
         <div className="hk-sp__credit">
           <h2 className="hk-sp__credit-label">ORGANIZED BY</h2>
           <ul className="hk-sp__logos">
@@ -171,7 +171,7 @@ export function Sponsor() {
           </ul>
         </div>
         <div className="hk-sp__credit">
-          <h2 className="hk-sp__credit-label">BACKED BY</h2>
+          <h2 className="hk-sp__credit-label">PARTNER ORGANIZATIONS</h2>
           <ul className="hk-sp__logos">
             {BACKERS.map((logo) => (
               <li key={logo.src}>
