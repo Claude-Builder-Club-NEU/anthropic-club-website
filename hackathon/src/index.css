@@ -1558,6 +1558,42 @@ button:focus-visible,
   transition: color 120ms linear;
 }
 
+/*
+ * The organizing team: the same dashed cell, taller, with a greyscale headshot
+ * over the name. The photos come from different shoots; greyscale is what
+ * makes them one row, as white does for the logos. Not links, so no hover.
+ * The flex row wrapped at four across, so eight people are two rows of four
+ * with the dashes running straight down through both. The partner row wraps
+ * the same way, four over three, and a short last row is centred under the
+ * one above it, as every other row on the page is centred. Below 1100px the
+ * two-up grid takes over, as it does for every row here.
+ */
+.hk-organizers__row--four {
+  flex-wrap: wrap;
+  width: 880px;
+}
+
+.hk-organizers__row--four .hk-organizers__item {
+  flex: 0 0 25%;
+}
+
+.hk-organizers__row--four .hk-organizers__item:nth-child(4n) {
+  border-right: 1px dashed var(--dash);
+}
+
+.hk-team__cell {
+  height: 180px;
+  gap: 0;
+}
+
+.hk-team__photo {
+  width: 88px;
+  height: 88px;
+  margin-bottom: 16px;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.05);
+}
+
 .hk-organizers__note {
   margin: 28px 0 0;
   font-family: var(--font-mono);
@@ -2277,6 +2313,12 @@ button:focus-visible,
     width: auto;
   }
 
+  /* Two up like every other row here; the desktop's every-fourth right-hand
+     dash would land on the outside edge. */
+  .hk-organizers__row--four .hk-organizers__item:nth-child(4n) {
+    border-right: 0;
+  }
+
   /* An odd row (three backers) gives its first cell the whole top row, the
      same fix the sponsor tiers use, so nothing is left alone at the bottom.
      The pairs then start at 2, so it is the odd cells that carry the middle
@@ -2418,6 +2460,17 @@ button:focus-visible,
   .hk-organizers__cell {
     height: 116px;
     gap: 12px;
+  }
+
+  .hk-team__cell {
+    height: 160px;
+    gap: 0;
+  }
+
+  .hk-team__photo {
+    width: 76px;
+    height: 76px;
+    margin-bottom: 12px;
   }
 
   /* The date and venue wrap here, and a wrapped flex line starts with a

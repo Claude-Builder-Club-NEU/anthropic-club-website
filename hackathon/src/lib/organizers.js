@@ -47,9 +47,10 @@ export const ORGANIZERS = [
 ];
 
 /**
- * Northeastern clubs backing the event without running it: the "ALSO BACKED
- * BY" row under the organizers. Neither a sponsor nor an organiser, so it is
- * its own list and its own row rather than more cells in either.
+ * Organisations partnering on the event without running it: the "PARTNER
+ * ORGANIZATIONS" row under the organizers (it was "ALSO BACKED BY"). Neither
+ * a sponsor nor an organiser, so it is its own list and its own row rather
+ * than more cells in either.
  *
  * Both logos carry their club's name as a wordmark, so `wordmark: true` drops
  * the caption under the mark (it would print the name twice) and the image's
@@ -76,6 +77,14 @@ export const ORGANIZERS = [
  * flatten to a single blob. NU Security has no site, and its Khoury profile
  * lists the Instagram, so the cell links there. The Investment Banking Club
  * has no `url` yet, so its cell is not a link.
+ *
+ * Disrupters is a different organisation from Disrupt. Its mark is the white
+ * pixel D cut from the supplied blue square, the shape taken from how white
+ * each pixel is, so the grid lines between its cells survive as hairlines.
+ * It is a symbol with no name in it, so it keeps the caption. Jumbo Ventures
+ * is the supplied lockup with only its blue kept: the elephant and the
+ * wordmark go white, and the yellow bulb drops out, so the bulb is knocked
+ * out of the head rather than flattened into it. Neither has a `url` yet.
  */
 export const BACKERS = [
   {
@@ -111,4 +120,37 @@ export const BACKERS = [
     url: null,
     logo: { src: "logos/investment-banking.png", alt: "Investment Banking Club" },
   },
+  {
+    name: "Disrupters",
+    short: "DISRUPTERS",
+    url: null,
+    logo: { src: "logos/disrupters.png", alt: "Disrupters" },
+  },
+  {
+    name: "Jumbo Ventures",
+    short: "JUMBO VENTURES",
+    url: null,
+    logo: { src: "logos/jumbo-ventures.png", alt: "Jumbo Ventures" },
+    wordmark: true,
+  },
+];
+
+/**
+ * The people running the event: the "ORGANIZING TEAM" grid under the
+ * organizer logos. Everyone is an organizer, so there is one list, four to a
+ * row on a desktop.
+ *
+ * Headshots in public/team/ are square 320px crops of the supplied photos,
+ * head and shoulders, in colour; the page shows them in greyscale so photos
+ * from different shoots read as one row, the way the logos are all white.
+ * Only people with a photo are listed.
+ */
+export const TEAM = [
+  { name: "Shourya Yadav", photo: "team/shourya-yadav.jpg" },
+  { name: "Smyan Sengupta", photo: "team/smyan-sengupta.jpg" },
+  { name: "Sohum Balsara", photo: "team/sohum-balsara.jpg" },
+  { name: "Mehr Anand", photo: "team/mehr-anand.jpg" },
+  { name: "Jackson Lamoureux", photo: "team/jackson-lamoureux.jpg" },
+  { name: "Ruby Robicheau", photo: "team/ruby-robicheau.jpg" },
+  { name: "Krishan", photo: "team/krishan.jpg" },
 ];
