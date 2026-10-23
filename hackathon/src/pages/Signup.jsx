@@ -261,8 +261,8 @@ export function Signup() {
               value={form.name} onChange={set("name")} error={errors.name}
             />
             <TextField
-              name="email" label="Northeastern email" type="email" autoComplete="email"
-              inputMode="email" placeholder="you@northeastern.edu"
+              name="email" label="School email" type="email" autoComplete="email"
+              inputMode="email" placeholder="you@school.edu"
               value={form.email} onChange={set("email")} error={errors.email}
             />
             <TextField
@@ -278,7 +278,7 @@ export function Signup() {
               value={form.year} onChange={set("year")} error={errors.year}
             />
             <SelectField
-              name="college" label="Northeastern college" options={COLLEGES}
+              name="college" label="College" options={COLLEGES}
               value={form.college} onChange={set("college")} error={errors.college}
             />
           </Group>

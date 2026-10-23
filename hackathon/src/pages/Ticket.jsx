@@ -317,7 +317,7 @@ function Issued({ ticket }) {
       ),
     },
     {
-      head: "Show your Northeastern ID.",
+      head: "Show your student ID.",
       text: `The name on it should match the one on this ticket: ${ticket.name}. Then find your team and start building.`,
     },
   ].filter(Boolean);

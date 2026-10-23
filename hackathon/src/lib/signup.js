@@ -34,7 +34,7 @@ export const COLLEGES = [
   { value: "law", label: "School of Law" },
   { value: "mills", label: "Mills College at Northeastern" },
   { value: "explore", label: "Explore Program (undeclared)" },
-  { value: "other", label: "Something else" },
+  { value: "other", label: "Something else, or another school" },
 ];
 
 export const labelFor = (list, value) => list.find((o) => o.value === value)?.label || "";
@@ -42,7 +42,8 @@ export const labelFor = (list, value) => list.find((o) => o.value === value)?.la
 export const MAX_FILE_BYTES = 5 * 1024 * 1024;
 export const HEADSHOT_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-const NEU_EMAIL = /^[^\s@]+@(northeastern\.edu|husky\.neu\.edu|neu\.edu)$/i;
+/** Any school's .edu address: the hackathon is open beyond Northeastern. */
+const EDU_EMAIL = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.edu$/i;
 const LINKEDIN =
   /^(?:https?:\/\/)?(?:[a-z]{2,3}\.)?linkedin\.com\/in\/[A-Za-z0-9_%-]{2,100}\/?(?:[?#].*)?$/i;
 
@@ -72,8 +73,8 @@ export function validate(form) {
   else if ("=+-@".includes(name[0])) errors.name = "Start with a letter.";
 
   const email = form.email.trim();
-  if (!email) errors.email = "Add your Northeastern email.";
-  else if (!NEU_EMAIL.test(email)) errors.email = "Use your @northeastern.edu address.";
+  if (!email) errors.email = "Add your school email.";
+  else if (!EDU_EMAIL.test(email)) errors.email = "Use your school's .edu address.";
 
   if (!/^\+[0-9]{8,15}$/.test(normalizePhone(form.phone))) {
     errors.phone = "Add a phone number, with the country code if it isn't a US number.";
@@ -105,7 +106,7 @@ const REASONS = {
   name_required: ["name", "Tell us your name."],
   name_invalid: ["name", "Start with a letter."],
   email_invalid: ["email", "Check that address and try again."],
-  email_domain: ["email", "Use your @northeastern.edu address."],
+  email_domain: ["email", "Use your school's .edu address."],
   phone_invalid: ["phone", "Check that number and try again."],
   year_required: ["year", "Pick your year."],
   college_required: ["college", "Pick your college."],
