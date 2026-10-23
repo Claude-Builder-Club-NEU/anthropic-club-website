@@ -94,6 +94,10 @@ let h = helpers(db);
 
 console.log("\n== Validation ==");
 ok("gmail is refused", (await h.register({ email: "x@gmail.com" })).reason === "email_domain");
+ok("another school's .edu is accepted",
+  (await h.register({ email: "jumbo@tufts.edu", name: "Jumbo" })).ok === true);
+ok("an .edu lookalike is refused",
+  (await h.register({ email: "x@tufts.edu.evil.com" })).reason === "email_domain");
 ok("suffix trick is refused",
   (await h.register({ email: "a@gmail.com.b@northeastern.edu" })).reason === "email_invalid");
 ok("short phone is refused", (await h.register({ phone: "555-0142" })).reason === "phone_invalid");

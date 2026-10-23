@@ -1,9 +1,8 @@
 -- HACK1984 registrations: the /hackathon/signup form, the $5 Stripe payment,
 -- the 100-seat count and the waitlist.
 --
--- Run this in the Supabase SQL editor AFTER schema.sql (it uses
--- is_member_email() from there). It is safe to run again: every statement is
--- idempotent.
+-- Run this in the Supabase SQL editor. It is safe to run again: every
+-- statement is idempotent.
 --
 -- HOW THIS DIFFERS FROM EVERY OTHER FILE IN THIS FOLDER
 --
@@ -19,7 +18,7 @@
 -- public cannot call. With the anon key in every visitor's bundle, "the
 -- browser may call confirm" would mean "anyone may give themselves a seat".
 --
--- THIS TABLE HOLDS PERSONAL DATA: name, Northeastern email, phone number,
+-- THIS TABLE HOLDS PERSONAL DATA: name, school email, phone number,
 -- year, college, LinkedIn URL, dietary notes, and pointers to a resume and a
 -- headshot in the private `hackathon` storage bucket. Registrants agree on the
 -- form that the resume, LinkedIn and headshot are shared with sponsors
@@ -367,7 +366,10 @@ begin
      or v_email !~ '^[^@[:space:]]+@[^@[:space:].]+(\.[^@[:space:].]+)+$' then
     return jsonb_build_object('ok', false, 'reason', 'email_invalid');
   end if;
-  if not public.is_member_email(v_email) then
+  -- Any school's .edu address, not only Northeastern's: the hackathon is
+  -- open to students from other universities. is_member_email() stays the
+  -- club's own rule, for the roster and stamp cards.
+  if v_email !~* '\.edu$' then
     return jsonb_build_object('ok', false, 'reason', 'email_domain');
   end if;
 

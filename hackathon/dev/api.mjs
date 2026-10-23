@@ -78,7 +78,7 @@ function mockBackend() {
     if (path === "register") {
       if (!applicationsOpen()) return reply(403, { ok: false, reason: "closed" });
       const b = await req.json();
-      if (!/@(northeastern\.edu|husky\.neu\.edu|neu\.edu)$/i.test(b.email || "")) {
+      if (!/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.edu$/i.test(b.email || "")) {
         return reply(422, { ok: false, reason: "email_domain" });
       }
       if ([...rows.values()].some((r) => r.email === b.email && r.status !== "pending")) {
