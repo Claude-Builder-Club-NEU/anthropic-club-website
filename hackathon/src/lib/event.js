@@ -60,9 +60,9 @@ export const EVENT = {
  */
 export const APPLY = {
   spots: 100,
-  deadlineISO: "2026-10-23T23:59:59-04:00",
-  deadlineLabel: "Fri Oct 23",
-  deadlineShort: "Oct 23",
+  deadlineISO: "2026-10-25T23:59:59-04:00",
+  deadlineLabel: "Sun Oct 25",
+  deadlineShort: "Oct 25",
   decisionsLabel: "Mon Oct 26",
   decisionsShort: "Oct 26",
   decisionsOut: false,
