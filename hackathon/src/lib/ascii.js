@@ -1,5 +1,9 @@
 /**
- * The ASCII banners: one per track, plus the sponsors masthead.
+ * The ASCII banners: one per track, and the field behind the hero.
+ *
+ * The sponsors masthead (src/ascii/masthead.html, 240 x 7) is off the page
+ * since the sponsors moved up under the hero, which is ASCII already; its
+ * file and its scene in tools/ascii_scenes.py are kept for it to come back.
  *
  * WHY RAW HTML AND NOT JSX.
  *
@@ -25,7 +29,7 @@ import ministryOfTruth from "../ascii/ministry-of-truth.html?raw";
 import telescreen from "../ascii/telescreen.html?raw";
 import sledgehammer from "../ascii/sledgehammer.html?raw";
 import room101 from "../ascii/room-101.html?raw";
-import masthead from "../ascii/masthead.html?raw";
+import hero from "../ascii/hero.html?raw";
 
 /**
  * The grid each image was generated on. Keep in step with COLS/ROWS and GRIDS
@@ -40,8 +44,8 @@ const GRID = {
   telescreen: [160, 18],
   sledgehammer: [160, 18],
   "room-101": [160, 18],
-  // Edge to edge across the page, so: wider and much thinner.
-  masthead: [240, 7],
+  // The whole hero, behind the mark, cropped to it like a cover image.
+  hero: [220, 96],
 };
 
 const ROW = '<div class="hk-ascii__row">';
@@ -68,5 +72,5 @@ export const ASCII = {
   telescreen: check(telescreen, "telescreen"),
   sledgehammer: check(sledgehammer, "sledgehammer"),
   "room-101": check(room101, "room-101"),
-  masthead: check(masthead, "masthead"),
+  hero: check(hero, "hero"),
 };

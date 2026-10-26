@@ -21,8 +21,8 @@ export function Tracks() {
     <section id="tracks" aria-labelledby="tracks-h" className="hk-section">
       <SectionHeading id="tracks-h" chip="TRACKS" title="Three ways to win">
         A main track for software that protects the people using it, one prize
-        for the most fundable idea, and a sponsor track from Tavily with three
-        places. More tracks will be announced as sponsors join.
+        for the most fundable idea, and Surge, a sponsor track from Tavily and
+        Exa with three places. More tracks will be announced as sponsors join.
       </SectionHeading>
 
       <div className="hk-tracks">
@@ -67,16 +67,20 @@ function Track({ track, lead }) {
           ))}
         </dl>
 
-        {track.sponsor ? (
+        {track.sponsors.length ? (
           <div className="hk-track__sponsor">
             <span className="hk-track__sponsor-label">SPONSORED BY</span>
-            <img
-              className="hk-track__sponsor-logo"
-              src={withBase(track.sponsor.logo)}
-              alt={track.sponsor.name}
-              height="30"
-              loading="lazy"
-            />
+            {track.sponsors.map((sponsor) => (
+              <img
+                key={sponsor.name}
+                className="hk-track__sponsor-logo"
+                src={withBase(sponsor.logo)}
+                alt={sponsor.name}
+                height="30"
+                style={sponsor.height ? { height: sponsor.height } : undefined}
+                loading="lazy"
+              />
+            ))}
           </div>
         ) : null}
       </div>

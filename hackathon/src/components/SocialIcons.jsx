@@ -4,8 +4,7 @@
  * Same rules as DetailIcons.jsx: Lucide geometry (ISC), inlined rather than
  * installed, with square caps and mitred joins because the radius on this page
  * is 0 everywhere. Lucide's rounded rects are flattened to square for the same
- * reason — the Instagram frame, the Slack bars and the LinkedIn dot all lose
- * their radii.
+ * reason — the Instagram frame and the LinkedIn dot both lose their radii.
  *
  * One colour throughout, via `currentColor`, so a card can brighten its own
  * icon without the icon knowing about it.
@@ -67,23 +66,10 @@ function LinkedIn() {
   );
 }
 
-/** Lucide `slack`, reduced to its four bars and squared off. */
-function Slack() {
-  return (
-    <Icon>
-      <rect x="13" y="2" width="3" height="8" />
-      <rect x="8" y="14" width="3" height="8" />
-      <rect x="14" y="13" width="8" height="3" />
-      <rect x="2" y="8" width="8" height="3" />
-    </Icon>
-  );
-}
-
 const ICONS = {
   mail: Mail,
   instagram: Instagram,
   linkedin: LinkedIn,
-  slack: Slack,
 };
 
 export function SocialIcon({ name }) {

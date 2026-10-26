@@ -3,6 +3,7 @@ import { WordmarkBlocks } from "./WordmarkBlocks";
 import { APPLY, EVENT, LINKS } from "../lib/event";
 import { withBase } from "../lib/base";
 import { useApplicationsOpen } from "../lib/apply";
+import { ASCII } from "../lib/ascii";
 
 /**
  * Hero.
@@ -13,8 +14,10 @@ import { useApplicationsOpen } from "../lib/apply";
  * rest. What the four claims said is still on the page — the tracks, the
  * prizes and the cost each have a section of their own.
  *
- * THE BACKGROUND IS CSS. Scanlines on pure black with one red haze rising off
- * the bottom edge. Nothing in this section animates.
+ * THE BACKGROUND IS ASCII. A field of red glyphs in soft diagonal bars, like
+ * light through blinds, fills the hero behind the mark (src/ascii/hero.html,
+ * from tools/ascii_scenes.py). The scanlines are still drawn over it on the
+ * mark's own grid. Nothing in this section animates.
  *
  * THE MARK IS THE ONE-PAGER'S. HACK1984 drawn cell by cell on a 5 x 7 grid
  * with real gaps between the cells — see WordmarkBlocks.jsx. It replaced a
@@ -26,13 +29,25 @@ import { useApplicationsOpen } from "../lib/apply";
  * needs before any claim matters, and they come out of EVENT rather than being
  * typed here, so the footer and the details cannot drift away from them.
  *
- * THE DEADLINE sits under the buttons: getting in is by application, so the
- * third fact someone needs is how long they have.
+ * THE BUTTONS. While applications are open: Apply, See the tracks, and the
+ * deadline under them, the third fact someone needs. Once they close, See
+ * the tracks, with "Applications are closed" as a line under it in the
+ * deadline's place rather than as a button: as a button it went nowhere.
+ * The decision date is the applicants' business, not a visitor's; the Apply
+ * section further down still says it.
  */
 export function Hero() {
   const open = useApplicationsOpen();
   return (
     <section className="hk-hero hk-bleed">
+      {/* Decorative, and the same build-time file as every ASCII banner; see
+          src/lib/ascii.js on the raw HTML. */}
+      <div
+        className="hk-hero__field"
+        aria-hidden="true"
+        dangerouslySetInnerHTML={{ __html: ASCII.hero }}
+      />
+
       <h1 className="hk-hero__title">
         <WordmarkBlocks />
       </h1>
@@ -42,20 +57,26 @@ export function Hero() {
         <li>{EVENT.venue}</li>
       </ul>
 
-      <div className="hk-hero__actions">
-        <BracketButton className={open ? "hk-btn--big" : ""} href={open ? withBase(LINKS.signUp) : "#apply"}>
-          {open ? "Apply" : "Applications closed"}
-        </BracketButton>
-        <BracketButton className="hk-hero__secondary" href="#tracks">
-          See the tracks
-        </BracketButton>
-      </div>
-
-      <p className="hk-hero__deadline">
-        <span>{open ? `Apply by ${APPLY.deadlineLabel}` : `Applications closed ${APPLY.deadlineLabel}`}</span>
-        <span className="hk-hero__deadline-sep" aria-hidden="true"> · </span>
-        <span>Decisions {APPLY.decisionsLabel}</span>
-      </p>
+      {open ? (
+        <>
+          <div className="hk-hero__actions">
+            <BracketButton className="hk-btn--big" href={withBase(LINKS.signUp)}>
+              Apply
+            </BracketButton>
+            <BracketButton className="hk-hero__secondary" href="#tracks">
+              See the tracks
+            </BracketButton>
+          </div>
+          <p className="hk-hero__deadline">Apply by {APPLY.deadlineLabel}</p>
+        </>
+      ) : (
+        <>
+          <div className="hk-hero__actions">
+            <BracketButton href="#tracks">See the tracks</BracketButton>
+          </div>
+          <p className="hk-hero__deadline">Applications are closed</p>
+        </>
+      )}
     </section>
   );
 }

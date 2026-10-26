@@ -14,8 +14,8 @@ import { homeAnchor, withBase } from "../lib/base";
  * palette, the dashed rules and the bracket button are this site's, so it
  * reads as the same organisation rather than as a transplant.
  *
- * PLACEHOLDER: the three social links. They point at `#` until the accounts
- * exist — see SOCIAL in src/lib/event.js, which the Find us band renders too.
+ * The social links are SOCIAL in src/lib/event.js, which the Find us band
+ * renders too.
  */
 
 export function Footer() {

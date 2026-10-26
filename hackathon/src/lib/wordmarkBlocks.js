@@ -36,14 +36,29 @@ export const WORD = "HACK";
 export const YEAR = "1984";
 
 /**
+ * The logo as the sponsorship packet (HACK1984_Sponsorship_Packet_FINAL)
+ * sets it: the same 47 x 7 grid, and the same glyphs but three, drawn as the
+ * packet draws them: C open on its right side, 1 on a three-cell foot, and
+ * 9 with a straight tail. The packet's cells are solid and touch; the header
+ * and footer draw this set that way (Wordmark.jsx). The hero keeps the set
+ * above, with its gaps.
+ */
+const LOGO_GLYPHS = {
+  ...GLYPHS,
+  C: [".####", "#....", "#....", "#....", "#....", "#....", ".####"],
+  1: ["..#..", ".##..", "..#..", "..#..", "..#..", "..#..", ".###."],
+  9: [".###.", "#...#", "#...#", ".####", "....#", "....#", ".###."],
+};
+
+/**
  * Every lit cell in the mark, as { x, y } on the 47 x 7 grid, split into the
  * two colour runs. Computed once at module load — the mark never changes.
  */
-function cellsFor(text, startCol) {
+function cellsFor(text, startCol, glyphs = GLYPHS) {
   const cells = [];
   let col = startCol;
   for (const ch of text) {
-    const glyph = GLYPHS[ch];
+    const glyph = glyphs[ch];
     if (!glyph) throw new Error(`wordmarkBlocks: no glyph for "${ch}"`);
     glyph.forEach((row, y) => {
       for (let x = 0; x < GLYPH_COLS; x += 1) {
@@ -57,6 +72,9 @@ function cellsFor(text, startCol) {
 
 export const WORD_CELLS = cellsFor(WORD, 0);
 export const YEAR_CELLS = cellsFor(YEAR, WORD.length * (GLYPH_COLS + 1));
+
+export const LOGO_WORD_CELLS = cellsFor(WORD, 0, LOGO_GLYPHS);
+export const LOGO_YEAR_CELLS = cellsFor(YEAR, WORD.length * (GLYPH_COLS + 1), LOGO_GLYPHS);
 
 /** 8 glyphs of 5 columns with a column of gap between each pair. */
 export const GRID_COLS =
