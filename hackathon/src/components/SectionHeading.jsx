@@ -1,12 +1,12 @@
 /**
- * The section heading block (SPEC §2): chip and H2 on the left, a paragraph
- * on the right, both sitting on the same baseline via `align-items: end`.
+ * The section heading block (SPEC §2): the chip, the H2 and a paragraph,
+ * centred in one column, then the section's buttons if it passes `actions`.
  *
  * `id` is required, not optional: every section is labelled by its own
  * heading with aria-labelledby, and a section that quietly lost its label
  * would still look right.
  */
-export function SectionHeading({ id, chip, title, children }) {
+export function SectionHeading({ id, chip, title, actions, children }) {
   return (
     <div className="hk-heading">
       <div className="hk-heading__left">
@@ -15,7 +15,8 @@ export function SectionHeading({ id, chip, title, children }) {
           {title}
         </h2>
       </div>
-      <p className="hk-heading__lede">{children}</p>
+      {children ? <p className="hk-heading__lede">{children}</p> : null}
+      {actions ? <div className="hk-heading__actions">{actions}</div> : null}
     </div>
   );
 }

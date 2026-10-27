@@ -1,92 +1,143 @@
-import { AsciiPanel } from "./AsciiPanel";
-import { BracketButton } from "./BracketButton";
+import { SectionHeading } from "./SectionHeading";
 import { withBase } from "../lib/base";
-import { LINKS } from "../lib/event";
-import { SPONSOR_TIERS } from "../lib/sponsors";
+import { SPONSORS, SPONSOR_TIERS } from "../lib/sponsors";
+import { capitalize, inWords } from "../lib/words";
 
 /**
- * 3.3 Sponsors.
+ * 3.3 Sponsors, the first section under the hero.
  *
- * A banner, then two tiers, each a chip over a row of cells divided by
- * dashed hairlines.
+ * The section heading, then the two tiers. Backed by comes straight under
+ * the heading, with no label of its own; With support from is the page's
+ * grey chip over its run. Backed by is laid out the way the organizing
+ * clubs are (and the way claudeneu.com's executive board is): a panel with
+ * the sponsor's logo in it over a red glow, the name in a red band across
+ * its foot, the Details chips' recipe the full width of the box, then the
+ * sponsor's part in the accent colour and one line about them, every card
+ * the same size, four to a row. With support from is a step down and a
+ * different build (`compact` in src/lib/sponsors.js): one short rectangle
+ * each, the logo in it and the name in the same red band, nothing under it,
+ * four to a row.
  *
- * The banner replaced a drawn mark. Three of those came and went — a pixel
- * eye, a vector eye, a bracketed aperture — and the honest read is that this
- * page does not want a logo standing on its own in the middle of a section.
- * It wants what the track panels have: a wide abstract field of characters.
- * The wordmark carries the brand in the header and the footer; here the
- * artwork does.
- *
- * The section is labelled rather than headed. Its two <h2>s are the tier
- * names, which is how the reference render marks them up and is the honest
- * structure: "BACKED BY" and "WITH SUPPORT FROM" are the headings a reader
- * actually navigates by here.
+ * The role line is the tier's (`role` in src/lib/sponsors.js) unless the
+ * sponsor has one of its own, as the Surge track's two and the prize
+ * sponsor do. Amounts are never printed.
  */
 export function Sponsors() {
   return (
-    <section id="sponsors" aria-label="Sponsors" className="hk-sponsors">
-      <div className="hk-sponsors__banner hk-bleed">
-        <AsciiPanel art="masthead" bare />
-      </div>
+    <section id="sponsors" aria-labelledby="sponsors-h" className="hk-section hk-sponsors">
+      <SectionHeading id="sponsors-h" chip="SPONSORS" title="Backing the weekend">
+        {capitalize(inWords(SPONSORS.length))} companies and campus organizations are
+        putting cash, API credits and swag behind HACK1984.
+      </SectionHeading>
 
-      {SPONSOR_TIERS.map((tier, tierIndex) => (
-        <Tier key={tier.label} tier={tier} first={tierIndex === 0} />
-      ))}
-
-      {/* The empty cells are an invitation; this is where it goes. */}
-      <div className="hk-sponsors__cta">
-        <p>Want your logo in one of these?</p>
-        <BracketButton href={withBase(LINKS.sponsor)}>Sponsor HACK1984</BracketButton>
+      <div className="hk-tiers">
+        {SPONSOR_TIERS.map((tier) => (
+          <div className="hk-tier" key={tier.id}>
+            {/* The lead tier sits straight under the section heading; only
+                the supporting tier, a step down, carries its label. */}
+            {tier.compact ? <h3 className="hk-chip">{tier.label}</h3> : null}
+            {tier.compact ? (
+              <ul className="hk-supporters">
+                {tier.sponsors.map((sponsor) => (
+                  <Supporter key={sponsor.name} sponsor={sponsor} />
+                ))}
+              </ul>
+            ) : (
+              <ul className="hk-members">
+                {tier.sponsors.map((sponsor) => (
+                  <Sponsor key={sponsor.name} sponsor={sponsor} role={sponsor.role ?? tier.role} />
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
       </div>
     </section>
   );
 }
 
-function Tier({ tier, first }) {
-  const labelClass = [
-    "hk-chip",
-    "hk-sponsors__label",
-    !first && "hk-sponsors__label--second",
-  ]
-    .filter(Boolean)
-    .join(" ");
+/**
+ * A supporting sponsor: one short rectangle, the panel's ground and glow with
+ * the logo in it (or the name set as type, with no logo yet), and the name
+ * in a red band across its foot, as the Backed by boxes have. Nothing under
+ * the box.
+ */
+function Supporter({ sponsor }) {
+  const { name, logo, url } = sponsor;
+  const body = (
+    <>
+      <span className="hk-supporter__panel">
+        {logo ? (
+          <img
+            className="hk-supporter__logo"
+            src={withBase(logo.src)}
+            alt=""
+            style={{ "--h": `${logo.height}px` }}
+            loading="lazy"
+          />
+        ) : (
+          <span className="hk-supporter__typed">{name}</span>
+        )}
+      </span>
+      <span className="hk-supporter__band">{name}</span>
+    </>
+  );
 
   return (
+    <li className="hk-supporter">
+      {url ? (
+        <a className="hk-supporter__box" href={url} target="_blank" rel="noopener noreferrer">
+          {body}
+        </a>
+      ) : (
+        <div className="hk-supporter__box">{body}</div>
+      )}
+    </li>
+  );
+}
+
+/**
+ * A Backed by sponsor: one box, the logo in its panel (or the name set as
+ * type, with no logo yet) and the name in a red band across the panel's
+ * foot, then the sponsor's part and one line under the box.
+ */
+function Sponsor({ sponsor, role }) {
+  const { name, logo, about, url } = sponsor;
+  const body = (
     <>
-      <h2 className={labelClass}>{tier.label}</h2>
-      <div className="hk-sponsors__tier">
-        {tier.logos.map((logo, i) => {
-          const img = logo ? (
-            <img
-              className={`hk-sponsors__logo${logo.stacked ? " hk-sponsors__logo--stacked" : ""}`}
-              src={withBase(logo.src)}
-              alt={logo.alt}
-              height={logo.height}
-            />
-          ) : (
-            <span className="hk-sponsors__placeholder">[SPONSOR LOGO]</span>
-          );
-          // The cells are placeholders with nothing to key on yet. The array
-          // is fixed-length and never reordered, so the index is stable. A
-          // sponsor with an `href` gets the whole cell as its link, the same
-          // generous target the organizer cells give.
-          return logo?.href ? (
-            <a
-              className="hk-sponsors__cell hk-sponsors__cell--link"
-              key={logo.src}
-              href={logo.href}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {img}
-            </a>
-          ) : (
-            <div className="hk-sponsors__cell" key={logo?.src ?? i}>
-              {img}
-            </div>
-          );
-        })}
-      </div>
+      <span className="hk-member__panel">
+        {logo ? (
+          <img
+            className="hk-member__logo hk-member__logo--sized"
+            src={withBase(logo.src)}
+            alt=""
+            style={{ "--h": `${logo.height}px` }}
+            loading="lazy"
+          />
+        ) : (
+          <span className="hk-member__typed">{name}</span>
+        )}
+      </span>
+      <h4 className="hk-member__band">{name}</h4>
     </>
+  );
+
+  return (
+    <li className="hk-member">
+      {url ? (
+        <a
+          className="hk-member__media hk-member__media--banded"
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {body}
+        </a>
+      ) : (
+        <div className="hk-member__media hk-member__media--banded">{body}</div>
+      )}
+      <p className="hk-member__role">{role}</p>
+      {about ? <p className="hk-member__detail">{about}</p> : null}
+    </li>
   );
 }

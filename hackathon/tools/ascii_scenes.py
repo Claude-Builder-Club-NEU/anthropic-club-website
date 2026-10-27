@@ -35,7 +35,60 @@ COLS, ROWS = 160, 18
 # than inside a panel, so it is wider and far thinner — 240 x 7 is about 20:1.
 # At seven rows nothing survives as a picture, so it is drawn as a signal
 # strip: flattened rings that read as converging scan lines, not as an object.
-GRIDS = {"masthead": (240, 7)}
+#
+# The hero field fills the whole hero, behind the wordmark, and is cropped to
+# it like a cover image, so it is drawn much taller than any banner: 220 x 96
+# is about 1.34:1, between a desktop hero (about 1.6:1) and a phone's (about
+# 0.5:1), so either one crops a band of it rather than running off its edge.
+GRIDS = {"masthead": (240, 7), "hero": (220, 96)}
+
+# Dark to light. The glyphs are the ramp the banners use; the colours are the
+# --ascii-0 … --ascii-6 tokens, emitted as classes (`.a0` … `.a6`, styled in
+# index.css) rather than inline colours, so a 21,000-character field is not
+# 21,000 copies of `style="color: …"`.
+RAMP = " .:-=+*#%@"
+# Six steps, --ascii-0 to --ascii-5. The seventh, #ffd0ca, is nearly white,
+# and white glyphs in a field of red read as noise rather than as a highlight.
+PAL = 6
+
+
+def ascii_art(im, seed, grid=None, gamma=1.0, dither=0.035):
+    """A greyscale picture as rows of glyphs, coloured by brightness.
+
+    Returns (html, txt). The html is one <div class="hk-ascii__row"> per row,
+    each a run of <span class="aN"> per colour, which is the markup
+    src/lib/ascii.js counts rows by.
+
+    NOTE: this function had gone missing from this file, though the scenes
+    and the __main__ block still called it. This is a reconstruction for the
+    hero field. The committed track banners and masthead were made by the
+    original, with inline colours, and are not regenerated unless named on the
+    command line.
+    """
+    cols, rows = grid or (COLS, ROWS)
+    small = im.convert("L").resize((cols, rows), Image.BOX)
+    v = np.asarray(small).astype(np.float32) / 255.0
+    v = np.clip(v, 0, 1) ** gamma
+    # A little noise before quantising, so a flat dark field resolves to a
+    # scatter of dots rather than a hard-edged hole.
+    rng = np.random.default_rng(seed)
+    v = np.clip(v + rng.normal(0, dither, v.shape), 0, 1)
+
+    glyph = np.minimum((v * len(RAMP)).astype(int), len(RAMP) - 1)
+    colour = np.minimum((v * PAL).astype(int), PAL - 1)
+
+    html_rows, txt_rows = [], []
+    for r in range(rows):
+        line = "".join(RAMP[g] for g in glyph[r])
+        txt_rows.append(line)
+        parts, start = [], 0
+        for c in range(1, cols + 1):
+            if c == cols or colour[r, c] != colour[r, start]:
+                run = html.escape(line[start:c])
+                parts.append(f'<span class="a{colour[r, start]}">{run}</span>')
+                start = c
+        html_rows.append('<div class="hk-ascii__row">' + "".join(parts) + "</div>")
+    return "".join(html_rows), "\n".join(txt_rows)
 
 # Source resolution for the default grid. Only the ASPECT matters: ascii_art()
 # resamples to whatever character grid it is given, so a scene can be drawn at
@@ -259,19 +312,68 @@ def masthead():
     return im
 
 
+def hero():
+    """Light through blinds: soft red bars falling corner to corner.
+
+    The pattern is Raycast's hero, a run of blurred diagonal bars, drawn in
+    this site's glyphs and reds instead of a gradient. The bars run top left
+    to bottom right; each is brightest along its upper edge, the bars in the
+    middle are the brightest of the set, and the whole field falls off toward
+    the corners so the header and the sections below sit on black.
+
+    The bars run at full strength through the middle too. What keeps the
+    wordmark and the copy legible over them is a shadow in the CSS.
+    """
+    # Its own canvas, at the grid's aspect: (220 * 0.6) / (96 * 1.03) = 1.335.
+    h = 1000
+    w = int(h * (220 * 0.6) / (96 * 1.03))
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32) / h
+    cx, cy = (w / h) / 2, 0.5
+
+    r2 = math.sqrt(2)
+    u = ((xx - cx) - (yy - cy)) / r2  # across the bars, + is up and right
+    v = ((xx - cx) + (yy - cy)) / r2  # along them
+
+    field = np.zeros_like(xx)
+    spacing, half = 0.17, 0.07
+    for k in range(-4, 5):
+        d = (u - k * spacing) / half
+        band = np.clip(1 - d * d, 0, 1) ** 1.2
+        lit = 0.6 + 0.4 * np.clip(0.5 + 0.5 * np.tanh(d * 1.6), 0, 1)
+        strength = math.exp(-((k * spacing) / 0.5) ** 2)
+        along = np.exp(-((v - 0.04 * k) / 0.7) ** 2)
+        field = np.maximum(field, band * lit * strength * along)
+
+    # Fall off toward the corners.
+    rr = np.sqrt(((xx - cx) / 1.0) ** 2 + ((yy - cy) / 0.78) ** 2)
+    field *= np.clip(1.25 - rr, 0, 1) ** 0.7
+
+    # The copy is kept legible by a shadow in the CSS (.hk-hero::after), not
+    # here, so the bars stay at full strength either side of it.
+    im = Image.fromarray((np.clip(field * 1.9, 0, 1) * 255).astype("uint8"))
+    return im.filter(ImageFilter.GaussianBlur(8))
+
+
 SCENES = {
     "ministry-of-truth": redaction,
     "telescreen": scanlines,
     "sledgehammer": fracture,
     "room-101": traces,
     "masthead": masthead,
+    "hero": hero,
 }
 
 if __name__ == "__main__":
     import os
+    import sys
 
+    # Name scenes to write only those (`python ascii_scenes.py hero`). With
+    # none named, every scene is written.
+    only = set(sys.argv[1:])
     out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src", "ascii")
     for i, (name, fn) in enumerate(SCENES.items()):
+        if only and name not in only:
+            continue
         grid = GRIDS.get(name)
         h, t = ascii_art(fn(), i, grid)
         with open(os.path.join(out, f"{name}.txt"), "w", encoding="utf-8") as f:

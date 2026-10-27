@@ -28,7 +28,7 @@ import {
  * nothing depends on measuring the window.
  */
 
-const BACKERS = SPONSOR_TIERS[0].logos.filter(Boolean);
+const BACKERS = SPONSOR_TIERS[0].sponsors;
 
 export function Sponsor() {
   return (
@@ -152,7 +152,7 @@ export function Sponsor() {
         </div>
       </section>
 
-      <section className="hk-sp__credits" aria-label="Organized by and partner organizations">
+      <section className="hk-sp__credits" aria-label="Organized by and backed by">
         <div className="hk-sp__credit">
           <h2 className="hk-sp__credit-label">ORGANIZED BY</h2>
           <ul className="hk-sp__logos">
@@ -171,16 +171,23 @@ export function Sponsor() {
           </ul>
         </div>
         <div className="hk-sp__credit">
-          <h2 className="hk-sp__credit-label">PARTNER ORGANIZATIONS</h2>
+          {/* The home page's top sponsor tier, under the same name. It said
+              PARTNER ORGANIZATIONS, which is now the home page's name for the
+              partner clubs, a different list. */}
+          <h2 className="hk-sp__credit-label">BACKED BY</h2>
           <ul className="hk-sp__logos">
-            {BACKERS.map((logo) => (
-              <li key={logo.src}>
-                <img
-                  className="hk-sp__logo hk-sp__logo--wide"
-                  src={withBase(logo.src)}
-                  alt={logo.alt}
-                  style={{ height: logo.height }}
-                />
+            {BACKERS.map((sponsor) => (
+              <li key={sponsor.name}>
+                {sponsor.logo ? (
+                  <img
+                    className="hk-sp__logo hk-sp__logo--wide"
+                    src={withBase(sponsor.logo.src)}
+                    alt={sponsor.name}
+                    style={{ height: sponsor.logo.height }}
+                  />
+                ) : (
+                  <span className="hk-sp__logo-name">{sponsor.name}</span>
+                )}
               </li>
             ))}
           </ul>

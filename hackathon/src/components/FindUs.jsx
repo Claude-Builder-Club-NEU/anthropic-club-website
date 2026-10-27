@@ -1,6 +1,7 @@
 import { SocialIcon } from "./SocialIcons";
 import { APPLY, LINKS, SOCIAL } from "../lib/event";
 import { withBase } from "../lib/base";
+import { useApplicationsOpen } from "../lib/apply";
 
 /**
  * Find us.
@@ -17,27 +18,31 @@ import { withBase } from "../lib/base";
  *
  * The first card is the application, matching claudeneu's "Get updates" slot: it
  * is the one thing someone who has just read the date actually wants, and it
- * comes from LINKS so it cannot disagree with the two hero buttons.
+ * comes from LINKS so it cannot disagree with the hero. Its note is the
+ * deadline while applications are open and says they are closed after; it
+ * still goes to the signup page, whose closed notice says the same.
+ *
+ * No heading on the band: the cards say what they are, and a FIND US chip
+ * straight under the hero was one label too many. The section keeps the name
+ * for a screen reader as its aria-label.
  */
-
-const CARDS = [
-  { label: "Apply", note: `By ${APPLY.deadlineLabel}`, href: withBase(LINKS.signUp), icon: "mail", internal: true },
-  ...SOCIAL,
-];
-
 export function FindUs() {
-  return (
-    <section
-      id="find-us"
-      aria-labelledby="find-us-h"
-      className="hk-find hk-bleed"
-    >
-      <h2 id="find-us-h" className="hk-chip hk-find__label">
-        FIND US
-      </h2>
+  const open = useApplicationsOpen();
+  const cards = [
+    {
+      label: "Apply",
+      note: open ? `By ${APPLY.deadlineLabel}` : "Applications are closed",
+      href: withBase(LINKS.signUp),
+      icon: "mail",
+      internal: true,
+    },
+    ...SOCIAL,
+  ];
 
+  return (
+    <section id="find-us" aria-label="Find us" className="hk-find hk-bleed">
       <ul className="hk-find__grid">
-        {CARDS.map((item) => (
+        {cards.map((item) => (
           <li key={item.label}>
             <a
               className="hk-find__card"

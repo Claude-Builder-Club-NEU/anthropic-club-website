@@ -2,7 +2,7 @@
  * The sponsor, signup and ticket pages.
  *
  * Separate from index.css, which is the home page's design system, so the
- * three pages that arrived together can be read together. Everything here is
+ * pages that arrived together can be read together. Everything here is
  * built from the same tokens and the same moves — dashed rules, mono caps,
  * square corners, the one red — and imported after index.css, so a shared
  * class such as .hk-btn or .hk-chip is only ever refined here, never defined.
@@ -394,6 +394,17 @@
 /* Backers set their own height from src/lib/sponsors.js. */
 .hk-sp__logo--wide {
   max-width: 180px;
+}
+
+/* A backer with no artwork yet, by name, as on the home page's tiers. */
+.hk-sp__logo-name {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 32px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
 }
 
 @media (max-width: 899px) {

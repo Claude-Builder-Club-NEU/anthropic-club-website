@@ -95,24 +95,39 @@ export const LINKS = {
 /**
  * Where to find the event.
  *
- * PLACEHOLDER (SPEC §5, "Social links"): every href is "#" until the accounts
- * exist. `note` is the one line under the name in the Find us band — it says
- * what you actually get by following, which is claudeneu.com's convention and
- * the reason that band reads as useful rather than as four logos in a row.
+ * `note` is the one line under the name in the Find us band — it says what
+ * you actually get by following, which is claudeneu.com's convention and the
+ * reason that band reads as useful rather than as a row of logos.
+ *
+ * Both are the event's own accounts: @bostonhack84 on Instagram (its display
+ * name is Hack1984; instagram.com/hack1984 is nobody's), and the Boston Hack
+ * 84 company page on LinkedIn. Slack is gone: there is no workspace to join,
+ * and a card that went to "#" was a dead end at the top of the page.
  *
  * Lives here rather than in Footer.jsx because two places render it now, and
- * the footer's copy was the second source of truth for the same three URLs.
+ * the footer's copy was the second source of truth for the same URLs.
  */
 export const SOCIAL = [
-  { label: "Instagram", href: "#", note: "@hack1984", icon: "instagram" },
-  { label: "LinkedIn", href: "#", note: "Follow the event", icon: "linkedin" },
-  { label: "Slack", href: "#", note: "Join the room", icon: "slack" },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/bostonhack84/",
+    note: "@bostonhack84",
+    icon: "instagram",
+  },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/company/boston-hack-84/posts/?feedView=all",
+    note: "Follow the event",
+    icon: "linkedin",
+  },
 ];
 
-/** The header nav (SPEC §3.1), in order. */
+/** The header nav (SPEC §3.1): every section of the home page, in its order. */
 export const NAV = [
-  { href: "#tracks", label: "TRACKS" },
-  { href: "#schedule", label: "SCHEDULE" },
-  { href: "#details", label: "DETAILS" },
   { href: "#sponsors", label: "SPONSORS" },
+  { href: "#tracks", label: "TRACKS" },
+  { href: "#apply", label: "APPLY" },
+  { href: "#schedule", label: "SCHEDULE" },
+  { href: "#team", label: "TEAM" },
+  { href: "#details", label: "DETAILS" },
 ];

@@ -84,9 +84,11 @@
   --hk-cell: calc(var(--hk-mark-w) / 47);
 
 
-  /* SPEC §1: section bottom padding, and heading to content. */
-  --hk-section-pad: 160px;
-  --hk-heading-gap: 56px;
+  /* SPEC §1: section bottom padding, and heading to content. 104 and 44,
+     down from SPEC's 160 and 56: at those, ten sections stacked read as
+     ten islands with dead water between them. */
+  --hk-section-pad: 104px;
+  --hk-heading-gap: 44px;
 
   /* The track banners are 160 columns of Geist Mono on rows 1.03x the type
      size, which is the ratio that keeps their 5.2:1 aspect. These are the
@@ -139,8 +141,8 @@ button:focus-visible,
   color: var(--on-accent);
 }
 
-/* The only thing on the page that moves of its own accord is the countdown
-   tick. Smooth scrolling is motion too, so it goes here. */
+/* Nothing on the page moves of its own accord. Smooth scrolling is motion
+   too, so it goes here. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -278,18 +280,33 @@ button:focus-visible,
    Shared: section heading block (SPEC §2).
    -------------------------------------------------------------------------- */
 
+/*
+ * Centred: the chip, the title and the lede in one column down the middle,
+ * then the section's buttons, if it has any. It was chip and title on the
+ * left with the lede on the right, which put every section's first words in
+ * a different place from the hero's centred mark above them.
+ */
 .hk-heading {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 48px;
-  align-items: end;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
 }
 
 .hk-heading__left {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 20px;
+}
+
+.hk-heading__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 32px;
+  margin-top: 4px;
 }
 
 .hk-heading__title {
@@ -308,7 +325,7 @@ button:focus-visible,
 
 .hk-heading__lede {
   margin: 0;
-  max-width: 26em;
+  max-width: 36em;
   font-size: 17px;
   line-height: 27px;
   color: var(--ink-body);
@@ -320,79 +337,207 @@ button:focus-visible,
    -------------------------------------------------------------------------- */
 
 /*
- * SQUARES, NOT DOTS. Workbench had this for a round, and its units are round
- * by construction — BLED and SCAN change how much they bleed and merge, not
- * their shape, so there is no setting of that face that is square. The blocks
- * have to come from a filter over ordinary type instead: Funnel Display 800
- * through #px, which samples the glyphs on a 7px grid and dilates each
- * survivor back out into an 8px square. Nothing is rounded anywhere in it.
- *
- * The 20px header and footer copies are unfiltered — at that size an 8px grid
- * leaves two and a half blocks of cap height and the word stops being a word.
+ * The logo, small: the sponsorship packet's pixel HACK1984, its cells solid
+ * and touching (Wordmark.jsx). 21px is three pixels a cell, 14px on a phone
+ * two, so every cell lands on whole pixels and the edges stay sharp; the
+ * width is the 47 x 7 grid's aspect at that height.
  */
-.hk-wordmark {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--ink);
+.hk-logo {
+  display: block;
+  width: calc(21px * 47 / 7);
+  height: 21px;
+}
+
+.hk-logo__word {
+  fill: var(--ink);
 }
 
 /* Not `accent`: see the note beside `wordmark-accent` in
    scripts/build-tokens.mjs for why the logo does not share the interface red. */
-.hk-wordmark__year {
-  color: var(--wordmark-accent);
+.hk-logo__year {
+  fill: var(--wordmark-accent);
+}
+
+@media (max-width: 640px) {
+  .hk-logo {
+    width: calc(14px * 47 / 7);
+    height: 14px;
+  }
 }
 
 /* --------------------------------------------------------------------------
    3.1 Header.
    -------------------------------------------------------------------------- */
 
+/*
+ * The full width of the window, pinned to its top, glass over whatever
+ * scrolls under it, with one hairline under the bar. .hk-bleed cancels the
+ * page gutter so the bar runs edge to edge; the gutter comes back as the
+ * bar's own padding, so its contents line up with the page's.
+ *
+ * Three columns, the outer two equal, so the nav sits on the true centre of
+ * the window rather than wherever the wordmark and the button leave it.
+ *
+ * The hero pulls itself up under the bar (.hk-hero's margin-top) so its
+ * field runs behind the glass.
+ */
 .hk-header {
-  /* position: relative is for the phone menu panel, which hangs off the bar. */
+  --hk-header-h: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(0, 0, 0, 0.72);
+  border-bottom: 1px solid var(--line-soft);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+}
+
+.hk-header__bar {
+  /* The phone menu panel's positioning context. */
   position: relative;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
-  height: 80px;
-  border-bottom: 1px dashed var(--chip-bg);
+  gap: 24px;
+  height: var(--hk-header-h);
+  padding: 0 var(--hk-gutter);
+}
+
+/* The bar covers the top 64px of the window, so an in-page jump stops short
+   of its target rather than under the bar. */
+main [id] {
+  scroll-margin-top: 80px;
 }
 
 .hk-header__brand {
+  justify-self: start;
   display: flex;
   align-items: center;
-  gap: 14px;
   text-decoration: none;
 }
 
-/* The right-hand group. At desktop it holds only [ SIGN UP ], because the
-   menu toggle beside it is display:none until the nav collapses. */
 .hk-header__actions {
+  justify-self: end;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 24px;
 }
 
 .hk-nav {
   display: flex;
-  gap: 36px;
+  gap: 32px;
 }
 
-.hk-nav a {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-decoration: none;
-  /* SPEC §4: touch targets at least 44px. */
-  min-height: 44px;
+.hk-nav a,
+.hk-header__link {
   display: flex;
   align-items: center;
+  /* SPEC §4: touch targets at least 44px. */
+  min-height: 44px;
+  padding: 0;
+  background: none;
+  border: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink-body);
+  cursor: pointer;
+  transition: color 120ms linear;
 }
 
-/* The phone menu's toggle. Hidden until the nav collapses; see SPEC §6. */
+.hk-nav a:hover,
+.hk-header__link:hover {
+  color: var(--ink);
+}
+
+/* The one action: a solid white block, square, with the label in black. */
+.hk-header__cta {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 16px;
+  background: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  color: #000000;
+  transition: background-color 120ms linear;
+}
+
+.hk-header__cta:hover {
+  background: #ffffff;
+  color: #000000;
+}
+
+/* Applications closed: the same block, greyed out. Still a link, to the
+   signup page's closed notice. */
+.hk-header__cta--closed,
+.hk-header__cta--closed:hover {
+  background: var(--chip-bg);
+  color: var(--ink-faint);
+}
+
+.hk-header__cta--closed:hover {
+  color: var(--ink-body);
+}
+
+/* The menu's toggle. Hidden until the nav collapses; see SPEC §6. */
 .hk-menu-toggle {
   display: none;
+}
+
+/*
+ * §6: the nav collapses into a menu once six links no longer fit beside the
+ * wordmark and the button. The panel hangs off the bottom of the bar, the
+ * window's full width, rather than pushing the hero down.
+ */
+@media (max-width: 1023px) {
+  .hk-header__bar {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .hk-menu-toggle {
+    display: flex;
+  }
+
+  .hk-nav {
+    display: none;
+  }
+
+  .hk-nav--open {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    padding: 8px var(--hk-gutter) 16px;
+    background: rgba(0, 0, 0, 0.96);
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .hk-nav--open a {
+    border-top: 1px dashed var(--line-soft);
+  }
+
+  .hk-nav--open a:first-child {
+    border-top: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .hk-header__actions {
+    gap: 18px;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -419,21 +564,38 @@ button:focus-visible,
  * the hero read as grey with black stripes rather than black with a texture.
  */
 .hk-hero {
-  --hk-pad-top: 170px;
+  /* 170px under the bar, as before; the hero now starts 64px higher, at the
+     top of the window, behind the bar. */
+  --hk-pad-top: 234px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 32px;
   position: relative;
   overflow: hidden;
-  padding: var(--hk-pad-top) var(--hk-gutter) 220px;
+  margin-top: -64px;
+  padding: var(--hk-pad-top) var(--hk-gutter) 128px;
   text-align: center;
   background-color: #000000;
+}
+
+/*
+ * The scanlines, now a layer over the ASCII field rather than the hero's own
+ * background, which the field covers. Half-transparent black rather than the
+ * #161616 they were on black: over the glyphs they have to darken, not
+ * lighten, to read as lines.
+ */
+.hk-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
   background-image: linear-gradient(
     180deg,
-    #161616 0 13%,
+    rgba(0, 0, 0, 0.55) 0 13%,
     transparent 13% 87%,
-    #161616 87% 100%
+    rgba(0, 0, 0, 0.55) 87% 100%
   );
   background-size: 100% var(--hk-cell);
   background-position: 0 var(--hk-pad-top);
@@ -441,33 +603,76 @@ button:focus-visible,
 }
 
 /*
- * The haze. A 1600 x 760 ellipse hung 420px below the hero's bottom edge, so
- * the hero clips it just short of its own centre: what shows is the top of a
- * glow, brightest at the cut. That is what makes it rise from the bottom edge
- * instead of sitting in the frame as a spotlight.
+ * A shadow behind the copy. The date, the buttons and the deadline are set in
+ * the same mono face as the field's glyphs, at nearly the same size, so laid
+ * straight over the bars they dissolve into them. This darkens an ellipse
+ * around the column of copy, the way Raycast's headline sits on a shadow, and
+ * leaves the bars bright either side of it.
  */
 .hk-hero::after {
   content: "";
   position: absolute;
-  left: 50%;
-  bottom: -420px;
-  width: 1600px;
-  height: 760px;
-  transform: translateX(-50%);
+  inset: 0;
+  z-index: 1;
   pointer-events: none;
   background: radial-gradient(
-    closest-side,
-    rgba(255, 59, 47, 0.3),
-    rgba(160, 20, 12, 0.14) 55%,
-    transparent
+    ellipse 46% 38% at 50% 47%,
+    rgba(0, 0, 0, 0.86) 0%,
+    rgba(0, 0, 0, 0.62) 45%,
+    transparent 100%
   );
 }
 
-/* Everything the hero holds sits above the haze. */
+/* Everything the hero holds sits above the field and the scanlines. */
 .hk-hero > * {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
+
+/*
+ * The field: 220 x 96 glyphs, sized like a cover image. The type is whichever
+ * is larger of the size that fills the width (220 columns at 0.6em is 132em)
+ * and the size that fills the height (96 rows at 1.03em is 98.88em), and the
+ * rows are centred, so the field always covers the hero and is cropped
+ * equally off the two sides that overflow. That needs the box's height as
+ * well as its width, so it is a size container, which its absolute inset
+ * gives a definite size.
+ */
+.hk-hero > .hk-hero__field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  letter-spacing: 0;
+  --hk-ascii-size: 11px;
+  --hk-ascii-row: 11.33px;
+  /* Faded off the bottom, so the bars run out into the black of the page
+     rather than stopping at a line where the next section starts. */
+  -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 72%, transparent 100%);
+}
+
+@supports (container-type: size) {
+  .hk-hero > .hk-hero__field {
+    --hk-ascii-size: max(calc(100cqw / 132), calc(100cqh / 98.88));
+    --hk-ascii-row: calc(max(calc(100cqw / 132), calc(100cqh / 98.88)) * 1.03);
+  }
+}
+
+/* The field's colours are classes, one per step of the ASCII ramp. */
+.hk-hero__field .a0 { color: var(--ascii-0); }
+.hk-hero__field .a1 { color: var(--ascii-1); }
+.hk-hero__field .a2 { color: var(--ascii-2); }
+.hk-hero__field .a3 { color: var(--ascii-3); }
+.hk-hero__field .a4 { color: var(--ascii-4); }
+.hk-hero__field .a5 { color: var(--ascii-5); }
+.hk-hero__field .a6 { color: var(--ascii-6); }
 
 /* The hero's own focus ring. Tighter than the page's 4px, per the hero spec. */
 .hk-hero a:focus-visible,
@@ -476,11 +681,9 @@ button:focus-visible,
   outline-offset: 3px;
 }
 
-/* The hero's copy of the wordmark. Everything about the face itself is on
-   .hk-wordmark; this only sets the size. */
 /*
- * The mark is an <svg>, so the <h1> only has to size it. No type properties
- * here at all — see WordmarkBlocks.jsx.
+ * The hero's mark is an <svg>, so the <h1> only has to size it. No type
+ * properties here at all — see WordmarkBlocks.jsx.
  */
 .hk-hero__title {
   margin: 0;
@@ -589,14 +792,11 @@ button:focus-visible,
   border-top: 1px dashed var(--chip-bg);
 }
 
-.hk-find__label {
-  margin-bottom: 20px;
-}
-
 /*
- * One column, two from 560, four from 1024 — claudeneu's own breaks. Cards
- * are separated by a gap rather than sharing dividers, which is the thing
- * that makes them read as cards.
+ * One column, three from 720. claudeneu breaks at two and then four, but this
+ * band holds three cards since Slack came out, and two up would leave the
+ * third alone on a row. Cards are separated by a gap rather than sharing
+ * dividers, which is the thing that makes them read as cards.
  */
 .hk-find__grid {
   display: grid;
@@ -608,15 +808,9 @@ button:focus-visible,
   list-style: none;
 }
 
-@media (min-width: 560px) {
+@media (min-width: 720px) {
   .hk-find__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
-  .hk-find__grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -687,116 +881,645 @@ button:focus-visible,
 }
 
 /* --------------------------------------------------------------------------
-   Sponsors.
+   Sponsors, under the hero.
+
+   The heading, then each tier as the page's grey chip over a run of member
+   cards, the organizing clubs' build (below); see Sponsors.jsx.
    -------------------------------------------------------------------------- */
 
+/* Under the Find us band, whose 48px of bottom padding is all the gap a
+   section heading would otherwise get. */
 .hk-sponsors {
+  padding-top: 72px;
+}
+
+.hk-tiers {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+.hk-tier {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* No rule above this one. The Find us band already closes the hero off with
-     its own, and a second one 130px later split the socials from the banner
-     into two things when they read better as one run down to the tracks.
-     64px of top padding rather than 140 for the same reason. */
-  padding: 64px 0 180px;
+  gap: 32px;
 }
 
-/* Edge to edge. The section is a centred column, so the banner cancels the
-   page gutter with .hk-bleed and then has to be told to fill the line box. */
-.hk-sponsors__banner {
-  align-self: stretch;
-  margin-bottom: 72px;
-}
-
-.hk-sponsors__banner .hk-ascii {
-  /* The track banners are inset in a frame; this one is the full width, so
-     the vertical padding that separated art from frame is not wanted. */
-  padding: 0;
-  background: none;
-}
-
-.hk-sponsors__label {
-  margin-bottom: 40px;
-}
-
-/* SPEC §3.3: 72px between the first tier's cells and the second tier's chip. */
-.hk-sponsors__label--second {
-  margin-top: 72px;
-}
-
-/* Capped at the column. The section centres its children, so without this
-   the five-cell tier sizes to its 1100px of content and runs past the page
-   gutter, and off the screen near 1100px wide. Capped, its cells shrink. */
-.hk-sponsors__tier {
+/*
+ * With support from: a step down from Backed by and a different build, one
+ * rectangle each, the panel's ground and glow, the logo over the red name
+ * band and nothing under it. Four to a row, each Backed by's width, so the
+ * two tiers line up down the page.
+ */
+.hk-supporters {
   display: flex;
-  max-width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px 24px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.hk-sponsors__cell {
-  width: 220px;
-  min-width: 0;
-  height: 68px;
+/* Backed by's quarter of the column, so the two tiers line up. */
+.hk-supporter {
+  display: flex;
+  width: calc((100% - 3 * 24px) / 4);
+}
+
+@media (max-width: 900px) {
+  .hk-supporter {
+    width: calc((100% - 24px) / 2);
+  }
+}
+
+/* The panel and the name band under it, one bordered box. */
+.hk-supporter__box {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid var(--chip-bg);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 160ms linear;
+}
+
+a.hk-supporter__box:hover,
+a.hk-supporter__box:focus-visible {
+  border-color: var(--line);
+}
+
+.hk-supporter__panel {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-left: 1px dashed var(--dash);
+  height: 84px;
+  padding: 12px;
+  background:
+    radial-gradient(circle at 50% 135%, rgba(255, 59, 47, 0.16), transparent 65%),
+    var(--surface);
 }
 
-/* The row is closed off on the right by its last cell only. */
-.hk-sponsors__cell:last-child {
-  border-right: 1px dashed var(--dash);
+/* The logo's `height` from the data. */
+.hk-supporter__logo {
+  width: auto;
+  height: var(--h, 26px);
+  max-height: 40px;
+  max-width: 72%;
+  object-fit: contain;
+  transition: transform 300ms ease;
 }
 
-.hk-sponsors__placeholder {
+a.hk-supporter__box:hover .hk-supporter__logo {
+  transform: scale(1.05);
+}
+
+/* The name, in the Backed by boxes' red band, a size down. */
+.hk-supporter__band {
+  display: block;
+  padding: 7px 8px;
+  overflow: hidden;
+  background: var(--red-900);
   font-family: var(--font-mono);
   font-size: 12px;
-  letter-spacing: 0.12em;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--red-chip-text);
+}
+
+/* A supporter with no logo yet, its name set as type. */
+.hk-supporter__typed {
+  font-family: var(--font-display);
+  font-size: 26px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   Partner clubs: their logos only.
+
+   One small square panel each, the organizing clubs' panel in miniature,
+   seven to a row, centred. See Organizers.jsx.
+   -------------------------------------------------------------------------- */
+
+/* The page's column edge to edge, seven to a row, five below 1100px. */
+.hk-logos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hk-logos__item {
+  display: flex;
+  width: calc((100% - 6 * 16px) / 7);
+}
+
+@media (max-width: 1099px) {
+  .hk-logos__item {
+    width: calc((100% - 4 * 16px) / 5);
+  }
+}
+
+/* The panel and the name band under it, one bordered box, and the size
+   container the band's type is measured against. */
+.hk-logos__card {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid var(--chip-bg);
+  text-decoration: none;
+  transition: border-color 160ms linear;
+}
+
+a.hk-logos__card:hover,
+a.hk-logos__card:focus-visible {
+  border-color: var(--line);
+}
+
+.hk-logos__panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background:
+    radial-gradient(circle at 50% 118%, rgba(255, 59, 47, 0.16), transparent 62%),
+    var(--surface);
+}
+
+/*
+ * The club's name, in a band across the foot of its box: the Details chips'
+ * recipe (the dark red ground, the soft red mono caps), the full width of
+ * the box.
+ *
+ * ONE SIZE FOR EVERY BAND. Geist Mono sets each character 0.6em wide, 0.64
+ * with this tracking, so the longest name (`--hk-band-chars`, counted in
+ * Organizers.jsx) needs that many times 0.64em. The type is whichever is
+ * smaller, 12px or the size at which that name exactly fills the box less
+ * its padding. Every box is the same width, so every band gets the same
+ * size, and no name can run past its box at any window width.
+ */
+.hk-logos__name {
+  display: block;
+  padding: 6px 4px;
+  background: var(--red-900);
+  font-family: var(--font-mono);
+  font-size: min(12px, calc((100cqi - 8px) / (var(--hk-band-chars, 14) * 0.64)));
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--red-chip-text);
+}
+
+.hk-logos__img {
+  width: auto;
+  height: 30%;
+  max-width: 68%;
+  object-fit: contain;
+  transition: transform 300ms ease;
+}
+
+a.hk-logos__card:hover .hk-logos__img {
+  transform: scale(1.06);
+}
+
+/* A club with no logo yet, its name set as type. */
+.hk-logos__typed {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+@media (max-width: 640px) {
+  .hk-sponsors {
+    padding-top: 56px;
+  }
+
+  .hk-tiers {
+    gap: 56px;
+  }
+
+  .hk-tier {
+    gap: 24px;
+  }
+
+  .hk-supporters {
+    gap: 10px;
+  }
+
+  .hk-supporter {
+    width: calc(50% - 5px);
+  }
+
+  .hk-supporter__panel {
+    height: 72px;
+    padding: 10px;
+  }
+
+  .hk-supporter__logo {
+    max-height: 32px;
+  }
+
+  .hk-supporter__band {
+    padding: 6px 4px;
+    font-size: 10.5px;
+    line-height: 14px;
+  }
+
+  .hk-supporter__typed {
+    font-size: 22px;
+  }
+
+  .hk-logos {
+    gap: 18px 10px;
+  }
+
+  .hk-logos__item {
+    width: calc((100% - 20px) / 3);
+  }
+
+  .hk-logos__name {
+    padding: 5px 4px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Members: the sponsors and the organizing clubs, laid out as claudeneu.com's
+   executive board is. No card surface: a square panel with the logo in it,
+   and the type hanging under it, name, role in the accent, a line. See
+   Sponsors.jsx and Organizers.jsx.
+   -------------------------------------------------------------------------- */
+
+/* Four to a row at most, centred, so seven people are four over three. */
+/* The page's column, edge to edge, like the tracks and the details: four to
+   a row, each a quarter of it less the gaps, a short last row centred. Two
+   to a row below 900px. */
+.hk-members {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 44px 24px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hk-member {
+  display: flex;
+  flex-direction: column;
+  width: calc((100% - 3 * 24px) / 4);
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .hk-member {
+    width: calc((100% - 24px) / 2);
+  }
+}
+
+/* Fixed ratio, so a picture arriving shifts nothing. */
+.hk-member__media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--chip-bg);
+  transition: border-color 160ms linear;
+}
+
+.hk-member__media:hover,
+.hk-member__media:focus-visible {
+  border-color: var(--line);
+}
+
+/* A club's panel: its logo in the middle of the square, over a red glow
+   rising from the bottom edge, the hero's light in miniature. */
+.hk-member__media--logo {
+  background:
+    radial-gradient(circle at 50% 118%, rgba(255, 59, 47, 0.18), transparent 62%),
+    var(--surface);
+}
+
+.hk-member__logo {
+  width: auto;
+  height: 34%;
+  max-width: 56%;
+  object-fit: contain;
+  transition: transform 300ms ease;
+}
+
+.hk-member__media--logo:hover .hk-member__logo {
+  transform: scale(1.06);
+}
+
+/* A sponsor's logo: its `height` from src/lib/sponsors.js, one and a half
+   times over, so wordmarks and symbols weigh about the same in the square;
+   a wide wordmark stops at seven tenths of the panel's width. */
+.hk-member__logo--sized {
+  height: calc(var(--h, 28px) * 1.5);
+  max-height: 42%;
+  max-width: 70%;
+}
+
+/*
+ * A Backed by sponsor's box: the panel, a little shorter than square, over a
+ * band with the sponsor's name in it the full width of the box, the Details
+ * chips' recipe a size up. Panel and band together come to about a square,
+ * the organizing clubs' footprint.
+ */
+.hk-member__media--banded {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  aspect-ratio: auto;
+}
+
+.hk-member__panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 6 / 5;
+  background:
+    radial-gradient(circle at 50% 118%, rgba(255, 59, 47, 0.18), transparent 62%),
+    var(--surface);
+}
+
+.hk-member__media--banded:hover .hk-member__logo,
+.hk-member__media--banded:focus-visible .hk-member__logo {
+  transform: scale(1.06);
+}
+
+.hk-member__band {
+  margin: 0;
+  padding: 9px 10px;
+  overflow: hidden;
+  background: var(--red-900);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--red-chip-text);
+}
+
+.hk-member__media--banded + .hk-member__role {
+  margin-top: 14px;
+}
+
+/* A sponsor with no logo yet, its name set in the panel as type. */
+.hk-member__typed {
+  font-family: var(--font-display);
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.hk-member__name {
+  margin: 16px 0 0;
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 23px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.hk-member__role {
+  margin: 4px 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 15px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.hk-member__detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 8px 0 0;
+  font-size: 13.5px;
+  line-height: 20px;
   color: var(--ink-faint);
 }
 
-/* SPEC §3.3: real logos are monochrome white, about 28–32px tall. Clamped so
-   one oversized file cannot push the 68px row out of shape. */
-.hk-sponsors__logo {
-  max-height: 32px;
-  max-width: min(180px, calc(100% - 24px));
-  width: auto;
-  object-fit: contain;
+/* --- A phone ------------------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .hk-members {
+    gap: 28px 14px;
+  }
+
+  .hk-member {
+    width: calc(50% - 7px);
+  }
+
+  .hk-member__name {
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .hk-member__typed {
+    font-size: 22px;
+  }
+
+  .hk-member__band {
+    padding: 7px 6px;
+    font-size: 11px;
+    line-height: 15px;
+  }
+
+  .hk-member__media--banded + .hk-member__role {
+    margin-top: 10px;
+  }
+
+  .hk-member__detail {
+    font-size: 12.5px;
+    line-height: 18px;
+  }
 }
 
-/* A stacked lockup, mark over wordmark, may run to 40px so its wordmark is
-   not the smallest name in the row. 40 still leaves 14px above and below in
-   the 68px cell. */
-.hk-sponsors__logo--stacked {
-  max-height: 40px;
-}
+/* --------------------------------------------------------------------------
+   The organizing team, as a list.
 
-/* A sponsor cell that links to the sponsor. Same response as an organizer
-   cell: the ground lifts to the chip grey, nothing moves. */
-.hk-sponsors__cell--link {
-  text-decoration: none;
-  transition: background-color 120ms linear;
-}
+   One dashed box per person, a gap between each, in the Details rows' build:
+   a small headshot (greyscale until the box is pointed at), the name in the
+   display face, the person's title in the red chip, and their LinkedIn in a
+   small grey box at the right-hand end. The page's column, edge to edge,
+   like the details. See Organizers.jsx.
+   -------------------------------------------------------------------------- */
 
-.hk-sponsors__cell--link:hover,
-.hk-sponsors__cell--link:focus-visible {
-  background: var(--chip-bg);
-}
-
-.hk-sponsors__cta {
+.hk-roster {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hk-roster__row {
+  display: grid;
+  /* The title chip's column is one width, the longest title's, so every
+     chip lines up down the list; the LinkedIn box's is one box wide, held
+     even in a row without one. */
+  grid-template-columns: 56px minmax(0, 1fr) 300px 40px;
+  grid-template-areas: "photo name role socials";
+  align-items: center;
+  gap: 24px;
+  min-height: 96px;
+  padding: 18px 28px;
+  border: 1px dashed var(--dash);
+  transition: background-color 160ms linear, border-color 160ms linear;
+}
+
+.hk-roster__row:hover {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+.hk-roster__photo {
+  grid-area: photo;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border: 1px solid var(--chip-bg);
+  filter: grayscale(1) contrast(1.05);
+  transition: filter 200ms linear;
+}
+
+.hk-roster__row:hover .hk-roster__photo {
+  filter: none;
+}
+
+/* The Details sentence's treatment: the display face, a size up. */
+.hk-roster__name {
+  grid-area: name;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* The person's title, in the Details chip a size down, filling its column. */
+.hk-roster__role {
+  grid-area: role;
+  padding: 6px 10px;
+  background: var(--red-900);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--red-chip-text);
+}
+
+.hk-roster__socials {
+  grid-area: socials;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* The Details row's grey box, small. */
+.hk-roster__socials a {
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px 24px;
-  margin-top: 56px;
-  text-align: center;
+  width: 40px;
+  height: 40px;
+  background: var(--line-soft);
+  color: var(--ink-faint);
+  transition: color 120ms linear;
 }
 
-.hk-sponsors__cta p {
-  margin: 0;
-  font-size: 15px;
-  line-height: 23px;
-  color: var(--ink-body);
+.hk-roster__socials a:hover,
+.hk-roster__socials a:focus-visible {
+  color: var(--accent);
+}
+
+.hk-roster__socials svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Below 900px, where the title chip's 300px column would squeeze the name:
+   the headshot down the left of two lines, the name and the LinkedIn box on
+   the first, the title chip on the second. */
+@media (max-width: 900px) {
+  .hk-roster {
+    gap: 10px;
+  }
+
+  .hk-roster__row {
+    grid-template-columns: 48px minmax(0, 1fr) 32px;
+    grid-template-areas:
+      "photo name socials"
+      "photo role role";
+    gap: 10px 14px;
+    min-height: 0;
+    padding: 16px;
+  }
+
+  .hk-roster__photo {
+    align-self: start;
+    width: 48px;
+    height: 48px;
+  }
+
+  .hk-roster__name {
+    font-size: 18px;
+    line-height: 23px;
+  }
+
+  .hk-roster__role {
+    justify-self: start;
+    padding: 4px 8px;
+    text-align: left;
+    font-size: 11px;
+    line-height: 15px;
+  }
+
+  .hk-roster__socials a {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -833,14 +1556,29 @@ button:focus-visible,
   flex-grow: 1;
 }
 
-/* The main track: full width, art on the left and the brief on the right. */
+/*
+ * The main track: full width, the art across the whole panel and the brief
+ * under it in two columns, the story on the left and the facts on the right.
+ * It was art on the left and brief on the right, which left a 5:1 banner in
+ * one half of a panel the brief made 600px tall, and a hole under the art.
+ */
 .hk-track--lead {
   grid-column: 1 / -1;
+  gap: 36px;
+  padding: 32px 32px 40px;
+}
+
+.hk-track--lead .hk-track__content {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 48px;
   align-items: start;
-  padding: 32px 32px 40px;
+}
+
+/* Beside the story rather than under it, so no rule above the facts. */
+.hk-track--lead .hk-track__facts {
+  padding-top: 4px;
+  border-top: 0;
 }
 
 .hk-track--lead .hk-track__title {
@@ -850,9 +1588,18 @@ button:focus-visible,
 
 @media (max-width: 1024px) {
   .hk-track--lead {
-    grid-template-columns: minmax(0, 1fr);
     gap: 32px;
     padding: 32px 24px 40px;
+  }
+
+  .hk-track--lead .hk-track__content {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .hk-track--lead .hk-track__facts {
+    padding-top: 20px;
+    border-top: 1px dashed var(--chip-bg);
   }
 }
 
@@ -899,11 +1646,6 @@ button:focus-visible,
   font-size: var(--hk-ascii-size);
   line-height: var(--hk-ascii-row);
   height: var(--hk-ascii-row);
-}
-
-/* 240 columns at 0.6em. Runs the full width of the page with no frame. */
-.hk-ascii--masthead {
-  --hk-ascii-em: 144;
 }
 
 @supports (container-type: inline-size) {
@@ -1427,179 +2169,6 @@ button:focus-visible,
 .hk-seats__legend strong {
   font-weight: 600;
   color: var(--ink);
-}
-
-/* --------------------------------------------------------------------------
-   Organized by.
-   -------------------------------------------------------------------------- */
-
-/*
- * No rule above this one, and no padding either. It sat between the timeline
- * and the credit and separated two things that read better as one breath —
- * and with the schedule's own 160px of section padding above it, a further
- * 96px here was a hole rather than a gap.
- */
-.hk-organizers {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 0;
-  padding-bottom: var(--hk-section-pad);
-}
-
-.hk-organizers__label {
-  margin-bottom: 40px;
-}
-
-/* One line, capped at the column, the way a sponsor tier is. Five backers
-   are 1100px of cells, which fits the column only from about 1340px; below
-   that, down to the ≤1099px grid, wrapping would leave fragments, so the
-   cells shrink instead. */
-.hk-organizers__row {
-  display: flex;
-  justify-content: center;
-  max-width: 100%;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.hk-organizers__item {
-  min-width: 0;
-  border-left: 1px dashed var(--dash);
-}
-
-.hk-organizers__item:last-child {
-  border-right: 1px dashed var(--dash);
-}
-
-/*
- * Same 220px dashed cell as a sponsor tier, so the two blocks read as the same
- * kind of object — taller here because the name sits under the mark.
- *
- * The whole cell is the link. A 44px logo over an 11px caption is two mean
- * targets; one 220 x 124 target is a generous one.
- */
-.hk-organizers__cell {
-  width: 220px;
-  max-width: 100%;
-  height: 124px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  text-decoration: none;
-  transition: background-color 120ms linear;
-}
-
-/* Only a cell that goes somewhere responds; a club with no link yet is a
-   plain div and should not look clickable. */
-.hk-organizers__cell[href]:hover,
-.hk-organizers__cell[href]:focus-visible {
-  background: var(--chip-bg);
-}
-
-/* The logo is white already; the name is the part that has to say "this is a
-   link", and it does it the way the rest of the page's links do. */
-.hk-organizers__cell[href]:hover .hk-organizers__name,
-.hk-organizers__cell[href]:focus-visible .hk-organizers__name {
-  color: var(--accent);
-}
-
-/*
- * The logos are already pure white with the shape in the alpha channel, so
- * nothing has to be filtered here. Height, not width, is what matches them to
- * each other: a wide starburst and a tall lightbulb set to the same width
- * would read as two different weights.
- */
-.hk-organizers__logo {
-  max-height: 44px;
-  max-width: 150px;
-  width: auto;
-  object-fit: contain;
-}
-
-/* A backer's logo is a wordmark with no caption under it, so it can take more
-   of the cell: these are wide lockups, about 3.9:1, which 150px left at 38px
-   tall in a 124px cell. */
-.hk-organizers__logo--wordmark {
-  max-height: 48px;
-  /* Capped by the cell as well, with 14px a side: on a phone a cell is about
-     170px, and a fixed 176px ran the lockup into the dashes and widened the
-     grid past the organizer row above it. */
-  max-width: min(176px, calc(100% - 28px));
-}
-
-/* Also backed by: a second heading and row, 72px under the organizer row,
-   the same gap as between the two sponsor tiers. Full width so the row's
-   ≤1099px grid has something to be 100% of. */
-.hk-organizers__backers {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-.hk-organizers__label--second {
-  margin-top: 72px;
-}
-
-.hk-organizers__name {
-  padding: 0 14px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  line-height: 15px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  color: var(--ink-body);
-  text-align: center;
-  text-wrap: balance;
-  transition: color 120ms linear;
-}
-
-/*
- * The organizing team: the same dashed cell, taller, with a greyscale headshot
- * over the name. The photos come from different shoots; greyscale is what
- * makes them one row, as white does for the logos. Not links, so no hover.
- * The flex row wrapped at four across, so eight people are two rows of four
- * with the dashes running straight down through both. The partner row wraps
- * the same way, four over three, and a short last row is centred under the
- * one above it, as every other row on the page is centred. Below 1100px the
- * two-up grid takes over, as it does for every row here.
- */
-.hk-organizers__row--four {
-  flex-wrap: wrap;
-  width: 880px;
-}
-
-.hk-organizers__row--four .hk-organizers__item {
-  flex: 0 0 25%;
-}
-
-.hk-organizers__row--four .hk-organizers__item:nth-child(4n) {
-  border-right: 1px dashed var(--dash);
-}
-
-.hk-team__cell {
-  height: 180px;
-  gap: 0;
-}
-
-.hk-team__photo {
-  width: 88px;
-  height: 88px;
-  margin-bottom: 16px;
-  object-fit: cover;
-  filter: grayscale(1) contrast(1.05);
-}
-
-.hk-organizers__note {
-  margin: 28px 0 0;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  color: var(--ink-faint);
 }
 
 /* --------------------------------------------------------------------------
@@ -2234,106 +2803,9 @@ button:focus-visible,
   /* The hero and section headings size themselves against vw at every width,
      so neither needs an override here any more. */
 
-  /* The heading block stacks to one column. */
-  .hk-heading {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   /* Tracks stay 2 columns: .hk-ascii scales the art to whatever panel it is
      given, so it fits by construction. */
 
-}
-
-/* --- ≤1099px: rows of cells become a ruled grid --------------------------- */
-
-/*
- * The sponsor tiers and the organizer row are lines of 220px cells divided by
- * dashes, and every one of those dashes is a left border, with a right border
- * on the last cell to close the row. That is right on one line and wrong the
- * moment it wraps: each cell keeps its lonely left-hand dash, the row above
- * loses its closing edge, and the result is fragments. The organizers row
- * wraps below 1073px (880px of cells and 9vw of gutter each side), so this
- * starts there, and it takes the sponsor tiers with it so the two blocks stay
- * the same kind of object.
- *
- * Two up, ruled like a table: a dash above every row and under the last, one
- * down the middle, none on the outside. An odd tier gives its FIRST cell the
- * whole top row, which leaves no orphan at the bottom and puts the lead
- * sponsor on a line of its own.
- */
-@media (max-width: 1099px) {
-  .hk-sponsors__tier,
-  .hk-organizers__row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 100%;
-    max-width: 440px;
-  }
-
-  .hk-sponsors__tier {
-    border-bottom: 1px dashed var(--dash);
-  }
-
-  .hk-sponsors__cell,
-  .hk-sponsors__cell:last-child {
-    width: auto;
-    border: 0;
-    border-top: 1px dashed var(--dash);
-  }
-
-  .hk-sponsors__cell:first-child:nth-last-child(odd) {
-    grid-column: 1 / -1;
-  }
-
-  /* The right-hand cell of each pair carries the middle rule. With the first
-     cell spanning, the pairs start at 2, so the right-hand ones are odd. */
-  .hk-sponsors__cell:first-child:nth-last-child(odd) ~ .hk-sponsors__cell:nth-child(odd),
-  .hk-sponsors__cell:first-child:nth-last-child(even) ~ .hk-sponsors__cell:nth-child(even) {
-    border-left: 1px dashed var(--dash);
-  }
-
-  .hk-organizers__item {
-    border-left: 0;
-    border-top: 1px dashed var(--dash);
-  }
-
-  .hk-organizers__item:nth-child(even) {
-    border-left: 1px dashed var(--dash);
-  }
-
-  .hk-organizers__item:last-child {
-    border-right: 0;
-  }
-
-  .hk-organizers__item:nth-last-child(-n + 2) {
-    border-bottom: 1px dashed var(--dash);
-  }
-
-  .hk-organizers__cell {
-    width: auto;
-  }
-
-  /* Two up like every other row here; the desktop's every-fourth right-hand
-     dash would land on the outside edge. */
-  .hk-organizers__row--four .hk-organizers__item:nth-child(4n) {
-    border-right: 0;
-  }
-
-  /* An odd row (three backers) gives its first cell the whole top row, the
-     same fix the sponsor tiers use, so nothing is left alone at the bottom.
-     The pairs then start at 2, so it is the odd cells that carry the middle
-     rule rather than the even ones. */
-  .hk-organizers__item:first-child:nth-last-child(odd) {
-    grid-column: 1 / -1;
-  }
-
-  .hk-organizers__item:first-child:nth-last-child(odd) ~ .hk-organizers__item:nth-child(even) {
-    border-left: 0;
-  }
-
-  .hk-organizers__item:first-child:nth-last-child(odd) ~ .hk-organizers__item:nth-child(odd) {
-    border-left: 1px dashed var(--dash);
-  }
 }
 
 /* --- ≤640px -------------------------------------------------------------- */
@@ -2344,21 +2816,27 @@ button:focus-visible,
        wordmark, [ MENU ] and [ SIGN UP ] need 318px of the 343px a 375px
        screen leaves at this gutter, and 6vw would take 13px of that slack. */
     --hk-gutter: 16px;
-    --hk-section-pad: 96px;
-  }
-
-  /* The last of the header's slack comes from here. */
-  .hk-header__actions {
-    gap: 12px;
+    --hk-section-pad: 72px;
   }
 
   /* BEYOND SPEC: §6 does not give hero padding. 170/220 is most of a phone
      screen before the wordmark appears, so it drops to 96/120 — 96px is the
      section padding §6 itself picks for this width, and both sit on the 4px
-     grid from SPEC §1. */
+     grid from SPEC §1. Under the bar, so 96 + 64. */
   .hk-hero {
-    --hk-pad-top: 96px;
-    padding-bottom: 120px;
+    --hk-pad-top: 160px;
+    padding-bottom: 96px;
+  }
+
+  /* On a phone the copy is a tall narrow column and the field's glyphs are
+     smaller and denser, so the shadow behind it is wider and deeper. */
+  .hk-hero::after {
+    background: radial-gradient(
+      ellipse 78% 34% at 50% 50%,
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(0, 0, 0, 0.7) 50%,
+      transparent 100%
+    );
   }
 
   /* One call to action on a phone. The two bracket buttons stacked there and
@@ -2366,31 +2844,6 @@ button:focus-visible,
      are one scroll away regardless. */
   .hk-hero__secondary {
     display: none;
-  }
-
-  /* §6: the header nav collapses into a menu, keeping the wordmark and Sign
-     up visible. The panel hangs off the bottom of the 80px bar rather than
-     pushing the hero down. */
-  .hk-menu-toggle {
-    display: inline-flex;
-  }
-
-  .hk-nav {
-    display: none;
-  }
-
-  .hk-nav--open {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    position: absolute;
-    top: 100%;
-    left: calc(var(--hk-gutter) * -1);
-    right: calc(var(--hk-gutter) * -1);
-    z-index: 10;
-    padding: 8px var(--hk-gutter) 16px;
-    background: var(--ground);
-    border-bottom: 1px dashed var(--chip-bg);
   }
 
   /* §6: "Tracks go to 1 column." The hairlines are the grid gap, so there
@@ -2412,29 +2865,7 @@ button:focus-visible,
     :root {
       --hk-ascii-size: calc((100vw - 96px) / 96);
       --hk-ascii-row: calc((100vw - 96px) / 96 * 1.03);
-      /* No container queries: the masthead is full-bleed, so it measures the
-         viewport rather than the padded content width. */
     }
-  }
-
-  /*
-   * The masthead gets a floor on its type size. Sized to fit all 240 columns
-   * across a 390px screen, each character came out 2.7px and the whole banner
-   * about 20px tall — a smudge, not a banner. So the characters stop shrinking
-   * at 7px, and once the full width no longer fits at that size the row simply
-   * overflows its box and is cropped.
-   *
-   * The crop is symmetric: .hk-ascii centres its rows, so an over-wide row
-   * spills equally off both sides and overflow: hidden trims them. That is
-   * safe here because 90% of the art's ink sits in the middle 131 of its 240
-   * columns; the outer sixty-odd each side are near-empty dots. At 390 about
-   * 93 columns show — the whole dense core — at 2.6x the old size.
-   *
-   * Phones only. At 720 and up the full 240 columns fit at 5px or more.
-   */
-  .hk-ascii--masthead {
-    --hk-ascii-size: max(calc(100cqi / 144), 7px);
-    --hk-ascii-row: calc(max(calc(100cqi / 144), 7px) * 1.03);
   }
 
   .hk-find {
@@ -2455,24 +2886,6 @@ button:focus-visible,
     padding: 22px 18px 24px;
   }
 
-  /* The two-up organizer grid is in the ≤1099px block; a phone only makes
-     the cells a little shorter. */
-  .hk-organizers__cell {
-    height: 116px;
-    gap: 12px;
-  }
-
-  .hk-team__cell {
-    height: 160px;
-    gap: 0;
-  }
-
-  .hk-team__photo {
-    width: 76px;
-    height: 76px;
-    margin-bottom: 12px;
-  }
-
   /* The date and venue wrap here, and a wrapped flex line starts with a
      separator that has nothing before it. A line each, no rules. */
   .hk-hero__where {
@@ -2483,15 +2896,6 @@ button:focus-visible,
   .hk-hero__where li {
     padding: 0;
     border-left: 0;
-  }
-
-  /* The same for the deadline line: a line each, no dot. */
-  .hk-hero__deadline span {
-    display: block;
-  }
-
-  .hk-hero__deadline .hk-hero__deadline-sep {
-    display: none;
   }
 
   /* The key column is a third of a phone screen, so the facts stack. */

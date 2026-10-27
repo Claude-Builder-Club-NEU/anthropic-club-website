@@ -10,20 +10,17 @@ import { Organizers } from "../components/Organizers";
 /**
  * The home page, /hackathon/.
  *
- * The order is an argument: what it is (Hero), where to follow it (FindUs),
- * who backs it (Sponsors), what
- * you would build (Tracks), how to get in (Apply), how the
- * weekend runs (Schedule), who is running it (Organizers) and what you need
- * to bring (Details).
- *
- * Organizers sits between the timeline and the details deliberately: it
- * breaks up two long blocks of the same kind of object, and the credit reads
- * better after someone has seen what the weekend actually is.
+ * The order follows the questions someone arriving has, in the order they
+ * have them: what it is (Hero), where to follow it (FindUs), who is behind
+ * it, the sponsors tier by tier (Sponsors), the page's most important
+ * section and the first thing a sponsor looks for; what you would build and
+ * win (Tracks), how to get in (Apply), how the weekend runs (Schedule); who
+ * is running it, the organizing clubs, the partner clubs and then the team
+ * (Organizers); and what to bring (Details).
  *
  * Apply sits immediately after Tracks because the tracks are where someone
- * decides they want in. There is no countdown: it was the band above the
- * footer and it is gone, along with its ASCII clock and the chrono field
- * behind it.
+ * decides they want in. The header's nav lists the sections in the same
+ * order (NAV in src/lib/event.js).
  *
  * The header and footer are drawn by App, around whichever page this is.
  */

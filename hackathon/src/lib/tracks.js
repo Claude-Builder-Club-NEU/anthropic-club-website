@@ -2,10 +2,11 @@
  * Three ways to win.
  *
  * The sponsor one-pager replaced four themed tracks with these three: a main
- * track on privacy by design, one prize for the most startup-able idea, and a
- * sponsor track from Tavily with three places. The sponsor page renders the
- * short form of the same list (`pitch`), so the two pages cannot describe
- * different contests.
+ * track on privacy by design, one prize for the most startup-able idea, and
+ * Surge, the sponsor track Tavily and Exa run together, with three places.
+ * Surge was two sponsor tracks, one per search API, until the two were folded
+ * into one. The sponsor page renders the short form of the same list
+ * (`pitch`), so the two pages cannot describe different contests.
  *
  * `art` is the key into src/lib/ascii.js. `kind` is the left-hand tag on the
  * panel, the same label the one-pager puts over each title. `index` renders as
@@ -18,7 +19,10 @@
  * More tracks are coming; add them here and the page, the sponsor page and
  * the "01 / 0N" counters all follow.
  *
- * PRIZES: the main track and the Tavily track pay three places, the same
+ * `sponsors` is the list of logos under SPONSORED BY: empty for a track no
+ * sponsor runs, two for Surge.
+ *
+ * PRIZES: the main track and Surge pay three places, the same
  * three, from PLACES below: first place a cash prize and a 2-year VIP
  * CodeCrafters membership, second a 1-year and third a 6-month one, as
  * confirmed by the club. Most Startup-able is one award, a cash award, and
@@ -60,7 +64,7 @@ export const TRACKS = [
         note: "Plus the main prizes of the weekend, announced soon",
       },
     ],
-    sponsor: null,
+    sponsors: [],
   },
   {
     index: "02",
@@ -83,17 +87,17 @@ export const TRACKS = [
       // One award, not three places: a cash award, its amount not set yet.
       { key: "PRIZE", places: [{ lead: "$$$ cash award" }] },
     ],
-    sponsor: null,
+    sponsors: [],
   },
   {
     index: "03",
     kind: "SPONSOR TRACK",
     art: "ministry-of-truth",
-    title: "Best Use of Tavily",
-    description: "Build with Tavily's search API. Three places.",
+    title: "Surge",
+    description: "Build with Tavily's and Exa's search APIs. Three places.",
     body:
-      "Tavily gives AI agents real-time access to the web: search, extract and crawl, built for language models rather than for people clicking links. Use it to build an agent that researches, verifies and cites its sources, without turning the person asking into the product.",
-    pitch: "1st–3rd prizes. Your company can run a track like this one.",
+      "Tavily and Exa give AI agents real-time access to the web: search, extract and crawl, built for language models rather than for people clicking links. Use either one, or both, to build an agent that researches, verifies and cites its sources, without turning the person asking into the product.",
+    pitch: "Tavily and Exa, one track, 1st–3rd prizes. Your company can run a track like this one.",
     facts: [
       {
         key: "BUILD",
@@ -101,11 +105,16 @@ export const TRACKS = [
       },
       {
         key: "JUDGED ON",
-        value: "How central Tavily is to what the project does, and how well it works.",
+        value: "How central Tavily or Exa is to what the project does, and how well it works.",
       },
       { key: "PRIZE", places: PLACES },
     ],
-    sponsor: { name: "Tavily", logo: "logos/tavily.png" },
+    // Exa at the panel's 30px outweighed Tavily's two-line lockup beside it;
+    // at 24 its lowercase letters stand level with Tavily's name.
+    sponsors: [
+      { name: "Tavily", logo: "logos/tavily.png" },
+      { name: "Exa", logo: "logos/exa.svg", height: 24 },
+    ],
   },
 ];
 
