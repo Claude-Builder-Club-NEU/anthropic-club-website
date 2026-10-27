@@ -63,8 +63,8 @@ export const APPLY = {
   deadlineISO: "2026-10-25T23:59:59-04:00",
   deadlineLabel: "Sun Oct 25",
   deadlineShort: "Oct 25",
-  decisionsLabel: "Mon Oct 26",
-  decisionsShort: "Oct 26",
+  decisionsLabel: "Fri Oct 30",
+  decisionsShort: "Oct 30",
   decisionsOut: false,
 };
 

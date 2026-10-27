@@ -67,7 +67,7 @@ export function TicketCard({
 }) {
   const applied = status === "applied";
   const waitlist = status === "waitlist";
-  // "Oct 26" → "26" and "OCT", for the stub.
+  // "Oct 30" → "30" and "OCT", for the stub.
   const decisionDay = APPLY.decisionsShort.replace(/\D/g, "");
   const decisionMonth = APPLY.decisionsShort.replace(/[^A-Za-z]/g, "").toUpperCase();
   const number = applied ? decisionDay : waitlist ? padSeat(waitlistPosition, 2) : padSeat(spot);

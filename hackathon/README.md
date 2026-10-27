@@ -227,7 +227,7 @@ links point at `/hackathon/#tracks` rather than a bare `#tracks`.
 
 **Getting in is by application.** Anyone can apply until `APPLY.deadlineISO`
 in `src/lib/event.js` (Sun Oct 25, 11:59 PM ET); the organizers pick 100 and
-email every applicant on decision day (Mon Oct 26). The event is completely
+email every applicant on decision day (Fri Oct 30). The event is completely
 free: no fee to apply and none to attend (the old $5 fee was dropped). The dates are written
 once, in `APPLY`, and every page reads them from there.
 
