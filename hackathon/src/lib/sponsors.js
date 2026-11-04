@@ -2,18 +2,14 @@
  * Sponsors, in two tiers: the Sponsors section under the hero
  * (src/components/Sponsors.jsx), and Backed by on the sponsor page.
  *
- * Only confirmed sponsors are listed. Elisity and FuzionX are pending
- * approval, so neither is on the page: Elisity's logo stays in public/logos/
- * for the day it is approved, and its entry is the commented-out line in
- * With support from.
+ * Only confirmed sponsors are listed.
  *
  * The split is by what each sponsor gives, against the one-pager's tiers in
  * src/lib/sponsorship.js. Backed by is Platinum and up ($3,650 or more, in
- * cash or credits): Anthropic, Tavily, Exa, CodeCrafters, Within3 and Team
- * IMPACT, plus JC&A and Bravado, placed there by the organizers. With support
- * from is everyone else, largest first, then the sponsors giving credits,
- * merch or links with no figure on them, then TechCXO. Amounts are never
- * printed.
+ * cash or credits), plus Bravado, placed there by the organizers. With support
+ * from is everyone else. Each tier runs largest first, in the order of the
+ * organizers' sponsor sheet, cash and credits counted alike, and the sponsors
+ * with no figure on them come last. Amounts are never printed.
  *
  * Team IMPACT and JC&A sponsor together, so they share one card: an entry
  * with `members`, each a sponsor of its own with a `share` on its logo, the
@@ -46,7 +42,9 @@
  * pure white; the sponsor list had it as "thin3". JC&A's, TechCXO's and
  * Bravado's are the supplied artwork on black, taken to white on alpha from
  * how bright each pixel is and trimmed to the mark, so the panel centres the
- * mark itself and not a margin around it.
+ * mark itself and not a margin around it. FuzionX's is its supplied lockup
+ * filled white, its green chevron with the rest, and Elisity's is its
+ * wordmark, also white.
  */
 export const SPONSOR_TIERS = [
   {
@@ -54,12 +52,6 @@ export const SPONSOR_TIERS = [
     label: "BACKED BY",
     role: "SPONSOR",
     sponsors: [
-      {
-        name: "Anthropic",
-        logo: { src: "logos/anthropic.svg", height: 20 },
-        about: "AI safety and research company, maker of Claude",
-        url: "https://www.anthropic.com/",
-      },
       {
         name: "Tavily",
         logo: { src: "logos/tavily.png", height: 32 },
@@ -82,6 +74,12 @@ export const SPONSOR_TIERS = [
         url: "https://codecrafters.io/",
       },
       {
+        name: "Anthropic",
+        logo: { src: "logos/anthropic.svg", height: 20 },
+        about: "AI safety and research company, maker of Claude",
+        url: "https://www.anthropic.com/",
+      },
+      {
         name: "Within3",
         logo: { src: "logos/within3.png", height: 28 },
         about: "Always-on launch intelligence platform for life sciences",
@@ -102,6 +100,12 @@ export const SPONSOR_TIERS = [
             url: "https://jcalnan.com/",
           },
         ],
+      },
+      {
+        name: "FuzionX",
+        logo: { src: "logos/fuzionx.png", height: 20 },
+        about: "Boston venture firm co-building AI-native software companies",
+        url: "https://www.fuzionx.com/",
       },
       {
         name: "Bravado",
@@ -129,16 +133,22 @@ export const SPONSOR_TIERS = [
         url: "https://www.northeasternsga.com/",
       },
       {
-        name: "SSOJet",
-        logo: { src: "logos/ssojet.svg", height: 28 },
-        about: "Add enterprise SSO to B2B SaaS, with 100+ identity providers",
-        url: "https://ssojet.com/",
-      },
-      {
         name: "Kaleidoscope",
         logo: { src: "logos/kaleidoscope.png", height: 28 },
         about: "Khoury College's official clubs council, run by students",
         url: "https://www.khoury.northeastern.edu/undergraduate-clubs-and-organizations/kaleidoscope/",
+      },
+      {
+        name: "Elisity",
+        logo: { src: "logos/elisity.png", height: 26 },
+        about: "Identity-based microsegmentation for enterprise networks",
+        url: "https://www.elisity.com/",
+      },
+      {
+        name: "SSOJet",
+        logo: { src: "logos/ssojet.svg", height: 28 },
+        about: "Add enterprise SSO to B2B SaaS, with 100+ identity providers",
+        url: "https://ssojet.com/",
       },
       {
         name: "Adobe",
@@ -158,8 +168,6 @@ export const SPONSOR_TIERS = [
         about: "Fractional executives for growing companies",
         url: "https://www.techcxo.com/",
       },
-      // Pending approval:
-      // { name: "Elisity", logo: { src: "logos/elisity.png", height: 26 }, about: null, url: "https://www.elisity.com/" },
     ],
   },
 ];
