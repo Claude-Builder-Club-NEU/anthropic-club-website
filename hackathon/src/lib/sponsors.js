@@ -10,10 +10,14 @@
  * The split is by what each sponsor gives, against the one-pager's tiers in
  * src/lib/sponsorship.js. Backed by is Platinum and up ($3,650 or more, in
  * cash or credits): Anthropic, Tavily, Exa, CodeCrafters, Within3 and Team
- * IMPACT, plus Gradium, whose 100k credits have no dollar figure yet but are
- * expected to clear the line. With support from is everyone else, largest
- * first, then the sponsors giving credits, merch or links with no figure on
- * them. Amounts are never printed.
+ * IMPACT, plus JC&A and Bravado, placed there by the organizers. With support
+ * from is everyone else, largest first, then the sponsors giving credits,
+ * merch or links with no figure on them, then TechCXO. Amounts are never
+ * printed.
+ *
+ * Team IMPACT and JC&A sponsor together, so they share one card: an entry
+ * with `members`, each a sponsor of its own with a `share` on its logo, the
+ * percent of the panel's width it takes. They still count as two.
  *
  * A sponsor is { name, logo, about, url }, and may add `role`. `logo` is
  * { src, height } or null; with null, the panel sets the name in the display
@@ -32,17 +36,17 @@
  * CodeCrafters' is its own white stacked lockup. Exa's is the wordmark from
  * exa.ai's header, filled white. Team IMPACT's is the teamimpact.org badge,
  * its navy and red made white and its lettering, stripes and handshake
- * knocked out. Gradium's and SSOJet's are their header SVGs, filled white.
+ * knocked out. SSOJet's is its header SVG, filled white.
  * Misneach's is the white lockup from misneach.ai. Northeastern SGA's is the
  * association's seal, cut from the lockup on its site, without the "SGA"
  * letters beside it. Kaleidoscope is Khoury College's club council, not the
  * scholarship company: its mark is the aperture from its Notion guide.
  * Adobe's lockup is from Wikimedia Commons, and Partiful's "p" from its site.
  * Within3's is the white wordmark from its own site header, flattened to
- * pure white; the sponsor list had it as "thin3".
- *
- * PLACEHOLDER: Orxion and Bravado have no logo, no site and no line yet, and
- * none could be found, so their cards are the name alone.
+ * pure white; the sponsor list had it as "thin3". JC&A's, TechCXO's and
+ * Bravado's are the supplied artwork on black, taken to white on alpha from
+ * how bright each pixel is and trimmed to the mark, so the panel centres the
+ * mark itself and not a margin around it.
  */
 export const SPONSOR_TIERS = [
   {
@@ -84,16 +88,26 @@ export const SPONSOR_TIERS = [
         url: "https://within3.com/",
       },
       {
-        name: "Team IMPACT",
-        logo: { src: "logos/team-impact.png", height: 52 },
-        about: "Nonprofit pairing kids facing serious illness with college teams",
-        url: "https://www.teamimpact.org/",
+        name: "Team IMPACT + JC&A",
+        about: "Nonprofit and Northeast construction manager, sponsoring together",
+        members: [
+          {
+            name: "Team IMPACT",
+            logo: { src: "logos/team-impact.png", height: 52, share: 30 },
+            url: "https://www.teamimpact.org/",
+          },
+          {
+            name: "JC&A",
+            logo: { src: "logos/jca.png", height: 44, share: 63 },
+            url: "https://jcalnan.com/",
+          },
+        ],
       },
       {
-        name: "Gradium",
-        logo: { src: "logos/gradium.svg", height: 20 },
-        about: "Low-latency voice AI APIs: text-to-speech and speech-to-text",
-        url: "https://gradium.ai/",
+        name: "Bravado",
+        logo: { src: "logos/bravado.png", height: 52 },
+        about: "Infrastructure for prediction markets: data and trading in one API",
+        url: "https://www.bravadotrade.com/",
       },
     ],
   },
@@ -114,8 +128,6 @@ export const SPONSOR_TIERS = [
         about: "Student Government Association, the voice of NU undergraduates",
         url: "https://www.northeasternsga.com/",
       },
-      { name: "Orxion", logo: null, about: null, url: null },
-      { name: "Bravado", logo: null, about: null, url: null },
       {
         name: "SSOJet",
         logo: { src: "logos/ssojet.svg", height: 28 },
@@ -140,11 +152,20 @@ export const SPONSOR_TIERS = [
         about: "Free event pages with invites, RSVP tracking and text blasts",
         url: "https://partiful.com/",
       },
+      {
+        name: "TechCXO",
+        logo: { src: "logos/techcxo.png", height: 32 },
+        about: "Fractional executives for growing companies",
+        url: "https://www.techcxo.com/",
+      },
       // Pending approval:
       // { name: "Elisity", logo: { src: "logos/elisity.png", height: 26 }, about: null, url: "https://www.elisity.com/" },
     ],
   },
 ];
 
+/** A tier's sponsors one by one, a shared card opened into its members. */
+export const eachSponsor = (tier) => tier.sponsors.flatMap((sponsor) => sponsor.members ?? [sponsor]);
+
 /** Every confirmed sponsor, both tiers, for counts and credits. */
-export const SPONSORS = SPONSOR_TIERS.flatMap((tier) => tier.sponsors);
+export const SPONSORS = SPONSOR_TIERS.flatMap(eachSponsor);

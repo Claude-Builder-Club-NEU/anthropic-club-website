@@ -118,7 +118,11 @@ export const ORGANIZERS = [
  * its LinkedIn page, a 200px original, so it is the softest mark in the row.
  * The globe has the club's initials across it, but at 44px they are about
  * 10px tall, so ISIB keeps its caption rather than counting as a wordmark.
- * NUIB has no logo and no link yet: its cell is the name and the tag.
+ *
+ * EX's and HAN's marks are the supplied artwork on black, taken to white on
+ * alpha from how bright each pixel is, so EX's red brackets and HAN's gold
+ * wing go white with the rest, and trimmed to the mark. Neither has a `url`
+ * or `about` yet.
  */
 const TAGS = {
   neu: "NEU PARTNER",
@@ -198,6 +202,23 @@ export const BACKERS = [
     logo: { src: "logos/math-club.png", alt: "NEU Math Club" },
   },
   {
+    name: "EX",
+    short: "EX",
+    tag: TAGS.neu,
+    about: null,
+    url: null,
+    logo: { src: "logos/ex.png", alt: "EX" },
+    wordmark: true,
+  },
+  {
+    name: "HAN",
+    short: "HAN",
+    tag: TAGS.neu,
+    about: null,
+    url: null,
+    logo: { src: "logos/han.png", alt: "HAN" },
+  },
+  {
     name: "BU Disrupters",
     short: "BU DISRUPTERS",
     tag: TAGS.external,
@@ -234,14 +255,6 @@ export const BACKERS = [
     url: "https://www.oasisneu.com/",
     logo: { src: "logos/oasis.png", alt: "Oasis" },
     wordmark: true,
-  },
-  {
-    name: "NUIB",
-    short: "NUIB",
-    tag: TAGS.social,
-    about: null,
-    url: null,
-    logo: null,
   },
   {
     name: "ISIB",

@@ -44,9 +44,13 @@ export function Sponsors() {
               </ul>
             ) : (
               <ul className="hk-members">
-                {tier.sponsors.map((sponsor) => (
-                  <Sponsor key={sponsor.name} sponsor={sponsor} role={sponsor.role ?? tier.role} />
-                ))}
+                {tier.sponsors.map((sponsor) =>
+                  sponsor.members ? (
+                    <SharedSponsor key={sponsor.name} sponsor={sponsor} role={sponsor.role ?? tier.role} />
+                  ) : (
+                    <Sponsor key={sponsor.name} sponsor={sponsor} role={sponsor.role ?? tier.role} />
+                  ),
+                )}
               </ul>
             )}
           </div>
@@ -92,6 +96,38 @@ function Supporter({ sponsor }) {
       ) : (
         <div className="hk-supporter__box">{body}</div>
       )}
+    </li>
+  );
+}
+
+/**
+ * Two sponsors giving together: one Backed by box, both logos side by side in
+ * its panel, each linking to its own site, and both names in the band.
+ */
+function SharedSponsor({ sponsor, role }) {
+  const { name, about, members } = sponsor;
+  return (
+    <li className="hk-member">
+      <div className="hk-member__media hk-member__media--banded">
+        <span className="hk-member__panel hk-member__panel--shared">
+          {members.map((member) => (
+            <a
+              key={member.name}
+              className="hk-member__shared"
+              style={{ "--share": `${member.logo.share}%` }}
+              href={member.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={member.name}
+            >
+              <img className="hk-member__shared-logo" src={withBase(member.logo.src)} alt="" loading="lazy" />
+            </a>
+          ))}
+        </span>
+        <h4 className="hk-member__band">{name}</h4>
+      </div>
+      <p className="hk-member__role">{role}</p>
+      {about ? <p className="hk-member__detail">{about}</p> : null}
     </li>
   );
 }

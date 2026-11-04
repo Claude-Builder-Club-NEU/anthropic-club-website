@@ -2,7 +2,7 @@ import { BracketButton } from "../components/BracketButton";
 import { withBase } from "../lib/base";
 import { EVENT } from "../lib/event";
 import { ORGANIZERS } from "../lib/organizers";
-import { SPONSOR_TIERS } from "../lib/sponsors";
+import { SPONSOR_TIERS, eachSponsor } from "../lib/sponsors";
 import { TRACKS } from "../lib/tracks";
 import { HACK_WINDOW } from "../lib/schedule";
 import {
@@ -28,7 +28,7 @@ import {
  * nothing depends on measuring the window.
  */
 
-const BACKERS = SPONSOR_TIERS[0].sponsors;
+const BACKERS = eachSponsor(SPONSOR_TIERS[0]);
 
 export function Sponsor() {
   return (

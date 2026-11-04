@@ -24,9 +24,8 @@ export const EVENT = {
   dateLong: "Sat Nov 7 – Sun Nov 8, 2026",
 
   /**
-   * PLACEHOLDER until the backup room bookings are confirmed. Doors Sat Nov 7,
-   * 2026 at 9:00 AM ET; hacking from noon Saturday to 1:00 PM Sunday; judging
-   * and pitching after, done by 5:00 PM.
+   * Doors Sat Nov 7, 2026 at 9:00 AM ET; hacking from 11:00 AM Saturday to
+   * 11:00 AM Sunday; judging, keynotes and closing after, done by 4:00 PM.
    *
    * These drive the .ics file (scripts/build-ics.mjs). -05:00 is Eastern
    * Standard Time: US DST ends Nov 1 2026, so November 7 is EST, not EDT.
@@ -36,8 +35,8 @@ export const EVENT = {
    */
   doorsISO: "2026-11-07T09:00:00-05:00",
   doorsLabel: "Sat Nov 7 at [9:00 AM] ET",
-  hackingStartISO: "2026-11-07T12:00:00-05:00",
-  hackingEndISO: "2026-11-08T13:00:00-05:00",
+  hackingStartISO: "2026-11-07T11:00:00-05:00",
+  hackingEndISO: "2026-11-08T11:00:00-05:00",
 };
 
 /**
@@ -128,6 +127,7 @@ export const NAV = [
   { href: "#tracks", label: "TRACKS" },
   { href: "#apply", label: "APPLY" },
   { href: "#schedule", label: "SCHEDULE" },
+  { href: "#workshops", label: "WORKSHOPS" },
   { href: "#team", label: "TEAM" },
   { href: "#details", label: "DETAILS" },
 ];

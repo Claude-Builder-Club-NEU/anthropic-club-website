@@ -4,6 +4,7 @@ import { Sponsors } from "../components/Sponsors";
 import { Tracks } from "../components/Tracks";
 import { Apply } from "../components/Apply";
 import { Schedule } from "../components/Schedule";
+import { Workshops } from "../components/Workshops";
 import { Details } from "../components/Details";
 import { Organizers } from "../components/Organizers";
 
@@ -14,8 +15,8 @@ import { Organizers } from "../components/Organizers";
  * have them: what it is (Hero), where to follow it (FindUs), who is behind
  * it, the sponsors tier by tier (Sponsors), the page's most important
  * section and the first thing a sponsor looks for; what you would build and
- * win (Tracks), how to get in (Apply), how the weekend runs (Schedule); who
- * is running it, the organizing clubs, the partner clubs and then the team
+ * win (Tracks), how to get in (Apply), how the weekend runs (Schedule), what
+ * anyone can come to without applying (Workshops); who is running it, the organizing clubs, the partner clubs and then the team
  * (Organizers); and what to bring (Details).
  *
  * Apply sits immediately after Tracks because the tracks are where someone
@@ -33,6 +34,7 @@ export function Home() {
       <Tracks />
       <Apply />
       <Schedule />
+      <Workshops />
       <Organizers />
       <Details />
     </main>

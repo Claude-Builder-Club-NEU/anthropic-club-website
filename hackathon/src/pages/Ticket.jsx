@@ -305,7 +305,7 @@ function Issued({ ticket }) {
   const steps = [
     {
       head: `Come to ${EVENT.venue}.`,
-      text: `Check-in opens ${checkInTime()}, with breakfast. Come before the opening ceremony; hacking starts at noon.`,
+      text: `Check-in opens ${checkInTime()}. Come before the opening ceremony; hacking begins at 11:00 AM.`,
     },
     {
       head: "Give the desk your seat number.",

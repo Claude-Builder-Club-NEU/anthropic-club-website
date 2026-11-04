@@ -14,7 +14,7 @@ import { capitalize, inWords } from "../lib/words";
  * line. Square-cornered here, where the club site rounds them.
  *
  * The partner clubs are their logos: one small square panel each, the
- * organizing clubs' panel in miniature, in a centred run seven to a row, with
+ * organizing clubs' panel in miniature, in a centred run eight to a row, with
  * the club's name in a red band across the panel's foot, the Details chips'
  * recipe the full width of the box. Every band's type is one size, the
  * largest at which the longest name still fits a box (see .hk-logos__name).

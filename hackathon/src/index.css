@@ -428,6 +428,13 @@ main [id] {
   gap: 32px;
 }
 
+/* Seven links stop clearing the wordmark at a 32px gap below this width. */
+@media (max-width: 1280px) {
+  .hk-nav {
+    gap: 18px;
+  }
+}
+
 .hk-nav a,
 .hk-header__link {
   display: flex;
@@ -1008,10 +1015,10 @@ a.hk-supporter__box:hover .hk-supporter__logo {
    Partner clubs: their logos only.
 
    One small square panel each, the organizing clubs' panel in miniature,
-   seven to a row, centred. See Organizers.jsx.
+   eight to a row, centred. See Organizers.jsx.
    -------------------------------------------------------------------------- */
 
-/* The page's column edge to edge, seven to a row, five below 1100px. */
+/* The page's column edge to edge, eight to a row, five below 1100px. */
 .hk-logos {
   display: flex;
   flex-wrap: wrap;
@@ -1025,7 +1032,7 @@ a.hk-supporter__box:hover .hk-supporter__logo {
 
 .hk-logos__item {
   display: flex;
-  width: calc((100% - 6 * 16px) / 7);
+  width: calc((100% - 7 * 16px) / 8);
 }
 
 @media (max-width: 1099px) {
@@ -1056,6 +1063,8 @@ a.hk-logos__card:focus-visible {
   align-items: center;
   justify-content: center;
   width: 100%;
+  /* Without this a tall, narrow logo's natural height stretches the square. */
+  min-height: 0;
   aspect-ratio: 1 / 1;
   background:
     radial-gradient(circle at 50% 118%, rgba(255, 59, 47, 0.16), transparent 62%),
@@ -1269,6 +1278,31 @@ a.hk-logos__card:hover .hk-logos__img {
 
 .hk-member__media--banded:hover .hk-member__logo,
 .hk-member__media--banded:focus-visible .hk-member__logo {
+  transform: scale(1.06);
+}
+
+/* Two sponsors in one panel: each logo takes its `share` of the width, in a
+   centred pair with the gap between them. */
+.hk-member__panel--shared {
+  gap: 7%;
+  padding: 0 10%;
+}
+
+.hk-member__shared {
+  display: block;
+  flex: 0 1 var(--share, 45%);
+  min-width: 0;
+}
+
+.hk-member__shared-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 300ms ease;
+}
+
+.hk-member__shared:hover .hk-member__shared-logo,
+.hk-member__shared:focus-visible .hk-member__shared-logo {
   transform: scale(1.06);
 }
 
@@ -2277,7 +2311,9 @@ a.hk-logos__card:hover .hk-logos__img {
   top: 0;
   bottom: 0;
   left: var(--x);
-  width: 76px;
+  /* Narrow, or a marker's box would cover the one before it: 10:30 is 20px
+     from 11:00. The stamp hangs outside the box and is clickable too. */
+  width: 18px;
   transform: translateX(-50%);
   padding: 0;
   border: 0;
@@ -2319,6 +2355,15 @@ a.hk-logos__card:hover .hk-logos__img {
   letter-spacing: 0.06em;
   white-space: nowrap;
   transition: color 120ms linear;
+}
+
+/* On the narrowest horizontal rail, 10:30 and 12:00 share a side an hour and
+   a half apart, which is less than a stamp at the full size. */
+@media (min-width: 901px) and (max-width: 1100px) {
+  .hk-time__stamp {
+    font-size: 10px;
+    letter-spacing: 0.02em;
+  }
 }
 
 /* The day, on its own line. Dimmer than the time it introduces. */
@@ -2418,13 +2463,25 @@ a.hk-logos__card:hover .hk-logos__img {
   font-weight: 600;
   letter-spacing: 0.06em;
   color: #000000;
-  /* The chip reads "FRI · 18:00" and the spacing around the dot is part of
-     the type, so it must not be collapsed. */
+  /* The chip reads "SAT 09:00–10:00", and must stay on one line. */
   white-space: pre;
 }
 
+.hk-time__what {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Where it happens, under the title. */
+.hk-time__place {
+  margin: 4px 0 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--ink);
+}
+
 .hk-time__title {
-  flex-grow: 1;
   margin: 0;
   font-family: var(--font-display);
   font-size: 30px;
@@ -2480,6 +2537,202 @@ a.hk-logos__card:hover .hk-logos__img {
   justify-content: center;
   width: 48px;
   border-left: 1px dashed var(--ink-faint);
+}
+
+/* The RSVP on a workshop's row: the same button, a size down. */
+.hk-cal--small {
+  height: 36px;
+  font-size: 12px;
+}
+
+.hk-cal--small .hk-cal__label {
+  padding: 0 12px;
+}
+
+.hk-cal--small .hk-cal__arrow {
+  width: 34px;
+}
+
+/* An hour on the timeline with sessions in it: the panel's row, then its
+   sessions the full width under it. */
+.hk-time__panel--sessions {
+  flex-wrap: wrap;
+  padding: 24px 28px;
+}
+
+/* Last on a phone too, where the panel's parts are given an order. */
+.hk-time__sessions {
+  order: 4;
+  flex-basis: 100%;
+  min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Workshops: the hours down the left, each hour's sessions in the roster's
+   dashed boxes. See Workshops.jsx.
+   -------------------------------------------------------------------------- */
+
+.hk-ws {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hk-ws__slot {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.hk-ws__time {
+  margin: 0;
+  padding: 6px 10px;
+  background: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: center;
+  color: #000000;
+}
+
+.hk-ws__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The room, format and RSVP columns are fixed so they line up down the list;
+   the RSVP's is held even in a row without one. */
+.hk-ws__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 92px 148px 92px;
+  grid-template-areas: "what room format action";
+  align-items: center;
+  gap: 20px;
+  min-height: 76px;
+  padding: 14px 20px;
+  border: 1px dashed var(--dash);
+  transition: background-color 160ms linear, border-color 160ms linear;
+}
+
+.hk-ws__row:hover {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+.hk-ws__what {
+  grid-area: what;
+  min-width: 0;
+}
+
+.hk-ws__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 26px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.hk-ws__host {
+  margin: 2px 0 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-body);
+}
+
+.hk-ws__room {
+  grid-area: room;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-body);
+}
+
+.hk-ws__format {
+  grid-area: format;
+  padding: 5px 8px;
+  background: var(--red-900);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--red-chip-text);
+}
+
+.hk-ws__action {
+  grid-area: action;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Below 900px the columns would squeeze the title: the title over a line of
+   room and format, with the RSVP at the end of that line, or on a line of its
+   own where the row is too narrow for all three. */
+@media (max-width: 900px) {
+  .hk-ws {
+    gap: 22px;
+  }
+
+  .hk-ws__slot {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .hk-ws__time {
+    justify-self: start;
+    padding: 4px 10px;
+    font-size: 13px;
+  }
+
+  .hk-ws__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 12px;
+    min-height: 0;
+    padding: 14px;
+  }
+
+  .hk-ws__what {
+    flex: 1 1 100%;
+  }
+
+  .hk-ws__action {
+    margin-left: auto;
+  }
+
+  .hk-ws__title {
+    font-size: 18px;
+    line-height: 23px;
+  }
+
+  .hk-ws__format {
+    padding: 4px 6px;
+    font-size: 10.5px;
+    line-height: 14px;
+  }
+
+  .hk-ws__room {
+    font-size: 11px;
+    white-space: nowrap;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2922,9 +3175,12 @@ a.hk-logos__card:hover .hk-logos__img {
     order: 1;
   }
 
-  .hk-time__title {
+  .hk-time__what {
     order: 2;
     flex: 1 1 100%;
+  }
+
+  .hk-time__title {
     font-size: 24px;
     line-height: 30px;
   }

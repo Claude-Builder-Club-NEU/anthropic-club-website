@@ -1,5 +1,6 @@
 import { useId, useRef, useState } from "react";
 import { SectionHeading } from "./SectionHeading";
+import { WorkshopRow } from "./Workshops";
 import {
   HACK_WINDOW,
   SCHEDULE,
@@ -13,8 +14,8 @@ import { withBase } from "../lib/base";
  * 3.6 Schedule, as an interactive timeline.
  *
  * IT IS TO SCALE. Every marker sits at its real position between check-in on
- * Saturday morning and prizes on Sunday afternoon, so the three hours before
- * hacking starts and the long night look like what they are. A list of nine rows
+ * Saturday morning and the closing ceremony on Sunday afternoon, so the two
+ * hours before hacking begins and the long night look like what they are. A list of nine rows
  * told you the order; this tells you the shape of the weekend, which is the
  * thing someone deciding whether to come is actually asking about.
  *
@@ -35,7 +36,7 @@ import { withBase } from "../lib/base";
  * collide at the ends, where the events bunch up.
  */
 
-/** Open on "Hacking starts". Computed from the data, not a literal, so the
+/** Open on "Hacking begins". Computed from the data, not a literal, so the
  *  server and the client cannot disagree about it. */
 const DEFAULT_INDEX = Math.max(
   0,
@@ -158,19 +159,29 @@ export function Schedule() {
         </div>
 
         <div
-          className="hk-time__panel"
+          className={row.sessions ? "hk-time__panel hk-time__panel--sessions" : "hk-time__panel"}
           role="tabpanel"
           id={panelId}
           aria-labelledby={tabId(active)}
           tabIndex={-1}
         >
           <span className="hk-time__chip">{timeChip(row)}</span>
-          <h3 className="hk-time__title">{row.title}</h3>
+          <div className="hk-time__what">
+            <h3 className="hk-time__title">{row.title}</h3>
+            {row.place ? <p className="hk-time__place">{row.place}</p> : null}
+          </div>
           {row.highlight ? (
             <AddToCalendar />
           ) : (
             <span className="hk-time__tag">{row.tag}</span>
           )}
+          {row.sessions ? (
+            <ul className="hk-ws__rows hk-time__sessions">
+              {row.sessions.map((session) => (
+                <WorkshopRow key={session.title} session={session} />
+              ))}
+            </ul>
+          ) : null}
         </div>
       </div>
     </section>
