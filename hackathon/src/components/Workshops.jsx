@@ -12,7 +12,7 @@ export function Workshops() {
   return (
     <section id="workshops" aria-labelledby="workshops-h" className="hk-section">
       <SectionHeading id="workshops-h" chip="WORKSHOPS" title="Open to the public">
-        {capitalize(inWords(WORKSHOPS.length))} sessions on Saturday, Nov 7, from 1 to 6 PM.
+        {capitalize(inWords(WORKSHOPS.length))} sessions on Saturday, Nov 7, from 2 to 6 PM.
         Anyone can come, hacker or not. RSVP for the ones you want on Partiful.
       </SectionHeading>
 
@@ -34,12 +34,13 @@ export function Workshops() {
 
 /** One session: the title and its host, the room, the format, the RSVP. */
 export function WorkshopRow({ session }) {
-  const { title, host, room, format, rsvp } = session;
+  const { title, host, about, room, format, rsvp } = session;
   return (
     <li className="hk-ws__row">
       <div className="hk-ws__what">
         <h4 className="hk-ws__title">{title}</h4>
         {host ? <p className="hk-ws__host">{host}</p> : null}
+        {about ? <p className="hk-ws__about">{about}</p> : null}
       </div>
       <span className="hk-ws__room">{room}</span>
       <span className="hk-ws__format">{format}</span>

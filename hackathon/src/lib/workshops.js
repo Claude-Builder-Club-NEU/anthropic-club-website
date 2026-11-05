@@ -10,11 +10,12 @@
  * `rsvp` is null where the sheet has no link, and the row then has no button.
  *
  * Intro to Options and Mathematics hides its address until you RSVP, so its
- * room is still the sheet's. Healthtech's Partiful says 1:30 PM, and the
- * sheet's time is printed here until the two are reconciled. Partiful has
+ * room is still the sheet's. AI in Clinical and Admin Settings is at 2 PM from
+ * the organizers, though its Partiful still says 1:30 PM. Partiful has
  * GTFOL and the VC Panel in room 344 at the same hour.
  *
- * A session is { time, title, host, room, format, rsvp }. `time` is 24-hour,
+ * A session is { time, title, host, room, format, rsvp }, and may add `about`,
+ * a few sentences under the host. `time` is 24-hour,
  * as the schedule's rows are, and every session is on Saturday.
  */
 const FORMATS = { workshop: "WORKSHOP", fireside: "FIRESIDE CHAT", panel: "PANEL" };
@@ -23,9 +24,11 @@ const partiful = (id) => `https://partiful.com/e/${id}`;
 
 export const WORKSHOPS = [
   {
-    time: "13:00",
-    title: "Healthtech",
-    host: null,
+    time: "14:00",
+    title: "AI in Clinical and Admin Settings",
+    host: "Abhinav Shrivastava, Founding Engineer at Ambra",
+    about:
+      "Abhinav Shrivastava, Founding Engineer at Ambra, will guide us all through how AI can solve one of the biggest problems for Americans: Healthcare. He will share some of his work building clinical AI systems for Ambra AI.",
     room: "Virtual",
     format: FORMATS.workshop,
     rsvp: partiful("3GTZttKQBMUOkN2NU5nA"),
@@ -45,6 +48,16 @@ export const WORKSHOPS = [
     room: "Curry 346",
     format: FORMATS.workshop,
     rsvp: partiful("ToaofvVUOn2G8YDkXxaX"),
+  },
+  {
+    time: "15:00",
+    title: "Physical AI in Medical Devices - Laza Medical",
+    host: "Puja Chaudhary",
+    about:
+      "Puja Chaudhary, a Robotics Software Engineer at Laza Medical, will take us through how AI is changing the physical world, and how she is building it.",
+    room: "Virtual",
+    format: FORMATS.workshop,
+    rsvp: partiful("AxR7V1GkOTx8srPcz3TB"),
   },
   {
     time: "15:00",

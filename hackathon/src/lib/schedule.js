@@ -25,8 +25,7 @@ import { capitalize, inWords } from "./words.js";
  *
  * The workshops are a marker for each hour, and a row carries its `sessions`
  * for the panel to list, straight from src/lib/workshops.js, so the timeline
- * and the Workshops section cannot disagree. The 1 PM virtual session shares
- * its hour with the fair, so it is listed on the fair's row.
+ * and the Workshops section cannot disagree.
  */
 const HQ = "300 Mass Ave";
 const AMPHITHEATRE = "Raytheon Amphitheatre";
@@ -62,7 +61,6 @@ export const SCHEDULE = [
     end: "14:00",
     title: "Sponsorship and club fair",
     tag: "FAIR",
-    sessions: sessionsAt("13:00"),
   },
   workshopHour("14:00", "15:00"),
   workshopHour("15:00", "16:00"),

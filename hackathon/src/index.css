@@ -2583,6 +2583,16 @@ a.hk-logos__card:hover .hk-logos__img {
   color: var(--ink-body);
 }
 
+/* A few sentences on the session, a step quieter than its host. */
+.hk-ws__about {
+  margin: 6px 0 0;
+  max-width: 62ch;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ink-faint);
+}
+
 .hk-ws__room {
   grid-area: room;
   font-family: var(--font-mono);
