@@ -4,6 +4,7 @@ import { Home } from "./pages/Home";
 import { Sponsor } from "./pages/Sponsor";
 import { Signup } from "./pages/Signup";
 import { Ticket } from "./pages/Ticket";
+import { Team } from "./pages/Team";
 
 /**
  * The shell every page shares: the header, one page's <main>, the footer.
@@ -20,7 +21,7 @@ import { Ticket } from "./pages/Ticket";
  * The header and footer sit outside <main>, which is what those elements are
  * for and what "skip to main content" expects.
  */
-const PAGES = { home: Home, sponsor: Sponsor, signup: Signup, ticket: Ticket };
+const PAGES = { home: Home, sponsor: Sponsor, signup: Signup, ticket: Ticket, team: Team };
 
 export default function App({ page = "home" }) {
   const Page = PAGES[page] || Home;

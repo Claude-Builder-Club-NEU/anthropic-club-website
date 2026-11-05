@@ -11,8 +11,9 @@ export const SITE_PATH = "/hackathon/";
 
 /**
  * The link preview (iMessage, Slack, LinkedIn, Discord) and the tab icon.
- * All four are drawn by scripts/build-icons.mjs from the hero's block mark,
- * and committed in public/. og:image has to be an ABSOLUTE url: the apps that
+ * All four are drawn by scripts/build-icons.mjs, the preview from the hero's
+ * block mark and the tab icon as a pixelated eyeball, and committed in
+ * public/. og:image has to be an ABSOLUTE url: the apps that
  * fetch it do not resolve a relative one against the page.
  */
 const IMAGE = `${SITE_ORIGIN}${SITE_PATH}og.png`;
@@ -35,6 +36,10 @@ const META = {
   signup: {
     title: `Apply — ${EVENT.name}`,
     description: `Apply for one of ${APPLY.spots} spots at ${EVENT.name}, ${EVENT.dateLong}, ${EVENT.venue}. Applications close ${APPLY.deadlineLabel}; decisions ${APPLY.decisionsLabel}. Completely free, no fee to apply or attend.`,
+  },
+  team: {
+    title: `The team — ${EVENT.name}`,
+    description: `Why ${EVENT.name} exists, and the people running it: what each of them did for the event and where they come from.`,
   },
   ticket: {
     title: `Your application — ${EVENT.name}`,

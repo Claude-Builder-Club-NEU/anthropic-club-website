@@ -1,12 +1,14 @@
 /**
- * Three ways to win.
+ * The ways to win.
  *
- * The sponsor one-pager replaced four themed tracks with these three: a main
+ * The sponsor one-pager replaced four themed tracks with three: a main
  * track on privacy by design, one prize for the most startup-able idea, and
  * Surge, the sponsor track Tavily and Exa run together, with three places.
  * Surge was two sponsor tracks, one per search API, until the two were folded
  * into one. The sponsor page renders the short form of the same list
- * (`pitch`), so the two pages cannot describe different contests.
+ * (`pitch`), so the two pages cannot describe different contests. Within3's
+ * Signal-to-Dose came after them, a fourth; `wide` sets it full width under
+ * the other two, since one panel alone in a two-column row leaves a hole.
  *
  * `art` is the key into src/lib/ascii.js. `kind` is the left-hand tag on the
  * panel, the same label the one-pager puts over each title. `index` renders as
@@ -20,7 +22,7 @@
  * the "01 / 0N" counters all follow.
  *
  * `sponsors` is the list of logos under SPONSORED BY: empty for a track no
- * sponsor runs, two for Surge.
+ * sponsor runs, Misneach for Most Startup-able, two for Surge.
  *
  * PRIZES: the main track and Surge pay three places, the same
  * three, from PLACES below: first place a cash prize and a 2-year VIP
@@ -73,7 +75,7 @@ export const TRACKS = [
     title: "Most Startup-able",
     description: "The idea most likely to become a company.",
     body:
-      "A standalone prize for the most fundable idea in the room: a real problem, someone who would pay to have it solved, and a reason you are the team to solve it. The prize is meant to come from one of the venture funds sponsoring the weekend; details to come.",
+      "A standalone prize for the most fundable idea in the room: a real problem, someone who would pay to have it solved, and a reason you are the team to solve it. The prize comes from Misneach, one of the weekend's sponsors.",
     pitch: "The idea most likely to become a company.",
     facts: [
       {
@@ -87,7 +89,7 @@ export const TRACKS = [
       // One award, not three places: a cash award, its amount not set yet.
       { key: "PRIZE", places: [{ lead: "$$$ cash award" }] },
     ],
-    sponsors: [],
+    sponsors: [{ name: "Misneach", logo: "logos/misneach.png" }],
   },
   {
     index: "03",
@@ -115,6 +117,31 @@ export const TRACKS = [
       { name: "Tavily", logo: "logos/tavily.png" },
       { name: "Exa", logo: "logos/exa.svg", height: 24 },
     ],
+  },
+  {
+    index: "04",
+    kind: "SPONSOR TRACK",
+    art: "room-101",
+    wide: true,
+    title: "Signal-to-Dose",
+    description:
+      "Spot the signals in a drug launch and track how the conversation moves, on a model you own.",
+    body:
+      "When a drug launches, the noise never stops: new trial data, safety updates, competitor moves, and doctors and patients weighing in. The launch team needs to know which of it matters and how sentiment is shifting. Build a pipeline that reads public data on two lung cancer drugs, Tagrisso and Rybrevant, and flags the signals worth acting on. It then tracks how doctors, patients, payers and media feel about efficacy, safety, convenience, access/cost and evidence, week over week. Every claim is cited. It runs on a 3B-parameter open model that you host, so nothing leaves the machine.",
+    pitch: "Within3's launch-intelligence track: find the signals in a drug launch on a model you host.",
+    facts: [
+      {
+        key: "BUILD",
+        value: "Insight cards (headline, signal type, why it matters, citations, confidence) and a sentiment trend report (−2 to +2 by aspect and speaker, over time, with the quotes behind each score). We provide about 2,000 unlabeled public items to show trends on, plus a starter repo, a labeled dev set and mentors.",
+      },
+      {
+        key: "JUDGED ON",
+        value: "Whether it catches the right signals and gets sentiment right on a hidden set, whether the citations support the claims, how the trends look at the demo, and a network-off run on the private transcripts. Would a launch-intelligence expert act on it?",
+      },
+      // Not set by the sponsor yet, so it says so rather than borrowing PLACES.
+      { key: "PRIZE", value: "To be announced" },
+    ],
+    sponsors: [{ name: "Within3", logo: "logos/within3.png" }],
   },
 ];
 

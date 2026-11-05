@@ -1513,6 +1513,13 @@ a.hk-logos__card:hover .hk-logos__img {
   height: 16px;
 }
 
+/* The one button under the list, to the team page. */
+.hk-roster__more {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
 /* Below 900px, where the title chip's 300px column would squeeze the name:
    the headshot down the left of two lines, the name and the LinkedIn box on
    the first, the title chip on the second. */

@@ -82,6 +82,7 @@ export const SPONSOR_TIERS = [
       {
         name: "Within3",
         logo: { src: "logos/within3.png", height: 28 },
+        role: "SIGNAL-TO-DOSE TRACK",
         about: "Always-on launch intelligence platform for life sciences",
         url: "https://within3.com/",
       },

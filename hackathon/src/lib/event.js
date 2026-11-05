@@ -88,6 +88,7 @@ export const LINKS = {
   signUp: "signup/",
   ticket: "ticket/",
   sponsor: "sponsor/",
+  team: "team/",
   calendar: "hacking-starts.ics",
 };
 

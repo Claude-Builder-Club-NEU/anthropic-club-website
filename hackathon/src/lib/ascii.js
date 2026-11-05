@@ -30,6 +30,7 @@ import telescreen from "../ascii/telescreen.html?raw";
 import sledgehammer from "../ascii/sledgehammer.html?raw";
 import room101 from "../ascii/room-101.html?raw";
 import hero from "../ascii/hero.html?raw";
+import contours from "../ascii/contours.html?raw";
 
 /**
  * The grid each image was generated on. Keep in step with COLS/ROWS and GRIDS
@@ -46,6 +47,8 @@ const GRID = {
   "room-101": [160, 18],
   // The whole hero, behind the mark, cropped to it like a cover image.
   hero: [220, 96],
+  // Behind the team page's headline, cropped the same way.
+  contours: [130, 64],
 };
 
 const ROW = '<div class="hk-ascii__row">';
@@ -73,4 +76,5 @@ export const ASCII = {
   sledgehammer: check(sledgehammer, "sledgehammer"),
   "room-101": check(room101, "room-101"),
   hero: check(hero, "hero"),
+  contours: check(contours, "contours"),
 };

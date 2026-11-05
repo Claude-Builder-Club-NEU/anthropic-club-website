@@ -4,13 +4,15 @@
  * and the Workshops section (src/components/Workshops.jsx), so they cannot
  * disagree.
  *
- * Times and rooms are the organizers' sheet. `title` is the Partiful event's
+ * Times are the organizers' sheet, and rooms are each Partiful event's, which
+ * win where the two disagree. `title` is the Partiful event's
  * name where there is one, so a visitor lands on the name they clicked.
  * `rsvp` is null where the sheet has no link, and the row then has no button.
  *
- * Three Partiful events disagree with the sheet, and the sheet is what is
- * printed here until they are reconciled: Private and Local AI says 5 PM,
- * Venture Capital says room 344, and AI Policy Simulation says room 346.
+ * Intro to Options and Mathematics hides its address until you RSVP, so its
+ * room is still the sheet's. Healthtech's Partiful says 1:30 PM, and the
+ * sheet's time is printed here until the two are reconciled. Partiful has
+ * GTFOL and Venture Capital in room 344 at the same hour.
  *
  * A session is { time, title, host, room, format, rsvp }. `time` is 24-hour,
  * as the schedule's rows are, and every session is on Saturday.
@@ -26,7 +28,7 @@ export const WORKSHOPS = [
     host: null,
     room: "Virtual",
     format: FORMATS.workshop,
-    rsvp: null,
+    rsvp: partiful("3GTZttKQBMUOkN2NU5nA"),
   },
   {
     time: "14:00",
@@ -66,7 +68,7 @@ export const WORKSHOPS = [
     host: "NUSA with Netochi",
     room: "Curry 342",
     format: FORMATS.workshop,
-    rsvp: null,
+    rsvp: partiful("3PoTvhAPTbSc3D14o0fU"),
   },
   {
     time: "16:00",
@@ -88,9 +90,9 @@ export const WORKSHOPS = [
     time: "16:00",
     title: "Private and Local AI",
     host: "Shourya, Rush Sanghrajka and EX",
-    room: "Curry 346",
+    room: "Curry 348",
     format: FORMATS.workshop,
-    rsvp: partiful("lHdGl6FMDXdkGXwS2wgN"),
+    rsvp: partiful("TDi7BNV8XYH6pxh4AwBk"),
   },
   {
     time: "17:00",
@@ -98,13 +100,13 @@ export const WORKSHOPS = [
     host: "Shourya and Disruptors Maritime YC",
     room: "Curry 344",
     format: FORMATS.workshop,
-    rsvp: null,
+    rsvp: partiful("lHdGl6FMDXdkGXwS2wgN"),
   },
   {
     time: "17:00",
     title: "Venture Capital",
     host: "Tufts Jumbo Ventures, Cybernetics and Rick Li",
-    room: "Curry 346",
+    room: "Curry 344",
     format: FORMATS.workshop,
     rsvp: partiful("njtdcB2Rgi0LbkVfw1Hi"),
   },
@@ -112,7 +114,7 @@ export const WORKSHOPS = [
     time: "17:00",
     title: "AI Policy Simulation",
     host: "NU Nexus",
-    room: "Curry 342",
+    room: "Curry 346",
     format: FORMATS.workshop,
     rsvp: partiful("2TRTzhaOlRmb3jCZKPGd"),
   },

@@ -1,11 +1,11 @@
 /**
- * Draws the favicon and the link-preview image from the hero's block mark.
+ * Draws the favicon, and the link-preview image from the hero's block mark.
  *
  *   npm run icons
  *
  * Writes, into public/ (served at /hackathon/...):
  *
- *   favicon.svg           the tab icon: the block H with a red square full stop
+ *   favicon.svg           the tab icon: a pixelated eyeball
  *   favicon-32.png        the same, for browsers that ignore SVG icons
  *   apple-touch-icon.png  180 x 180, for home screens and some previews
  *   og.png                1200 x 630, the image iMessage, Slack, LinkedIn and
@@ -46,15 +46,35 @@ const rects = (cells, fill, dx = 0, dy = 0) =>
     .join("");
 
 // ---------------------------------------------------------------------------
-// Favicon: the H of the mark, and a red square full stop after it, on black.
-// A 9 x 9 grid: one cell of margin, the 5 x 7 glyph, a gap, the stop.
+// Favicon: a pixelated eyeball on black, each character one pixel. Square
+// pixels with no gaps, and crispEdges, so the steps stay steps at any size.
 // ---------------------------------------------------------------------------
 
-const H = WORD_CELLS.filter((c) => c.x < 5);
-const favicon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9 9" width="64" height="64">
-  <rect width="9" height="9" fill="#000"/>
-  ${rects(H, "#ffffff", 1, 1)}
-  ${rects([{ x: 6, y: 6 }], RED, 1, 1)}
+const EYEBALL = [
+  "................",
+  ".....wwwwww.....",
+  "...wwwwwwwwww...",
+  "..wwwwrrrrwwwww.",
+  "..wwwrrrrrrwwws.",
+  ".wwwrrkkkkrrwws.",
+  ".wwrrkkkkkkrrws.",
+  ".wwrrkhhkkkrrws.",
+  ".wwrrkhkkkkrrws.",
+  ".wwrrkkkkkkrrws.",
+  ".wwwrrkkkkrrwws.",
+  "..wwwrrrrrrwws..",
+  "..wwwwrrrrwwss..",
+  "...wwwwwwwsss...",
+  ".....sssss......",
+  "................",
+];
+const PIXEL = { w: "#ffffff", s: "#a3a3a3", r: RED, k: "#000000", h: "#ffffff" };
+
+const favicon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="64" height="64" shape-rendering="crispEdges">
+  <rect width="16" height="16" fill="#000"/>
+  ${EYEBALL.flatMap((row, y) =>
+    [...row].map((c, x) => (PIXEL[c] ? `<rect x="${x}" y="${y}" width="1" height="1" fill="${PIXEL[c]}"/>` : "")),
+  ).join("")}
 </svg>
 `;
 writeFileSync(join(PUBLIC, "favicon.svg"), favicon);
