@@ -1,6 +1,5 @@
 import { BracketButton } from "./BracketButton";
 import { SectionHeading } from "./SectionHeading";
-import { SocialIcon } from "./SocialIcons";
 import { BACKERS, ORGANIZERS, ROLES, TEAM } from "../lib/organizers";
 import { withBase } from "../lib/base";
 import { LINKS } from "../lib/event";
@@ -8,7 +7,7 @@ import { capitalize, inWords } from "../lib/words";
 
 /**
  * Organized by, the partner organizations, and the organizing team, in that
- * order: the clubs, then the people.
+ * order: the clubs, then a way to the people.
  *
  * The clubs running the event are laid out the way claudeneu.com's executive
  * board is: no card surface, a square panel with the club's logo in it and
@@ -21,10 +20,8 @@ import { capitalize, inWords } from "../lib/words";
  * recipe the full width of the box. Every band's type is one size, the
  * largest at which the longest name still fits a box (see .hk-logos__name).
  *
- * The people are a list, one dashed box each, in the Details rows' build: a
- * small headshot, the name in the display face, the person's title in the
- * red chip, and their LinkedIn in a small grey box at the right-hand end. One
- * button under the list goes to the team page, which has the rest.
+ * The people have their own page, /hackathon/team/. Their section here is the
+ * heading and one button to it.
  *
  * An organiser is not a sponsor, and putting them in one row would say they
  * are, so the clubs running the event get their own section.
@@ -91,49 +88,12 @@ export function Organizers() {
           id="team-h"
           chip="ORGANIZING TEAM"
           title="The people running it"
+          actions={<BracketButton href={withBase(LINKS.team)}>Meet the team</BracketButton>}
         >
           {capitalize(inWords(ORGANIZING.length))} organizers, and the presidents of {inWords(PRESIDENTS.length)} partner organizations.
         </SectionHeading>
-        <ol className="hk-roster">
-          {TEAM.map((person) => (
-            <RosterRow key={person.name} person={person} />
-          ))}
-        </ol>
-        <div className="hk-roster__more">
-          <BracketButton href={withBase(LINKS.team)}>More information</BracketButton>
-        </div>
       </section>
     </>
-  );
-}
-
-/** One person: headshot, name, their title in the red chip, their LinkedIn. */
-function RosterRow({ person }) {
-  return (
-    <li className="hk-roster__row">
-      <img
-        className="hk-roster__photo"
-        src={withBase(person.photo)}
-        alt=""
-        width="56"
-        height="56"
-        loading="lazy"
-      />
-      <h3 className="hk-roster__name">{person.name}</h3>
-      <span className="hk-roster__role">{person.title}</span>
-      <span className="hk-roster__socials">
-        {person.linkedin ? (
-          <a
-            href={person.linkedin}
-            aria-label={`${person.name} on LinkedIn`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <SocialIcon name="linkedin" />
-          </a>
-        ) : null}
-      </span>
-    </li>
   );
 }
 

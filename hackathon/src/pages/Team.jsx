@@ -1,20 +1,16 @@
 import { SocialIcon } from "../components/SocialIcons";
 import { ASCII } from "../lib/ascii";
 import { withBase } from "../lib/base";
-import { ROLES, TEAM } from "../lib/organizers";
+import { TEAM } from "../lib/organizers";
 
 /**
  * /hackathon/team/: why the event exists, then who runs it.
  *
- * The home page's team list is the short form, a row per person and one
- * button under it to here. This page has the organizers, not the partner
- * presidents, with the same photos and everything about them: what they did
- * for HACK1984, and a line of background. It is built on the sponsor page's
+ * The one place the people are listed; the home page's team section is a
+ * button to here. Each has their photo, what they did for HACK1984 where that
+ * is written, and a line of background. It is built on the sponsor page's
  * hero and blocks, so the two read as the same site.
  */
-
-const ORGANIZING = TEAM.filter((person) => person.role === ROLES.organizer);
-
 export function Team() {
   return (
     <main className="hk-sp">
@@ -50,7 +46,7 @@ export function Team() {
       <section className="hk-sp__block" aria-labelledby="tm-team">
         <h2 id="tm-team" className="hk-sp__label">THE PEOPLE RUNNING IT</h2>
         <ol className="hk-tm__list">
-          {ORGANIZING.map((person) => (
+          {TEAM.map((person) => (
             <Profile key={person.name} person={person} />
           ))}
         </ol>
@@ -87,8 +83,8 @@ function Profile({ person }) {
           ) : null}
         </div>
         <p className="hk-tm__title">{person.title}</p>
-        <p className="hk-tm__focus">{person.focus}</p>
-        <p className="hk-tm__blurb">{person.blurb}</p>
+        {person.focus ? <p className="hk-tm__focus">{person.focus}</p> : null}
+        {person.blurb ? <p className="hk-tm__blurb">{person.blurb}</p> : null}
         <p className="hk-tm__background">{person.background.join(" · ")}</p>
       </div>
     </li>

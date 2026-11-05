@@ -15,13 +15,13 @@ import { Organizers } from "../components/Organizers";
  * have them: what it is (Hero), where to follow it (FindUs), who is behind
  * it, the sponsors tier by tier (Sponsors), the page's most important
  * section and the first thing a sponsor looks for; what you would build and
- * win (Tracks), how to get in (Apply), how the weekend runs (Schedule), what
- * anyone can come to without applying (Workshops); who is running it, the organizing clubs, the partner clubs and then the team
+ * win (Tracks), how the weekend runs (Schedule), what anyone can come to
+ * without applying (Workshops), how to get in (Apply); who is running it, the
+ * organizing clubs, the partner clubs and a link to the team page
  * (Organizers); and what to bring (Details).
  *
- * Apply sits immediately after Tracks because the tracks are where someone
- * decides they want in. The header's nav lists the sections in the same
- * order (NAV in src/lib/event.js).
+ * The header's nav lists the sections in the same order (NAV in
+ * src/lib/event.js).
  *
  * The header and footer are drawn by App, around whichever page this is.
  */
@@ -32,9 +32,9 @@ export function Home() {
       <FindUs />
       <Sponsors />
       <Tracks />
-      <Apply />
       <Schedule />
       <Workshops />
+      <Apply />
       <Organizers />
       <Details />
     </main>

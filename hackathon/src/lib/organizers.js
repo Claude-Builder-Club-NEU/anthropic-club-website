@@ -267,19 +267,17 @@ export const BACKERS = [
 ];
 
 /**
- * The people running the event: the "ORGANIZING TEAM" list on the home page,
- * one row each (Organizers.jsx), in the order the club gave.
+ * The people running the event: the team page (src/pages/Team.jsx), one
+ * profile each, in the order the club gave.
  *
  * `title` is each person's job on the event, as the club set them, the red
- * chip in their row. `role` only sorts them for the count in the section's
- * lede: the five organizers, and the two partner organizations' presidents.
- * `linkedin` is the one link a row carries. A row without one keeps the
- * box's column empty, so the chips still line up.
+ * chip on their profile. `role` only sorts them for the count in the home
+ * page's team section: the five organizers, and the two partner
+ * organizations' presidents. `linkedin` is the one link a profile carries.
  *
- * The rest is for the team page (src/pages/Team.jsx), which lists the
- * organizers only, so the two partner presidents have none of it. `focus` and
- * `blurb` are what the person did for HACK1984, in the team's own words.
- * `background` is the line under them, four items from their LinkedIn.
+ * `focus` and `blurb` are what the person did for HACK1984, in the team's own
+ * words, so the two partner presidents, who have none written yet, have
+ * neither. `background` is the line under them, from their LinkedIn.
  *
  * Headshots in public/team/ are square 320px crops of the supplied photos,
  * head and shoulders, in colour; the page shows them in greyscale so photos
@@ -375,6 +373,7 @@ export const TEAM = [
     title: "Partner Organization President",
     photo: "team/ruby-robicheau.jpg",
     linkedin: "https://www.linkedin.com/in/ruby-robicheau/",
+    background: ["Economics + Math, Northeastern", "Executive Director, Rev", "Partiful Campus Ambassador"],
   },
   {
     name: "Krishan Gauri",
@@ -382,5 +381,10 @@ export const TEAM = [
     title: "Partner Organization President",
     photo: "team/krishan.jpg",
     linkedin: "https://www.linkedin.com/in/krishangauri/",
+    background: [
+      "Accounting + Finance, Northeastern",
+      "President, AINU",
+      "Incoming Private Equity Tax Compliance Co-op, Blackstone",
+    ],
   },
 ];

@@ -126,9 +126,9 @@ export const SOCIAL = [
 export const NAV = [
   { href: "#sponsors", label: "SPONSORS" },
   { href: "#tracks", label: "TRACKS" },
-  { href: "#apply", label: "APPLY" },
   { href: "#schedule", label: "SCHEDULE" },
   { href: "#workshops", label: "WORKSHOPS" },
+  { href: "#apply", label: "APPLY" },
   { href: "#team", label: "TEAM" },
   { href: "#details", label: "DETAILS" },
 ];
