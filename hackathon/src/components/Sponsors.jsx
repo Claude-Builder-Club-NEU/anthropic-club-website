@@ -6,22 +6,25 @@ import { capitalize, inWords } from "../lib/words";
 /**
  * 3.3 Sponsors, the first section under the hero.
  *
- * The section heading, then the two tiers. Backed by comes straight under
- * the heading, with no label of its own; With support from is the page's
- * grey chip over its run. Backed by is laid out the way the organizing
- * clubs are (and the way claudeneu.com's executive board is): a panel with
- * the sponsor's logo in it over a red glow, the name in a red band across
- * its foot, the Details chips' recipe the full width of the box, then the
- * sponsor's part in the accent colour and one line about them, every card
- * the same size, four to a row. With support from is a step down and a
- * different build (`compact` in src/lib/sponsors.js): one short rectangle
- * each, the logo in it and the name in the same red band, nothing under it,
- * four to a row.
+ * The section heading, then the tiers, each under the page's grey chip.
+ * Platinum is laid out the way the organizing clubs are (and the way
+ * claudeneu.com's executive board is): a panel with the sponsor's logo in it
+ * over a red glow, the name in a red band across its foot, the Details chips'
+ * recipe the full width of the box, then the sponsor's part in the accent
+ * colour and one line about them, every card the same size, three to a row.
+ * The lower tiers are a step down and a different build (`compact` in
+ * src/lib/sponsors.js): one short rectangle each, the logo in it and the name
+ * in the same red band, nothing under it. Silver is three to a row, and
+ * Bronze and Supporter share one line of smaller boxes.
  *
  * The role line is the tier's (`role` in src/lib/sponsors.js) unless the
  * sponsor has one of its own, as the Surge track's two and the prize
  * sponsor do. Amounts are never printed.
  */
+const FULL_TIERS = SPONSOR_TIERS.filter((tier) => !tier.small);
+const SMALL_TIERS = SPONSOR_TIERS.filter((tier) => tier.small);
+const SMALL_COUNT = SMALL_TIERS.reduce((count, tier) => count + tier.sponsors.length, 0);
+
 export function Sponsors() {
   return (
     <section id="sponsors" aria-labelledby="sponsors-h" className="hk-section hk-sponsors">
@@ -31,39 +34,59 @@ export function Sponsors() {
       </SectionHeading>
 
       <div className="hk-tiers">
-        {SPONSOR_TIERS.map((tier) => (
-          <div className="hk-tier" key={tier.id}>
-            {/* The lead tier sits straight under the section heading; only
-                the supporting tier, a step down, carries its label. */}
-            {tier.compact ? <h3 className="hk-chip">{tier.label}</h3> : null}
-            {tier.compact ? (
-              <ul className="hk-supporters">
-                {tier.sponsors.map((sponsor) => (
-                  <Supporter key={sponsor.name} sponsor={sponsor} />
-                ))}
-              </ul>
-            ) : (
-              <ul className="hk-members">
-                {tier.sponsors.map((sponsor) =>
-                  sponsor.members ? (
-                    <SharedSponsor key={sponsor.name} sponsor={sponsor} role={sponsor.role ?? tier.role} />
-                  ) : (
-                    <Sponsor key={sponsor.name} sponsor={sponsor} role={sponsor.role ?? tier.role} />
-                  ),
-                )}
-              </ul>
-            )}
-          </div>
+        {FULL_TIERS.map((tier) => (
+          <Tier key={tier.id} tier={tier} />
         ))}
+        {/* Each small tier spans as many of the line's columns as it has
+            sponsors, so every box on the line is the same width. */}
+        <div className="hk-tiers__small" style={{ "--n": SMALL_COUNT }}>
+          {SMALL_TIERS.map((tier) => (
+            <Tier key={tier.id} tier={tier} />
+          ))}
+        </div>
       </div>
     </section>
+  );
+}
+
+/** One tier: its label over its sponsors, in the tier's build and width. */
+function Tier({ tier }) {
+  const classes = [
+    "hk-tier",
+    tier.columns === 3 && "hk-tier--three",
+    tier.small && "hk-tier--small",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <div className={classes} style={tier.small ? { "--n": tier.sponsors.length } : undefined}>
+      <h3 className="hk-chip">{tier.label}</h3>
+      {tier.compact ? (
+        <ul className="hk-supporters">
+          {tier.sponsors.map((sponsor) => (
+            <Supporter key={sponsor.name} sponsor={sponsor} />
+          ))}
+        </ul>
+      ) : (
+        <ul className="hk-members">
+          {tier.sponsors.map((sponsor) =>
+            sponsor.members ? (
+              <SharedSponsor key={sponsor.name} sponsor={sponsor} role={sponsor.role ?? tier.role} />
+            ) : (
+              <Sponsor key={sponsor.name} sponsor={sponsor} role={sponsor.role ?? tier.role} />
+            ),
+          )}
+        </ul>
+      )}
+    </div>
   );
 }
 
 /**
  * A supporting sponsor: one short rectangle, the panel's ground and glow with
  * the logo in it (or the name set as type, with no logo yet), and the name
- * in a red band across its foot, as the Backed by boxes have. Nothing under
+ * in a red band across its foot, as the Platinum boxes have. Nothing under
  * the box.
  */
 function Supporter({ sponsor }) {
@@ -101,7 +124,7 @@ function Supporter({ sponsor }) {
 }
 
 /**
- * Two sponsors giving together: one Backed by box, both logos side by side in
+ * Two sponsors giving together: one Platinum box, both logos side by side in
  * its panel, each linking to its own site, and both names in the band.
  */
 function SharedSponsor({ sponsor, role }) {
@@ -133,7 +156,7 @@ function SharedSponsor({ sponsor, role }) {
 }
 
 /**
- * A Backed by sponsor: one box, the logo in its panel (or the name set as
+ * A Platinum sponsor: one box, the logo in its panel (or the name set as
  * type, with no logo yet) and the name in a red band across the panel's
  * foot, then the sponsor's part and one line under the box.
  */

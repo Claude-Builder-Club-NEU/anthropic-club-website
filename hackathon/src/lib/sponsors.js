@@ -1,15 +1,19 @@
 /**
- * Sponsors, in two tiers: the Sponsors section under the hero
- * (src/components/Sponsors.jsx), and Backed by on the sponsor page.
+ * Sponsors, by tier: the Sponsors section under the hero
+ * (src/components/Sponsors.jsx), and the sponsor page's credits.
  *
- * Only confirmed sponsors are listed.
+ * Only confirmed sponsors are listed, plus Gradium, which the organizers
+ * placed while its status is pending.
  *
- * The split is by what each sponsor gives, against the one-pager's tiers in
- * src/lib/sponsorship.js. Backed by is Platinum and up ($3,650 or more, in
- * cash or credits), plus Bravado, placed there by the organizers. With support
- * from is everyone else. Each tier runs largest first, in the order of the
- * organizers' sponsor sheet, cash and credits counted alike, and the sponsors
- * with no figure on them come last. Amounts are never printed.
+ * Tiers follow the organizers' sponsor tracker, in its order. Where it gives a
+ * level, that is the tier: Anthropic, Gradium, Elisity and SSOJet are Silver.
+ * Where it gives a figure, the tier is the highest of the sponsorship packet's
+ * levels the figure reaches: Platinum $3,650, Gold $2,650, Silver $950, Bronze
+ * $700, Supporter $500. No one is at Gold, so it has no entry. Misneach gives
+ * $2,500, under Gold. TechCXO ($300, from the finance sheet, and not on the
+ * tracker) and Bravado ($200, which the tracker marks as unclear) are under
+ * Supporter, the lowest level there is, and Adobe and Partiful give goods with
+ * no figure, so all four are Supporters. Amounts are never printed.
  *
  * Team IMPACT and JC&A sponsor together, so they share one card: an entry
  * with `members`, each a sponsor of its own with a `share` on its logo, the
@@ -21,10 +25,12 @@
  * which evens out marks of different shapes; the panel draws it 1.5 times
  * that (src/index.css, .hk-member__logo--sized). `about` is one line from
  * the sponsor's own site, printed under the name; null where nothing could
- * be found. In Backed by, the red line under the name is the tier's `role`
+ * be found. In Platinum, the red line under the name is the tier's `role`
  * unless the sponsor has its own: the two that run the Surge track, and
- * CodeCrafters, whose memberships are the tracks' prizes. With support from
- * is `compact`: a rectangle with the logo and the name, no line or role.
+ * CodeCrafters, whose memberships are the tracks' prizes. The lower tiers
+ * are `compact`: a rectangle with the logo and the name, no line or role.
+ * `columns: 3` sets a tier three across. `small` tiers share one line of
+ * smaller boxes, each under its own label.
  *
  * The logos are each sponsor's own artwork, monochrome white. Anthropic's is
  * the club repo's official wordmark (src/assets/brand/) filled white.
@@ -44,13 +50,14 @@
  * how bright each pixel is and trimmed to the mark, so the panel centres the
  * mark itself and not a margin around it. FuzionX's is its supplied lockup
  * filled white, its green chevron with the rest, and Elisity's is its
- * wordmark, also white.
+ * wordmark, also white. Gradium's is the monogram from gradium.ai, filled white.
  */
 export const SPONSOR_TIERS = [
   {
-    id: "backed",
-    label: "BACKED BY",
+    id: "platinum",
+    label: "PLATINUM",
     role: "SPONSOR",
+    columns: 3,
     sponsors: [
       {
         name: "Tavily",
@@ -72,12 +79,6 @@ export const SPONSOR_TIERS = [
         about: "Build your own Redis, Git, SQLite and more from scratch",
         role: "PRIZE SPONSOR",
         url: "https://codecrafters.io/",
-      },
-      {
-        name: "Anthropic",
-        logo: { src: "logos/anthropic.svg", height: 20 },
-        about: "AI safety and research company, maker of Claude",
-        url: "https://www.anthropic.com/",
       },
       {
         name: "Within3",
@@ -108,19 +109,20 @@ export const SPONSOR_TIERS = [
         about: "Boston venture firm co-building AI-native software companies",
         url: "https://www.fuzionx.com/",
       },
-      {
-        name: "Bravado",
-        logo: { src: "logos/bravado.png", height: 52 },
-        about: "Infrastructure for prediction markets: data and trading in one API",
-        url: "https://www.bravadotrade.com/",
-      },
     ],
   },
   {
-    id: "support",
-    label: "WITH SUPPORT FROM",
+    id: "silver",
+    label: "SILVER",
     compact: true,
+    columns: 3,
     sponsors: [
+      {
+        name: "Anthropic",
+        logo: { src: "logos/anthropic.svg", height: 20 },
+        about: "AI safety and research company, maker of Claude",
+        url: "https://www.anthropic.com/",
+      },
       {
         name: "Misneach",
         logo: { src: "logos/misneach.png", height: 26 },
@@ -134,10 +136,10 @@ export const SPONSOR_TIERS = [
         url: "https://www.northeasternsga.com/",
       },
       {
-        name: "Kaleidoscope",
-        logo: { src: "logos/kaleidoscope.png", height: 28 },
-        about: "Khoury College's official clubs council, run by students",
-        url: "https://www.khoury.northeastern.edu/undergraduate-clubs-and-organizations/kaleidoscope/",
+        name: "Gradium",
+        logo: { src: "logos/gradium.svg", height: 34 },
+        about: "Low-latency voice AI API for speech, transcription and cloning",
+        url: "https://gradium.ai/",
       },
       {
         name: "Elisity",
@@ -151,6 +153,40 @@ export const SPONSOR_TIERS = [
         about: "Add enterprise SSO to B2B SaaS, with 100+ identity providers",
         url: "https://ssojet.com/",
       },
+    ],
+  },
+  {
+    id: "bronze",
+    label: "BRONZE",
+    compact: true,
+    small: true,
+    sponsors: [
+      {
+        name: "Kaleidoscope",
+        logo: { src: "logos/kaleidoscope.png", height: 28 },
+        about: "Khoury College's official clubs council, run by students",
+        url: "https://www.khoury.northeastern.edu/undergraduate-clubs-and-organizations/kaleidoscope/",
+      },
+    ],
+  },
+  {
+    id: "supporter",
+    label: "SUPPORTER",
+    compact: true,
+    small: true,
+    sponsors: [
+      {
+        name: "TechCXO",
+        logo: { src: "logos/techcxo.png", height: 32 },
+        about: "Fractional executives for growing companies",
+        url: "https://www.techcxo.com/",
+      },
+      {
+        name: "Bravado",
+        logo: { src: "logos/bravado.png", height: 40 },
+        about: "Infrastructure for prediction markets: data and trading in one API",
+        url: "https://www.bravadotrade.com/",
+      },
       {
         name: "Adobe",
         logo: { src: "logos/adobe.svg", height: 24 },
@@ -163,12 +199,6 @@ export const SPONSOR_TIERS = [
         about: "Free event pages with invites, RSVP tracking and text blasts",
         url: "https://partiful.com/",
       },
-      {
-        name: "TechCXO",
-        logo: { src: "logos/techcxo.png", height: 32 },
-        about: "Fractional executives for growing companies",
-        url: "https://www.techcxo.com/",
-      },
     ],
   },
 ];
@@ -176,5 +206,5 @@ export const SPONSOR_TIERS = [
 /** A tier's sponsors one by one, a shared card opened into its members. */
 export const eachSponsor = (tier) => tier.sponsors.flatMap((sponsor) => sponsor.members ?? [sponsor]);
 
-/** Every confirmed sponsor, both tiers, for counts and credits. */
+/** Every confirmed sponsor, all tiers, for counts and credits. */
 export const SPONSORS = SPONSOR_TIERS.flatMap(eachSponsor);
