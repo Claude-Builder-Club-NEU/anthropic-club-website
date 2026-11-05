@@ -12,12 +12,12 @@
  * Intro to Options and Mathematics hides its address until you RSVP, so its
  * room is still the sheet's. Healthtech's Partiful says 1:30 PM, and the
  * sheet's time is printed here until the two are reconciled. Partiful has
- * GTFOL and Venture Capital in room 344 at the same hour.
+ * GTFOL and the VC Panel in room 344 at the same hour.
  *
  * A session is { time, title, host, room, format, rsvp }. `time` is 24-hour,
  * as the schedule's rows are, and every session is on Saturday.
  */
-const FORMATS = { workshop: "WORKSHOP", fireside: "FIRESIDE CHAT" };
+const FORMATS = { workshop: "WORKSHOP", fireside: "FIRESIDE CHAT", panel: "PANEL" };
 
 const partiful = (id) => `https://partiful.com/e/${id}`;
 
@@ -104,10 +104,10 @@ export const WORKSHOPS = [
   },
   {
     time: "17:00",
-    title: "Venture Capital",
-    host: "Tufts Jumbo Ventures, Cybernetics and Rick Li",
+    title: "VC Panel: Getting Venture-Backed in AI, Cybersecurity, and Robotics",
+    host: "Organized in partnership with Jumbo Ventures at Tufts University; VCs joining from Cybernetix Ventures, Propeller, and more",
     room: "Curry 344",
-    format: FORMATS.workshop,
+    format: FORMATS.panel,
     rsvp: partiful("njtdcB2Rgi0LbkVfw1Hi"),
   },
   {
