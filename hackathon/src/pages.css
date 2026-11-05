@@ -114,7 +114,7 @@
 
 .hk-sp__win {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1px;
   margin: 0;
   padding: 0;
@@ -1451,6 +1451,229 @@ textarea.hk-su__input {
   .hk-checkin__head {
     font-size: 19px;
     line-height: 26px;
+  }
+}
+
+/* ==========================================================================
+   /hackathon/team/ — why the event exists, and who runs it.
+   ========================================================================== */
+
+/* The art is out of the flow, so the copy sits above it. */
+.hk-tm__hero {
+  position: relative;
+}
+
+.hk-tm__hero > :not(.hk-tm__art) {
+  position: relative;
+  z-index: 1;
+}
+
+/*
+ * The contours, sized like the hero's field: whichever is larger of the type that
+ * fills the box's width (130 columns at 0.6em is 78em) and the type that fills
+ * its height (64 rows at 1.03em is 65.92em), so it always covers the box and
+ * is cropped evenly. It starts beside the copy, whose width is the lede's 40em
+ * or the headline's, about 11em of its own size, and runs out to the edge of
+ * the window. The masks are in pixels so the fade finishes at the copy's edge
+ * at every width: black for the first 140px, full strength by 300px.
+ */
+.hk-tm__art {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: max(620px, calc(min(4.6vw, 72px) * 9.5));
+  right: calc((100% - 100vw) / 2);
+  z-index: 0;
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  letter-spacing: 0;
+  pointer-events: none;
+  --hk-ascii-size: 9px;
+  --hk-ascii-row: 9.27px;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 140px, #000 300px),
+    linear-gradient(180deg, transparent 0, #000 14%, #000 86%, transparent 100%);
+  mask-image:
+    linear-gradient(90deg, transparent 140px, #000 300px),
+    linear-gradient(180deg, transparent 0, #000 14%, #000 86%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+@supports (container-type: size) {
+  .hk-tm__art {
+    --hk-ascii-size: max(calc(100cqw / 78), calc(100cqh / 65.92));
+    --hk-ascii-row: calc(max(calc(100cqw / 78), calc(100cqh / 65.92)) * 1.03);
+  }
+}
+
+.hk-tm__art .a0 { color: var(--ascii-0); }
+.hk-tm__art .a1 { color: var(--ascii-1); }
+.hk-tm__art .a2 { color: var(--ascii-2); }
+.hk-tm__art .a3 { color: var(--ascii-3); }
+.hk-tm__art .a4 { color: var(--ascii-4); }
+.hk-tm__art .a5 { color: var(--ascii-5); }
+
+/* Below this only a sliver of it fits beside the copy. */
+@media (max-width: 1180px) {
+  .hk-tm__art {
+    display: none;
+  }
+}
+
+.hk-tm__synopsis {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.hk-tm__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The home page's roster row, with room for the writing. */
+.hk-tm__person {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 32px;
+  padding: 28px;
+  border: 1px dashed var(--dash);
+  transition: background-color 160ms linear, border-color 160ms linear;
+}
+
+.hk-tm__person:hover {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+.hk-tm__photo {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border: 1px solid var(--chip-bg);
+  filter: grayscale(1) contrast(1.05);
+  transition: filter 200ms linear;
+}
+
+.hk-tm__person:hover .hk-tm__photo {
+  filter: none;
+}
+
+.hk-tm__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.hk-tm__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.hk-tm__linkedin {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--line-soft);
+  color: var(--ink-faint);
+  transition: color 120ms linear;
+}
+
+.hk-tm__linkedin:hover,
+.hk-tm__linkedin:focus-visible {
+  color: var(--accent);
+}
+
+.hk-tm__linkedin svg {
+  width: 16px;
+  height: 16px;
+}
+
+.hk-tm__title {
+  display: inline-block;
+  margin: 8px 0 0;
+  padding: 4px 8px;
+  background: var(--red-900);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--red-chip-text);
+}
+
+.hk-tm__focus {
+  margin: 16px 0 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.hk-tm__blurb {
+  max-width: 72ch;
+  margin: 8px 0 0;
+  font-size: 16px;
+  line-height: 25px;
+  color: var(--ink-body);
+  text-wrap: pretty;
+}
+
+.hk-tm__background {
+  margin: 14px 0 0;
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ink-faint);
+}
+
+@media (max-width: 640px) {
+  .hk-tm__person {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .hk-tm__photo {
+    width: 96px;
+    height: 96px;
+  }
+
+  .hk-tm__name {
+    font-size: 22px;
+    line-height: 28px;
+  }
+
+  .hk-tm__blurb {
+    font-size: 14.5px;
+    line-height: 22px;
+  }
+
+  .hk-tm__background {
+    font-size: 12.5px;
+    line-height: 18px;
   }
 }
 

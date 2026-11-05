@@ -2,13 +2,14 @@ import { AsciiPanel } from "./AsciiPanel";
 import { SectionHeading } from "./SectionHeading";
 import { TRACKS, TRACK_COUNT } from "../lib/tracks";
 import { withBase } from "../lib/base";
+import { capitalize, inWords } from "../lib/words";
 
 /**
- * Three ways to win.
+ * The ways to win.
  *
  * The main track leads, full width, with its art on one side and its brief on
- * the other; the one prize and the sponsor track sit side by side under it.
- * Three equal panels in a row would say the three are the same size of
+ * the other; the one prize and Surge sit side by side under it, and Within3's
+ * track closes the section at full width (`wide`). Equal panels in a row would say the three are the same size of
  * contest, and they are not: one is the track, one is a single prize, one is
  * a sponsor's.
  *
@@ -19,15 +20,16 @@ import { withBase } from "../lib/base";
 export function Tracks() {
   return (
     <section id="tracks" aria-labelledby="tracks-h" className="hk-section">
-      <SectionHeading id="tracks-h" chip="TRACKS" title="Three ways to win">
+      <SectionHeading id="tracks-h" chip="TRACKS" title={`${capitalize(inWords(TRACKS.length))} ways to win`}>
         A main track for software that protects the people using it, one prize
-        for the most fundable idea, and Surge, a sponsor track from Tavily and
-        Exa with three places. More tracks will be announced as sponsors join.
+        for the most fundable idea, Surge, a sponsor track from Tavily and Exa
+        with three places, and Signal-to-Dose, Within3&rsquo;s launch-intelligence
+        track. More tracks will be announced as sponsors join.
       </SectionHeading>
 
       <div className="hk-tracks">
         {TRACKS.map((track, i) => (
-          <Track key={track.art} track={track} lead={i === 0} />
+          <Track key={track.art} track={track} lead={i === 0 || track.wide} />
         ))}
       </div>
     </section>

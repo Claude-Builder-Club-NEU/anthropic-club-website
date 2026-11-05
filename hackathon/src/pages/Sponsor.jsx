@@ -4,6 +4,7 @@ import { EVENT } from "../lib/event";
 import { ORGANIZERS } from "../lib/organizers";
 import { SPONSOR_TIERS, eachSponsor } from "../lib/sponsors";
 import { TRACKS } from "../lib/tracks";
+import { inWords } from "../lib/words";
 import { HACK_WINDOW } from "../lib/schedule";
 import {
   BENEFITS,
@@ -16,7 +17,7 @@ import {
 /**
  * /hackathon/sponsor/: the sponsor one-pager, as a page.
  *
- * Same content, same order: the pitch, three ways to win, the tier table,
+ * Same content, same order: the pitch, the ways to win, the tier table,
  * other ways to help, who to write to, and who is behind it. It is set in
  * this site's system rather than traced from the PDF — dashed rules, mono
  * caps, square corners — so it reads as the same event as /hackathon/.
@@ -60,7 +61,9 @@ export function Sponsor() {
       </section>
 
       <section className="hk-sp__block" aria-labelledby="sp-win">
-        <h2 id="sp-win" className="hk-sp__label">THREE WAYS TO WIN</h2>
+        <h2 id="sp-win" className="hk-sp__label">
+          {inWords(TRACKS.length).toUpperCase()} WAYS TO WIN
+        </h2>
         <ol className="hk-sp__win">
           {TRACKS.map((track) => (
             <li key={track.index}>

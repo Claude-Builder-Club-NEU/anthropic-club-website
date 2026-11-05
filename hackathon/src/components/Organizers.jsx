@@ -1,7 +1,9 @@
+import { BracketButton } from "./BracketButton";
 import { SectionHeading } from "./SectionHeading";
 import { SocialIcon } from "./SocialIcons";
 import { BACKERS, ORGANIZERS, ROLES, TEAM } from "../lib/organizers";
 import { withBase } from "../lib/base";
+import { LINKS } from "../lib/event";
 import { capitalize, inWords } from "../lib/words";
 
 /**
@@ -21,7 +23,8 @@ import { capitalize, inWords } from "../lib/words";
  *
  * The people are a list, one dashed box each, in the Details rows' build: a
  * small headshot, the name in the display face, the person's title in the
- * red chip, and their LinkedIn in a small grey box at the right-hand end.
+ * red chip, and their LinkedIn in a small grey box at the right-hand end. One
+ * button under the list goes to the team page, which has the rest.
  *
  * An organiser is not a sponsor, and putting them in one row would say they
  * are, so the clubs running the event get their own section.
@@ -96,6 +99,9 @@ export function Organizers() {
             <RosterRow key={person.name} person={person} />
           ))}
         </ol>
+        <div className="hk-roster__more">
+          <BracketButton href={withBase(LINKS.team)}>More information</BracketButton>
+        </div>
       </section>
     </>
   );

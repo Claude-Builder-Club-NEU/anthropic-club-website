@@ -1,5 +1,5 @@
 /**
- * The four pages this app renders, and how a URL picks one.
+ * The five pages this app renders, and how a URL picks one.
  *
  * There is still no router: each page is prerendered to its own
  * index.html (scripts/prerender.mjs), and in the browser main.jsx reads the
@@ -13,6 +13,7 @@ export const PAGES = {
   sponsor: { path: "sponsor" },
   signup: { path: "signup" },
   ticket: { path: "ticket" },
+  team: { path: "team" },
 };
 
 export const PAGE_NAMES = Object.keys(PAGES);

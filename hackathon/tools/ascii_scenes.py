@@ -40,7 +40,10 @@ COLS, ROWS = 160, 18
 # it like a cover image, so it is drawn much taller than any banner: 220 x 96
 # is about 1.34:1, between a desktop hero (about 1.6:1) and a phone's (about
 # 0.5:1), so either one crops a band of it rather than running off its edge.
-GRIDS = {"masthead": (240, 7), "hero": (220, 96)}
+#
+# The contours sit behind the team page's headline, in a box about as wide as
+# it is tall, and are cropped to it the same way: 130 x 64 is about 1.18:1.
+GRIDS = {"masthead": (240, 7), "hero": (220, 96), "contours": (130, 64)}
 
 # Dark to light. The glyphs are the ramp the banners use; the colours are the
 # --ascii-0 … --ascii-6 tokens, emitted as classes (`.a0` … `.a6`, styled in
@@ -354,6 +357,38 @@ def hero():
     return im.filter(ImageFilter.GaussianBlur(8))
 
 
+def contours():
+    """A contour map of nowhere: the fifth abstract system.
+
+    Sums of slow waves make a height field, and only the lines where it
+    crosses a level are lit, so it reads as terrain with no subject. Every
+    fifth line is drawn heavier, the way a survey map's index contours are.
+    """
+    # Its own canvas, at the grid's aspect: (130 * 0.6) / (64 * 1.03) = 1.183.
+    h = 1000
+    w = int(h * (130 * 0.6) / (64 * 1.03))
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32) / h
+
+    height = (
+        np.sin(xx * 3.1 + 0.6) * np.cos(yy * 2.7 - 0.4)
+        + 0.6 * np.sin(xx * 5.3 - yy * 3.9 + 1.1)
+        + 0.4 * np.cos(xx * 2.2 + yy * 7.1)
+        + 0.8 * np.exp(-(((xx - 0.72) / 0.3) ** 2 + ((yy - 0.46) / 0.26) ** 2))
+    )
+
+    levels = height * 7.0
+    dist = np.abs(levels - np.round(levels))
+    # The line's half-width in level units: about 7px wherever the ground is,
+    # so a steep slope does not draw it fat or a flat one lose it.
+    width = np.hypot(*np.gradient(levels)) * 7 + 0.004
+    line = np.exp(-((dist / width) ** 2))
+    index = (np.round(levels).astype(int) % 5) == 0
+    field = line * np.where(index, 1.0, 0.5)
+
+    im = Image.fromarray((np.clip(field, 0, 1) * 255).astype("uint8"))
+    return im.filter(ImageFilter.GaussianBlur(1))
+
+
 SCENES = {
     "ministry-of-truth": redaction,
     "telescreen": scanlines,
@@ -361,6 +396,7 @@ SCENES = {
     "room-101": traces,
     "masthead": masthead,
     "hero": hero,
+    "contours": contours,
 }
 
 if __name__ == "__main__":

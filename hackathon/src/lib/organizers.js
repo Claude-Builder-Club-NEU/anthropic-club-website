@@ -276,6 +276,11 @@ export const BACKERS = [
  * `linkedin` is the one link a row carries. A row without one keeps the
  * box's column empty, so the chips still line up.
  *
+ * The rest is for the team page (src/pages/Team.jsx), which lists the
+ * organizers only, so the two partner presidents have none of it. `focus` and
+ * `blurb` are what the person did for HACK1984, in the team's own words.
+ * `background` is the line under them, four items from their LinkedIn.
+ *
  * Headshots in public/team/ are square 320px crops of the supplied photos,
  * head and shoulders, in colour; the page shows them in greyscale so photos
  * from different shoots read as one set, the way the logos are all white.
@@ -290,6 +295,15 @@ export const TEAM = [
     title: "Head of Sponsorship Outreach",
     photo: "team/shourya-yadav.jpg",
     linkedin: "https://www.linkedin.com/in/shouryadav/",
+    focus: "Tech, Funding & Compliance",
+    blurb:
+      "Shourya's technical range shows up everywhere. He built agentic workflows to run parts of our operations and untangled the funding and compliance work most people never see. Without him, most of HACK1984's funding wouldn't exist, and it's a big reason hackers have something to compete for and our ops team has what it needs.",
+    background: [
+      "CS + Business (Fintech), Northeastern '27",
+      "Junior Healthcare Research Associate, M3",
+      "Software Tech Lead, ACM @ Northeastern",
+      "Co-Founder, Claude Builders Club",
+    ],
   },
   {
     name: "Smyan Sengupta",
@@ -297,6 +311,15 @@ export const TEAM = [
     title: "Head of Operations",
     photo: "team/smyan-sengupta.jpg",
     linkedin: "https://www.linkedin.com/in/smyan-sengupta/",
+    focus: "Operations",
+    blurb:
+      "If something at HACK1984 runs smoothly, Smyan probably made it happen. For months he's been up until 3 a.m. working out workshops, rooms, timing, spreadsheets, day-of logistics, Discord, Devpost, and everything in between. More than half of what happens behind the scenes is his work. He's the stage crew that makes the whole show possible.",
+    background: [
+      "CS (AI) + Math, Northeastern '27",
+      "Vice Chair, ACM @ Northeastern",
+      "Full Stack Developer Co-op, FuzionX",
+      "Previously ML Co-op, Pfizer",
+    ],
   },
   {
     name: "Sohum Balsara",
@@ -304,6 +327,15 @@ export const TEAM = [
     title: "Head of Operations",
     photo: "team/sohum-balsara.jpg",
     linkedin: "https://www.linkedin.com/in/sohum-balsara/",
+    focus: "Theme & Fundraising",
+    blurb:
+      "Sohum gave HACK1984 its point. After a lot of back and forth on the theme, he pushed past safe, generic options for one with real substance: software that doesn't watch the people using it. He also worked alongside Shourya to bring in the funding that made the event possible.",
+    background: [
+      "CS + Business, Northeastern '27",
+      "VP, Rev",
+      "DevOps Software Engineer Co-op, Wolters Kluwer",
+      "Founder, Burrow Housing",
+    ],
   },
   {
     name: "Mehr Anand",
@@ -311,6 +343,15 @@ export const TEAM = [
     title: "Head of Partnerships",
     photo: "team/mehr-anand.jpg",
     linkedin: "https://www.linkedin.com/in/mehr-anand/",
+    focus: "Partnerships & Growth",
+    blurb:
+      "Mehr had the vision from day one: a hackathon built by clubs across Northeastern, not just one. Across four years and 25+ e-board roles, he built a network that reaches almost every corner of campus, and used it to bring students from different majors, clubs, and professional backgrounds into one room to build and share what they know. The partner clubs, speakers, and judges at HACK1984 trace back to that web of people.",
+    background: [
+      "CS (AI) + Math, Northeastern '27",
+      "Data Warehouse Management Co-op, General Atlantic",
+      "CTO, Teens 4 Teens",
+      "Founded 6 clubs at Northeastern Oakland",
+    ],
   },
   {
     name: "Jackson Lamoureux",
@@ -318,6 +359,15 @@ export const TEAM = [
     title: "Head of Marketing",
     photo: "team/jackson-lamoureux.jpg",
     linkedin: "https://www.linkedin.com/in/jacksonlamoureux/",
+    focus: "Design & Web",
+    blurb:
+      "Jackson is the reason HACK1984 looks like HACK1984. He designed graphics across the website and social media, and his eye for features and design helped turn the idea into something real.",
+    background: [
+      "Business Administration, Northeastern '29",
+      "President, Claude Builders Club",
+      "Claude Campus Ambassador",
+      "Founder, Lamoureux Enterprises",
+    ],
   },
   {
     name: "Ruby Robicheau",
