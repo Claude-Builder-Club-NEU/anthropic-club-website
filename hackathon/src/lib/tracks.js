@@ -7,8 +7,7 @@
  * Surge was two sponsor tracks, one per search API, until the two were folded
  * into one. The sponsor page renders the short form of the same list
  * (`pitch`), so the two pages cannot describe different contests. Within3's
- * Signal-to-Dose came after them, a fourth; `wide` sets it full width under
- * the other two, since one panel alone in a two-column row leaves a hole.
+ * Signal-to-Dose came after them, a fourth.
  *
  * `art` is the key into src/lib/ascii.js. `kind` is the left-hand tag on the
  * panel, the same label the one-pager puts over each title. `index` renders as
@@ -22,7 +21,7 @@
  * the "01 / 0N" counters all follow.
  *
  * `sponsors` is the list of logos under SPONSORED BY: empty for a track no
- * sponsor runs, Misneach for Most Startup-able, two for Surge.
+ * sponsor runs, two each for Most Startup-able and Surge.
  *
  * PRIZES: the main track and Surge pay three places, the same
  * three, from PLACES below: first place a cash prize and a 2-year VIP
@@ -75,7 +74,7 @@ export const TRACKS = [
     title: "Most Startup-able",
     description: "The idea most likely to become a company.",
     body:
-      "A standalone prize for the most fundable idea in the room: a real problem, someone who would pay to have it solved, and a reason you are the team to solve it. The prize comes from Misneach, one of the weekend's sponsors.",
+      "A standalone prize for the most fundable idea in the room: a real problem, someone who would pay to have it solved, and a reason you are the team to solve it. The prize comes from Misneach and FuzionX, two of the weekend's sponsors.",
     pitch: "The idea most likely to become a company.",
     facts: [
       {
@@ -89,7 +88,10 @@ export const TRACKS = [
       // One award, not three places: a cash award, its amount not set yet.
       { key: "PRIZE", places: [{ lead: "$$$ cash award" }] },
     ],
-    sponsors: [{ name: "Misneach", logo: "logos/misneach.png" }],
+    sponsors: [
+      { name: "Misneach", logo: "logos/misneach.png", height: 24 },
+      { name: "FuzionX", logo: "logos/fuzionx.png", height: 20 },
+    ],
   },
   {
     index: "03",
@@ -122,7 +124,6 @@ export const TRACKS = [
     index: "04",
     kind: "SPONSOR TRACK",
     art: "room-101",
-    wide: true,
     title: "Signal-to-Dose",
     description:
       "Spot the signals in a drug launch and track how the conversation moves, on a model you own.",

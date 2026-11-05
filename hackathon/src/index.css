@@ -1405,171 +1405,12 @@ a.hk-logos__card:hover .hk-logos__img {
 }
 
 /* --------------------------------------------------------------------------
-   The organizing team, as a list.
-
-   One dashed box per person, a gap between each, in the Details rows' build:
-   a small headshot (greyscale until the box is pointed at), the name in the
-   display face, the person's title in the red chip, and their LinkedIn in a
-   small grey box at the right-hand end. The page's column, edge to edge,
-   like the details. See Organizers.jsx.
-   -------------------------------------------------------------------------- */
-
-.hk-roster {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.hk-roster__row {
-  display: grid;
-  /* The title chip's column is one width, the longest title's, so every
-     chip lines up down the list; the LinkedIn box's is one box wide, held
-     even in a row without one. */
-  grid-template-columns: 56px minmax(0, 1fr) 300px 40px;
-  grid-template-areas: "photo name role socials";
-  align-items: center;
-  gap: 24px;
-  min-height: 96px;
-  padding: 18px 28px;
-  border: 1px dashed var(--dash);
-  transition: background-color 160ms linear, border-color 160ms linear;
-}
-
-.hk-roster__row:hover {
-  background: var(--surface);
-  border-color: var(--line);
-}
-
-.hk-roster__photo {
-  grid-area: photo;
-  width: 56px;
-  height: 56px;
-  object-fit: cover;
-  border: 1px solid var(--chip-bg);
-  filter: grayscale(1) contrast(1.05);
-  transition: filter 200ms linear;
-}
-
-.hk-roster__row:hover .hk-roster__photo {
-  filter: none;
-}
-
-/* The Details sentence's treatment: the display face, a size up. */
-.hk-roster__name {
-  grid-area: name;
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 22px;
-  line-height: 28px;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-}
-
-/* The person's title, in the Details chip a size down, filling its column. */
-.hk-roster__role {
-  grid-area: role;
-  padding: 6px 10px;
-  background: var(--red-900);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-align: center;
-  text-transform: uppercase;
-  color: var(--red-chip-text);
-}
-
-.hk-roster__socials {
-  grid-area: socials;
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* The Details row's grey box, small. */
-.hk-roster__socials a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: var(--line-soft);
-  color: var(--ink-faint);
-  transition: color 120ms linear;
-}
-
-.hk-roster__socials a:hover,
-.hk-roster__socials a:focus-visible {
-  color: var(--accent);
-}
-
-.hk-roster__socials svg {
-  width: 16px;
-  height: 16px;
-}
-
-/* The one button under the list, to the team page. */
-.hk-roster__more {
-  display: flex;
-  justify-content: center;
-  margin-top: 32px;
-}
-
-/* Below 900px, where the title chip's 300px column would squeeze the name:
-   the headshot down the left of two lines, the name and the LinkedIn box on
-   the first, the title chip on the second. */
-@media (max-width: 900px) {
-  .hk-roster {
-    gap: 10px;
-  }
-
-  .hk-roster__row {
-    grid-template-columns: 48px minmax(0, 1fr) 32px;
-    grid-template-areas:
-      "photo name socials"
-      "photo role role";
-    gap: 10px 14px;
-    min-height: 0;
-    padding: 16px;
-  }
-
-  .hk-roster__photo {
-    align-self: start;
-    width: 48px;
-    height: 48px;
-  }
-
-  .hk-roster__name {
-    font-size: 18px;
-    line-height: 23px;
-  }
-
-  .hk-roster__role {
-    justify-self: start;
-    padding: 4px 8px;
-    text-align: left;
-    font-size: 11px;
-    line-height: 15px;
-  }
-
-  .hk-roster__socials a {
-    width: 32px;
-    height: 32px;
-  }
-}
-
-/* --------------------------------------------------------------------------
    3.4 Tracks.
    -------------------------------------------------------------------------- */
 
 .hk-tracks {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   /* The rules between panels are this 1px gap showing the line colour
      behind it, so each is drawn once whatever the shape of the grid. The
      border closes the outside. */
@@ -1869,8 +1710,9 @@ a.hk-logos__card:hover .hk-logos__img {
 
 .hk-track__sponsor {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
+  gap: 12px 16px;
   margin-top: auto;
   padding-top: 20px;
   border-top: 1px dashed var(--chip-bg);
@@ -1899,6 +1741,12 @@ a.hk-logos__card:hover .hk-logos__img {
   display: block;
   height: 30px;
   width: auto;
+}
+
+/* On its own line, so the logos start level across the row of three however
+   wide each pair is. */
+.hk-track:not(.hk-track--lead) .hk-track__sponsor-label {
+  flex-basis: 100%;
 }
 
 .hk-track__sponsor-label {
@@ -3063,8 +2911,11 @@ a.hk-logos__card:hover .hk-logos__img {
   /* The hero and section headings size themselves against vw at every width,
      so neither needs an override here any more. */
 
-  /* Tracks stay 2 columns: .hk-ascii scales the art to whatever panel it is
-     given, so it fits by construction. */
+  /* Three in a row would be too narrow here, and two would leave a hole, so
+     the tracks stack. .hk-ascii scales the art to whatever panel it is given. */
+  .hk-tracks {
+    grid-template-columns: minmax(0, 1fr);
+  }
 
 }
 

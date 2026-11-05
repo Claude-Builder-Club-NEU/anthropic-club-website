@@ -7,11 +7,9 @@ import { capitalize, inWords } from "../lib/words";
 /**
  * The ways to win.
  *
- * The main track leads, full width, with its art on one side and its brief on
- * the other; the one prize and Surge sit side by side under it, and Within3's
- * track closes the section at full width (`wide`). Equal panels in a row would say the three are the same size of
- * contest, and they are not: one is the track, one is a single prize, one is
- * a sponsor's.
+ * The main track leads, full width, with its art across the panel and its
+ * brief under it; the other three sit under it in a row of equal panels. The
+ * row stacks at 1024px and below, where three would be too narrow.
  *
  * The panels share their hairlines. The grid's 1px gap shows the line colour
  * behind it, so every rule between panels is drawn once, whatever the shape —
@@ -29,7 +27,7 @@ export function Tracks() {
 
       <div className="hk-tracks">
         {TRACKS.map((track, i) => (
-          <Track key={track.art} track={track} lead={i === 0 || track.wide} />
+          <Track key={track.art} track={track} lead={i === 0} />
         ))}
       </div>
     </section>
