@@ -2542,12 +2542,13 @@ a.hk-logos__card:hover .hk-logos__img {
 }
 
 /* The room, format and RSVP columns are fixed so they line up down the list;
-   the RSVP's is held even in a row without one. */
+   the RSVP's is held even in a row without one. They sit at the top, beside
+   the title, because a description can make a row very tall. */
 .hk-ws__row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 92px 148px 92px;
   grid-template-areas: "what room format action";
-  align-items: center;
+  align-items: start;
   gap: 20px;
   min-height: 76px;
   padding: 14px 20px;
@@ -2587,6 +2588,7 @@ a.hk-logos__card:hover .hk-logos__img {
 .hk-ws__about {
   margin: 6px 0 0;
   max-width: 62ch;
+  white-space: pre-line;
   font-family: var(--font-sans);
   font-size: 13.5px;
   line-height: 20px;
@@ -2645,6 +2647,7 @@ a.hk-logos__card:hover .hk-logos__img {
   .hk-ws__row {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 10px 12px;
     min-height: 0;
     padding: 14px;
