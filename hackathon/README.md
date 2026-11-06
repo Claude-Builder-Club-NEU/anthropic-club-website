@@ -307,9 +307,9 @@ Every one of these is marked `PLACEHOLDER` at the point it occurs.
       role. Add a line or two and a LinkedIn when each sends one.
 - [ ] **Details copy.** Meals, quiet room, team size, student ID and "Free for
       students" in `src/lib/details.js`.
-- [ ] **Workshop RSVPs.** Healthtech, Intro to Options and GTFOL have no
-      Partiful link. Three Partiful events disagree with the sheet on a time
-      or a room; see the note in `src/lib/workshops.js`.
+- [ ] **Workshop Partifuls.** The sheet wins over Partiful. The Clinical
+      event still has its old title and 1:30 PM, and Off the Telescreen's
+      location still says 348; see the note in `src/lib/workshops.js`.
 - [ ] **BU Disrupters, EX and HAN.** All three have a logo but no link or
       line. Add them in `BACKERS` (`src/lib/organizers.js`).
 - [ ] **NU Security's link.** The club has no website, so its cell links the
