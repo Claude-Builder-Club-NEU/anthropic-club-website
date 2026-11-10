@@ -75,5 +75,16 @@
     "rsvpUrl": "https://claudeneu.com/hackathon/signup/",
     "url": null,
     "allDay": false
+  },
+  {
+    "id": "7dp8hedr9g3h2tiu7jv83j7ms0@google.com",
+    "title": "Slideshow Swap",
+    "start": "2026-11-12T23:00:00.000Z",
+    "end": "2026-11-13T00:00:00.000Z",
+    "location": "Forsyth Building Room 129",
+    "description": null,
+    "rsvpUrl": "https://luma.com/ts9zgnrc",
+    "url": null,
+    "allDay": false
   }
 ]
