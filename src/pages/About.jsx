@@ -118,7 +118,7 @@ const About = () => {
 
           {/* Every card lazy-loads its headshot: the grid sits far below the
               fold, so nothing here is fetched on a normal first visit. */}
-          <ul className="board-grid mt-12 grid list-none grid-cols-2 gap-x-6 gap-y-8 p-0 md:grid-cols-4">
+          <ul className="board-grid mt-12 grid list-none grid-cols-2 gap-x-6 gap-y-8 p-0 md:grid-cols-3">
             {BOARD.map((member) => (
               <BoardCard key={member.slug} member={member} />
             ))}

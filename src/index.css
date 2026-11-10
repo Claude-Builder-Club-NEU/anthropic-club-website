@@ -887,9 +887,9 @@ a {
    Contrast on Oat: Burnt Terracotta 4.70:1, Stone Gray 4.64:1, ink 14.73:1.
    ========================================================================== */
 
-/* Four across from 768px, two below. Eight people fill both layouts evenly;
-   an odd roster at two columns leaves one alone, so centre it rather than
-   leave a hole beside it. */
+/* Three across from 768px (nine people, 3x3), two below. An odd roster at
+   two columns leaves one alone, so centre it rather than leave a hole
+   beside it. */
 @media (max-width: 767px) {
   .board-grid > li:last-child:nth-child(2n + 1) {
     grid-column: 1 / -1;
