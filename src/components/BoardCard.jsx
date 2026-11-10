@@ -15,12 +15,12 @@ const WIDTHS = [320, 480, 640];
  * pick the smallest adequate file before layout runs. Getting it wrong costs
  * real bytes.
  *
- * Four across from 768px, two across below, with 24px column gaps inside the
- * content column: 1024px from 1152px up, so (1024 - 72) / 4 = 238px. Below
+ * Three across from 768px, two across below, with 24px column gaps inside the
+ * content column: 1024px from 1152px up, so (1024 - 48) / 3 = 325px. Below
  * that the column tracks the 64 / 40 / 24px insets in force.
  */
 const SIZES =
-  "(min-width: 1152px) 238px, (min-width: 1024px) calc((100vw - 200px) / 4), (min-width: 768px) calc((100vw - 152px) / 4), (min-width: 640px) calc((100vw - 104px) / 2), calc((100vw - 72px) / 2)";
+  "(min-width: 1152px) 325px, (min-width: 1024px) calc((100vw - 176px) / 3), (min-width: 768px) calc((100vw - 128px) / 3), (min-width: 640px) calc((100vw - 104px) / 2), calc((100vw - 72px) / 2)";
 
 const srcset = (slug, ext) =>
   WIDTHS.map((w) => `/board/${slug}-${w}.${ext} ${w}w`).join(", ");

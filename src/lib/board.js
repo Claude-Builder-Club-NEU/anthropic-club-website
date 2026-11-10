@@ -67,7 +67,8 @@ export const BOARD = [
     slug: "oliver-ward",
     name: "Oliver Ward",
     role: "Vice President",
-    affiliation: "Founder @ RUSH Focus Energy",
+    affiliation: "Startup and Labs Marketing @ Fidelity",
+    secondAffiliation: "Founder @ RUSH Focus Energy",
     major: "BA, Entrepreneurial Startups + AI",
     photo: true,
     ambassador: true,
@@ -78,7 +79,8 @@ export const BOARD = [
     slug: "lucas-salzgeber",
     name: "Lucas Salzgeber",
     role: "Vice President",
-    affiliation: "Founder @ LSstacks",
+    affiliation: "Digital Workflow Automation @ MFS Investment Management",
+    secondAffiliation: "Founder @ LSstacks",
     major: "BA, Finance + AI",
     photo: true,
     linkedin: "https://www.linkedin.com/in/lucas-salzgeber/",
@@ -119,7 +121,8 @@ export const BOARD = [
     slug: "alex-green",
     name: "Alex Green",
     role: "Head of Events",
-    affiliation: "Prev. Analyst @ Gordon Brothers",
+    affiliation: "Growth Strategy Analyst @ Denneen & Company",
+    secondAffiliation: "Prev. Analyst @ Gordon Brothers",
     major: "BA, Finance",
     photo: true,
     linkedin: "https://www.linkedin.com/in/greena1/",
@@ -144,6 +147,16 @@ export const BOARD = [
     // club has not sent them. BoardCard filters falsy socials, so an absent
     // key costs a row of icons and nothing else, where a placeholder would
     // ship a dead link with his name on it.
+  },
+  {
+    slug: "shourya-yadav",
+    name: "Shourya Yadav",
+    role: "Founder",
+    affiliation: "Healthcare Research Associate @ M3 USA",
+    secondAffiliation: "Prev. Data Engineer @ Kroll",
+    major: "CS + Business (Fintech) & AI",
+    photo: true,
+    linkedin: "https://www.linkedin.com/in/shouryadav/",
   },
 ];
 
