@@ -145,7 +145,7 @@ const FOLLOW_UPS = [
   },
   {
     // Same credit form, for members who first need credits at this meeting.
-    match: /^slideshow swap/i,
+    match: /^slideshow swap\b/i,
     url: "https://form.jotform.com/262505588699173",
     lead: "Next, request your Anthropic API credits.",
     action: "Open the credit request form",
