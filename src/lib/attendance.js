@@ -128,29 +128,55 @@ export async function checkIn({ code, name, email }, options) {
 /* -------------------------------------------------------------------------- *
  * After the stamp
  *
- * Some sessions hand the student on to a form once they are checked in. The
- * title is the only thing check_in() returns that says which session this was,
- * so the match is on that, loose enough to accept "Intro" or "Introduction".
- * A session with no entry here just shows the card, as before.
+ * Every check-in hands the student on to the Claude Builder Club check-in form
+ * on Jotform: the program-wide form ambassadors' attendees fill in after each
+ * meeting, which is also where they request API credits. It asks again for
+ * things the student has just typed here, so the link fills them in: campus,
+ * the meeting's date, first and last name, and email. What is left for them is
+ * the ambassador, whether they have credits, their Org ID and the captcha.
+ *
+ * The ambassador is left blank on purpose. Two board members lead every
+ * meeting, and picking one for the student would credit the same person every
+ * time.
+ *
+ * Jotform prefills from the query string by each field's unique name. Checked
+ * against the live form on Nov 17, 2026: whatCampus, whatCbc[month|day|year],
+ * whatIs (first), typeA6 (last), whatIs7 (email). If Jotform renames a field it
+ * simply stops prefilling; the form itself still opens.
  * -------------------------------------------------------------------------- */
 
-const FOLLOW_UPS = [
-  {
-    // The club's Jotform, where a member claims their Claude Console API
-    // credits. The intro workshop is where most people first need them.
-    match: /^intro(duction)? to claude\b/i,
-    url: "https://form.jotform.com/262505588699173",
-    lead: "Next, request your Anthropic API credits.",
-    action: "Open the credit request form",
-  },
-  {
-    // Same credit form, for members who first need credits at this meeting.
-    match: /^slideshow swap\b/i,
-    url: "https://form.jotform.com/262505588699173",
-    lead: "Next, request your Anthropic API credits.",
-    action: "Open the credit request form",
-  },
-];
+const CHECKIN_FORM_URL = "https://form.jotform.com/262505588699173";
+
+/** Exactly as it appears in the form's campus dropdown. */
+const CAMPUS = "Northeastern University";
+
+/** The meeting's date in Boston, which is what the form's date field means. */
+function bostonDate(iso) {
+  const at = iso ? new Date(iso) : new Date();
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  }).formatToParts(Number.isNaN(at.getTime()) ? new Date() : at);
+  const get = (type) => parts.find((p) => p.type === type)?.value || "";
+  return { month: get("month"), day: get("day"), year: get("year") };
+}
+
+/** The check-in form with everything already known filled in. */
+export function checkInFormUrl({ session, name, email } = {}) {
+  const params = new URLSearchParams();
+  params.set("whatCampus", CAMPUS);
+  const { month, day, year } = bostonDate(session?.starts_at);
+  params.set("whatCbc[month]", month);
+  params.set("whatCbc[day]", day);
+  params.set("whatCbc[year]", year);
+  const [first = "", ...rest] = String(name || "").trim().split(/\s+/);
+  if (first) params.set("whatIs", first);
+  if (rest.length) params.set("typeA6", rest.join(" "));
+  if (email) params.set("whatIs7", String(email).trim());
+  return `${CHECKIN_FORM_URL}?${params.toString()}`;
+}
 
 /**
  * Long enough to read "You're stamped" and see the card, short enough that
@@ -158,10 +184,15 @@ const FOLLOW_UPS = [
  */
 export const FOLLOW_UP_DELAY_MS = 4000;
 
-/** Where to send someone after checking in to `session`, or null. */
-export function followUpFor(session) {
-  const title = (session?.title || "").trim();
-  return FOLLOW_UPS.find((f) => f.match.test(title)) || null;
+/** Where to send someone after a successful check-in, from its result. */
+export function followUpFor(result) {
+  if (!result?.session) return null;
+  return {
+    url: checkInFormUrl(result),
+    lead: "Next, finish your Claude Builder Club check-in.",
+    note: "Your name, email and the date are already filled in. You can request API credits there too.",
+    action: "Open the check-in form",
+  };
 }
 
 /* -------------------------------------------------------------------------- *
