@@ -229,7 +229,7 @@ x = X0 - 4
 while x < X1:
     w, h = rnd.randint(22, 46), rnd.randint(16, 58)
     r(x, BASE - h, w + 1, h + 1, NEAR)
-    if rnd.random() < 0.4 and w > 20:
+    if rnd.random() < 0.1 and w > 30:
         tx, ty = x + rnd.uniform(4, w - 13), BASE - h
         add(f'<path d="M{tx:.1f} {ty - 10} h9 v7 h-9 z M{tx - 0.6:.1f} {ty - 10} l5.1 -4.5 l5.1 4.5 z '
             f'M{tx + 1:.1f} {ty - 3} v3 h1 v-3 z M{tx + 7:.1f} {ty - 3} v3 h1 v-3 z" fill="{NEAR}" />')
