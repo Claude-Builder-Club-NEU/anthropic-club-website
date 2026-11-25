@@ -14,6 +14,7 @@
 
 import {
   INTEREST_FORM,
+  NYC_JOIN_PATH,
   INSTAGRAM,
   LINKEDIN,
   SLACK_WORKSPACE,
@@ -42,6 +43,7 @@ export function track(name, params = {}) {
 function eventForHref(href) {
   if (!href) return null;
   if (href === INTEREST_FORM) return "join_click";
+  if (href === NYC_JOIN_PATH) return "nyc_join_click";
   if (href.startsWith(SLACK_WORKSPACE)) return "slack_click";
   if (href.startsWith(INSTAGRAM)) return "instagram_click";
   if (href.startsWith(LINKEDIN)) return "linkedin_click";

@@ -805,17 +805,6 @@ a {
   text-shadow: 0 2px 18px rgba(36, 25, 42, 0.45);
 }
 
-/* A static block cursor after the headline. Deliberately not blinking: the
-   site allows one motion primitive, and this is not it. */
-.nyc-band__cursor {
-  display: inline-block;
-  width: 0.55em;
-  height: 0.85em;
-  margin-left: 0.12em;
-  vertical-align: -0.06em;
-  background: var(--coral);
-}
-
 .nyc-band__body {
   margin: 0;
   max-width: 52ch;

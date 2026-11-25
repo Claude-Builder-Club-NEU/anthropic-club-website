@@ -19,8 +19,7 @@ const NycBanner = () => (
 
     <div className="nyc-band__copy">
       <h2 id="nyc-heading" className="nyc-band__heading">
-        Now building in New York City
-        <span className="nyc-band__cursor" aria-hidden="true" />
+        Now building in New York City.
       </h2>
       <p className="nyc-band__body">
         Claude Builders Club is opening a branch at Northeastern&apos;s NYC
