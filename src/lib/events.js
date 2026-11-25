@@ -55,9 +55,10 @@ export const KINDS = {
   info: { label: "Info session", plural: "Info sessions" },
   workshop: { label: "Workshop", plural: "Workshops" },
   hackathon: { label: "Hackathon", plural: "Hackathons" },
+  nyc: { label: "NYC campus", plural: "NYC campus" },
 };
 
-export const KIND_ORDER = ["info", "workshop", "hackathon"];
+export const KIND_ORDER = ["info", "workshop", "hackathon", "nyc"];
 
 /**
  * Title keywords, most specific first.
@@ -73,8 +74,28 @@ const KIND_MATCHERS = [
   [/\binfo(rmation)?\s*(session|night)\b|\bintro\b|\borientation\b|\bkick\s?-?off\b|\binterest\s*meeting\b/i, "info"],
 ];
 
+/**
+ * NYC campus events. Checked before the title keywords, because WHERE an event
+ * is outranks what kind it is: an NYC info session is shown as NYC campus, in
+ * slate blue, so Boston students can tell at a glance it is not theirs.
+ *
+ * To tag an event, put "NYC" in its calendar title (e.g. "NYC Interest
+ * Meeting"), or "NYC campus" anywhere in its description. Nothing else to
+ * change and no deploy; it shows up on the next hourly rebuild.
+ */
+const NYC_TITLE = /\bNYC\b|\bnew york\b/i;
+const NYC_TAG = /\bNYC campus\b/i;
+
+export function isNyc(event) {
+  return (
+    NYC_TITLE.test(event?.title || "") ||
+    NYC_TAG.test(event?.description || "")
+  );
+}
+
 /** Everything the club runs is a workshop unless the title says otherwise. */
 export function kindOf(event) {
+  if (isNyc(event)) return "nyc";
   const title = event?.title || "";
   for (const [re, kind] of KIND_MATCHERS) if (re.test(title)) return kind;
   return "workshop";

@@ -35,6 +35,20 @@ export const JOIN_PATH = "/join";
 export const INTEREST_FORM = JOIN_PATH;
 
 /**
+ * The NYC campus interest form. A SEPARATE form and a separate list
+ * (supabase/nyc-signups.sql), so INTEREST_FORM above is untouched and every
+ * "Join the club" button still goes to the Boston form. Only the NYC banner
+ * on the homepage links here.
+ */
+export const NYC_JOIN_PATH = "/join/nyc";
+
+/**
+ * The NYC campus hub: what the New York branch is, its events and FAQs.
+ * Linked from the NYC ribbon on the homepage, the footer and the mobile menu.
+ */
+export const NYC_HUB_PATH = "/nyc";
+
+/**
  * The retired Typeform. NOT linked from anywhere on the site, and must not be.
  *
  * Kept as a constant so the id is written down somewhere other than a chat
@@ -45,6 +59,8 @@ export const INTEREST_FORM = JOIN_PATH;
 export const TYPEFORM_ARCHIVE = "https://form.typeform.com/to/RH9sxEqE";
 
 export const INSTAGRAM = "https://www.instagram.com/claudeclub.nu/";
+/** The NYC branch's own account, linked from the /nyc hero. */
+export const NYC_INSTAGRAM = "https://www.instagram.com/claudeclub.neunyc/";
 export const LINKEDIN =
   "https://www.linkedin.com/company/northeastern-anthropic-builders-club";
 export const LINKTREE = "https://linktr.ee/claudeNortheastern";

@@ -14,6 +14,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test:db": "node supabase/signups.test.mjs",
+    "test:nyc-db": "node supabase/nyc-signups.test.mjs",
     "test:hackathon-db": "node supabase/hackathon.test.mjs"
   },
   "dependencies": {

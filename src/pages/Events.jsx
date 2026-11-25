@@ -92,7 +92,7 @@ const Events = () => {
     featured.length > 0
       ? "No additional events"
       : hasAny
-        ? `No ${KINDS[kind]?.plural.toLowerCase() ?? "events"} coming up.`
+        ? `No ${kind === "nyc" ? "NYC campus events" : KINDS[kind]?.plural.toLowerCase() ?? "events"} coming up.`
         : "No events planned at this time! Check back at a later date.";
 
   // Only offer a filter for a kind that actually appears on the calendar,
@@ -272,7 +272,7 @@ const Events = () => {
             </ul>
           ) : (
             <p className="mt-6 text-gray-text">
-              No past {KINDS[kind]?.plural.toLowerCase() ?? "events"} yet.
+              No past {kind === "nyc" ? "NYC campus events" : KINDS[kind]?.plural.toLowerCase() ?? "events"} yet.
             </p>
           )}
         </section>

@@ -137,7 +137,7 @@ const Chevron = ({ up }) => (
 );
 
 /** Bottom-right step controls. Up goes back, down validates and advances. */
-const NavButtons = ({ onBack, onNext, disabled }) => (
+export const NavButtons = ({ onBack, onNext, disabled }) => (
   <div className="pf-nav">
     <button
       type="button"
@@ -185,7 +185,7 @@ const NavButtons = ({ onBack, onNext, disabled }) => (
  * Space to toggle, roving tabindex and the checked state reaching the
  * accessibility tree, all of it native, none of it ours to keep in sync.
  */
-const ChoiceStep = ({ step, value, onChange, describedBy, firstRef }) => {
+export const ChoiceStep = ({ step, value, onChange, describedBy, firstRef }) => {
   const multi = Boolean(step.multi);
   const selected = multi ? value || [] : value;
 

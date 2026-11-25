@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { INTEREST_FORM } from "../lib/links";
+import { INTEREST_FORM, NYC_HUB_PATH, NYC_JOIN_PATH } from "../lib/links";
 
 /**
  * Mobile-only sticky CTA.
@@ -43,7 +43,7 @@ const StickyCta = () => {
 
   return (
     <div className="sticky-cta md:hidden" role="complementary" aria-label="Join the club">
-      <Link className="btn btn--primary flex-1" to={INTEREST_FORM}>
+      <Link className="btn btn--primary flex-1" to={pathname === NYC_HUB_PATH ? NYC_JOIN_PATH : INTEREST_FORM}>
         Join the club
       </Link>
       <button

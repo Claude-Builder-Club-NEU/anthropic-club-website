@@ -3,6 +3,8 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import claudeSpark from "../assets/brand/claude-spark.svg";
 import {
   INTEREST_FORM,
+  NYC_HUB_PATH,
+  NYC_JOIN_PATH,
   INSTAGRAM,
   LINKEDIN,
   SLACK_WORKSPACE,
@@ -33,6 +35,14 @@ const NAV = [
   { to: "/blog", label: "Blog" },
 ];
 
+/**
+ * The NYC campus hub is linked from the footer and the mobile menu, NOT the
+ * desktop header: the header is measured to fit at 768px with 20 to 30px to
+ * spare (see the comment on the desktop <nav>), and a fifth item would wrap it.
+ */
+const NYC_ITEM = { to: NYC_HUB_PATH, label: "NYC campus" };
+const MORE_NAV = [...NAV, NYC_ITEM];
+
 /** Shared container inset. The header uses the same one as every page so the
  *  wordmark lines up with page headings rather than floating on its own grid. */
 const CONTAINER = "mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-16";
@@ -56,6 +66,10 @@ const Layout = ({ children }) => {
     to !== "/" &&
     location.pathname !== to &&
     location.pathname.startsWith(`${to}/`);
+  // On the NYC hub every "Join the club" goes to the NYC form, so a New York
+  // student never lands on the Boston list by accident.
+  const joinTo =
+    location.pathname === NYC_HUB_PATH ? NYC_JOIN_PATH : INTEREST_FORM;
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const headerRef = useRef(null);
@@ -109,15 +123,21 @@ const Layout = ({ children }) => {
         data-scrolled={String(scrolled)}
         data-open={String(menuOpen)}
       >
-        <div className={`${CONTAINER} flex items-center justify-between py-4`}>
+        {/* A floating bar: inset from the page edges, frosted, and lifted
+            with a shadow once the page scrolls under it. */}
+        <div className="site-header__bar flex items-center justify-between">
           <Link
             to="/"
             className="group flex items-center gap-2.5 no-underline"
-            aria-label="Claude Builders Club, home"
+            aria-label="Claude Builders Club at Northeastern, home"
           >
-            <img src={claudeSpark} alt="" width="26" height="26" />
-            <span className="font-display text-small font-semibold tracking-tight text-ink">
-              Claude Builders Club
+            <img src={claudeSpark} alt="" width="28" height="28" />
+            {/* One line from lg up. Below that it stacks, so the longer name
+                still fits beside the nav at 768px and the menu button on a
+                phone. */}
+            <span className="site-brand font-display text-ink">
+              <span className="site-brand__name">Claude Builders Club</span>{" "}
+              <span className="site-brand__at">at Northeastern</span>
             </span>
           </Link>
 
@@ -141,8 +161,8 @@ const Layout = ({ children }) => {
                 {item.label}
               </NavLink>
             ))}
-            <Link className="btn btn--coral btn--sm" to={INTEREST_FORM}>
-              Join the club
+            <Link className="btn-join" to={joinTo}>
+              Join us
             </Link>
           </nav>
 
@@ -184,7 +204,7 @@ const Layout = ({ children }) => {
       {menuOpen && (
         <nav id="mobile-menu" aria-label="Primary" className="mobile-menu md:hidden">
           <ul className="m-0 list-none space-y-1 p-0">
-            {NAV.map((item) => (
+            {MORE_NAV.map((item) => (
               <li key={item.to} className="border-b border-rule">
                 <NavLink
                   to={item.to}
@@ -203,8 +223,8 @@ const Layout = ({ children }) => {
             ))}
           </ul>
 
-          <Link className="btn btn--coral mt-8 w-full" to={INTEREST_FORM}>
-            Join the club
+          <Link className="btn-join btn-join--block mt-8" to={joinTo}>
+            Join us
           </Link>
 
           <ul className="mt-auto flex list-none gap-6 p-0 pt-10">
@@ -260,7 +280,7 @@ const Layout = ({ children }) => {
             <nav aria-label="Footer">
               <h2 className="meta m-0">Pages</h2>
               <ul className="mt-4 list-none space-y-2.5 p-0">
-                {NAV.map((item) => (
+                {MORE_NAV.map((item) => (
                   <li key={item.to}>
                     <Link
                       to={item.to}
@@ -315,7 +335,7 @@ const Layout = ({ children }) => {
                 Tell us you&apos;re interested and we&apos;ll be in touch about
                 what&apos;s coming up.
               </p>
-              <Link className="btn btn--coral mt-5" to={INTEREST_FORM}>
+              <Link className="btn btn--coral mt-5" to={joinTo}>
                 Join the club
               </Link>
             </div>

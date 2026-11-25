@@ -13,7 +13,7 @@
 import { BOARD } from "./board";
 import { POSTS, authorFor, findPost } from "./blog";
 import { faqJsonLd } from "./faq";
-import { SITE_ORIGIN, INSTAGRAM, LINKEDIN, JOIN_PATH } from "./links";
+import { SITE_ORIGIN, INSTAGRAM, LINKEDIN, JOIN_PATH, NYC_JOIN_PATH, NYC_HUB_PATH } from "./links";
 import { UNSUBSCRIBE_PATH, UNSUBSCRIBE_SLUG } from "./unsubscribe";
 import { FEATURE_PATH } from "./feature";
 
@@ -81,6 +81,14 @@ export const ROUTES = [
       "What's coming up at Northeastern's Claude Builders Club: workshops, info sessions and hackathons, on a calendar you can subscribe to, plus how to run a session of your own.",
   },
   {
+    path: NYC_HUB_PATH,
+    file: "nyc/index.html",
+    title: `NYC campus | ${SITE_NAME}`,
+    description:
+      "Claude Builders Club is opening a branch at Northeastern's NYC campus. What it is, what we'll run, upcoming NYC events, and the interest form.",
+    priority: "0.8",
+  },
+  {
     path: "/events/pitch",
     file: "events/pitch/index.html",
     title: `Pitch a workshop | ${SITE_NAME}`,
@@ -117,6 +125,19 @@ export const ROUTES = [
     description:
       "Sign up for Northeastern's Claude Builders Club. Six questions, about thirty seconds, and we build the semester around your answers.",
     priority: "0.9",
+  },
+  {
+    /**
+     * The NYC campus interest form. Indexed for the same reason /join is:
+     * somebody searching for the club in New York has landed where they meant
+     * to. Separate list from /join; see supabase/nyc-signups.sql.
+     */
+    path: NYC_JOIN_PATH,
+    file: "join/nyc/index.html",
+    title: `NYC campus interest form | ${SITE_NAME}`,
+    description:
+      "Claude Builders Club is coming to Northeastern's NYC campus. Five quick questions and we'll invite you to the first interest meeting.",
+    priority: "0.8",
   },
   {
     /**
