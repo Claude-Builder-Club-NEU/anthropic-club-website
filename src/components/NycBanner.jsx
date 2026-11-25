@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { NYC_JOIN_PATH } from "../lib/links";
+import { NYC_HUB_PATH, NYC_JOIN_PATH } from "../lib/links";
 import NycSkyline from "./NycSkyline";
 
 /**
@@ -9,8 +9,9 @@ import NycSkyline from "./NycSkyline";
  * left column, and a monospace face (JetBrains Mono, self-hosted) instead
  * of the main banner's Lora. The artwork is NycSkyline.jsx.
  *
- * Links to the NYC interest form, which is a separate form and list from the
- * one every other "Join the club" button opens.
+ * Links to the NYC interest form, and quietly to the NYC hub at /nyc. The
+ * form is a separate form and list from the one every other "Join the club"
+ * button opens.
  */
 const NycBanner = () => (
   <section className="nyc-band" aria-labelledby="nyc-heading">
@@ -28,6 +29,9 @@ const NycBanner = () => (
       </p>
       <Link className="nyc-band__cta" to={NYC_JOIN_PATH}>
         Fill out the interest form
+      </Link>
+      <Link className="nyc-band__more" to={NYC_HUB_PATH}>
+        More about NYC →
       </Link>
     </div>
   </section>

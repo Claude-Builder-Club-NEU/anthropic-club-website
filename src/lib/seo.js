@@ -13,7 +13,7 @@
 import { BOARD } from "./board";
 import { POSTS, authorFor, findPost } from "./blog";
 import { faqJsonLd } from "./faq";
-import { SITE_ORIGIN, INSTAGRAM, LINKEDIN, JOIN_PATH, NYC_JOIN_PATH } from "./links";
+import { SITE_ORIGIN, INSTAGRAM, LINKEDIN, JOIN_PATH, NYC_JOIN_PATH, NYC_HUB_PATH } from "./links";
 import { UNSUBSCRIBE_PATH, UNSUBSCRIBE_SLUG } from "./unsubscribe";
 import { FEATURE_PATH } from "./feature";
 
@@ -79,6 +79,14 @@ export const ROUTES = [
     title: `Events & Calendar | ${SITE_NAME}`,
     description:
       "What's coming up at Northeastern's Claude Builders Club: workshops, info sessions and hackathons, on a calendar you can subscribe to, plus how to run a session of your own.",
+  },
+  {
+    path: NYC_HUB_PATH,
+    file: "nyc/index.html",
+    title: `NYC campus | ${SITE_NAME}`,
+    description:
+      "Claude Builders Club is opening a branch at Northeastern's NYC campus. What it is, what we'll run, upcoming NYC events, and the interest form.",
+    priority: "0.8",
   },
   {
     path: "/events/pitch",

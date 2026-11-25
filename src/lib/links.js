@@ -43,6 +43,12 @@ export const INTEREST_FORM = JOIN_PATH;
 export const NYC_JOIN_PATH = "/join/nyc";
 
 /**
+ * The NYC campus hub: what the New York branch is, its events and FAQs.
+ * Linked from the NYC ribbon on the homepage, the footer and the mobile menu.
+ */
+export const NYC_HUB_PATH = "/nyc";
+
+/**
  * The retired Typeform. NOT linked from anywhere on the site, and must not be.
  *
  * Kept as a constant so the id is written down somewhere other than a chat

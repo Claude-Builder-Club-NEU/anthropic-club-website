@@ -36,19 +36,22 @@ function renderAnswer(text, links = []) {
 }
 
 /**
+ * `items` defaults to the club FAQ. The NYC hub passes its own list (and its
+ * own heading id, so the two never collide in one document).
+ *
  * Native <details>/<summary> accordion: keyboard accessible and expandable
  * without JavaScript, which matters because the page is prerendered.
  */
-const Faq = () => (
+const Faq = ({ items = FAQ, id = "faq-heading", heading = "FAQs" }) => (
   <section
-    aria-labelledby="faq-heading"
+    aria-labelledby={id}
     className="border-t border-rule bg-gray-light"
   >
     <div className="mx-auto max-w-6xl px-6 py-16 sm:px-10 sm:py-24 lg:px-16">
-      <h2 id="faq-heading">FAQs</h2>
+      <h2 id={id}>{heading}</h2>
 
       <div className="mt-10 max-w-measure">
-        {FAQ.map(({ q, a, links }) => (
+        {items.map(({ q, a, links }) => (
           <details key={q} className="faq-item group border-b border-rule first:border-t">
             <summary className="flex cursor-pointer list-none items-start justify-between gap-6 py-5 font-display text-step-3 font-semibold text-ink">
               <span>{q}</span>

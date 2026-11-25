@@ -14,12 +14,13 @@ import Poll from "./pages/Poll";
 import Pitch from "./pages/Pitch";
 import Join from "./pages/Join";
 import NycJoin from "./pages/NycJoin";
+import Nyc from "./pages/Nyc";
 import FallFest from "./pages/FallFest";
 import FeatureMe from "./pages/FeatureMe";
 import NotFound from "./pages/NotFound";
 import { UNSUBSCRIBE_PATH } from "./lib/unsubscribe";
 import { FEATURE_PATH } from "./lib/feature";
-import { JOIN_PATH, NYC_JOIN_PATH } from "./lib/links";
+import { JOIN_PATH, NYC_JOIN_PATH, NYC_HUB_PATH } from "./lib/links";
 import "./App.css";
 
 /**
@@ -102,6 +103,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/events" element={<Events />} />
+          {/* The NYC campus hub. The form it links to, /join/nyc, is the
+              chromeless route above. */}
+          <Route path={NYC_HUB_PATH} element={<Nyc />} />
           {/* No /hackathon route. That URL is HACK1984, a separate app in
               hackathon/ that the build copies to dist/hackathon/ as static
               files; see "The hackathon page" in the README. It replaced the
