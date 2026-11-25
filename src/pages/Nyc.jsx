@@ -3,7 +3,55 @@ import { Link } from "react-router-dom";
 import NycSkyline from "../components/NycSkyline";
 import EventTile from "../components/EventTile";
 import { upcoming, isNyc, statusOf } from "../lib/events";
-import { NYC_JOIN_PATH } from "../lib/links";
+import { NYC_INSTAGRAM, NYC_JOIN_PATH } from "../lib/links";
+import { InstagramIcon } from "../components/Icons";
+
+// "See NYC events" glides down to the events row instead of jumping. People
+// who ask for reduced motion still get the instant jump.
+const scrollToEvents = (e) => {
+  const target = document.getElementById("nyc-events-heading");
+  if (!target) return;
+  e.preventDefault();
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  window.history.replaceState(null, "", "#nyc-events-heading");
+};
+
+/* Line icons for the "What we'll run" cards, drawn on the same 24px grid and
+   stroke as Icons.jsx. */
+const runIcon = {
+  viewBox: "0 0 24 24",
+  width: 26,
+  height: 26,
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.75,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+  "aria-hidden": "true",
+  focusable: "false",
+};
+
+const RUN_ICONS = {
+  Workshops: (
+    <svg {...runIcon}>
+      <rect x="4" y="5" width="16" height="11" rx="1.5" />
+      <path d="M2.5 19h19" />
+      <path d="m10 9-2 1.75L10 12.5M14 9l2 1.75-2 1.75" />
+    </svg>
+  ),
+  "Build nights": (
+    <svg {...runIcon}>
+      <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" />
+      <path d="M17 3.5v3M15.5 5h3" />
+    </svg>
+  ),
+  Hackathons: (
+    <svg {...runIcon}>
+      <path d="M13 2.5 5 13.5h6l-1 8 8-11h-6l1-8Z" />
+    </svg>
+  ),
+};
 
 /**
  * NYC campus hub. Mode: Persuade, for a student at Northeastern's New York
@@ -22,14 +70,17 @@ import { NYC_JOIN_PATH } from "../lib/links";
 const RUN = [
   {
     title: "Workshops",
+    tag: "Learn a skill",
     body: "Hands-on sessions that each teach one specific skill with Claude. Bring a laptop. You do not need to know how to code.",
   },
   {
     title: "Build nights",
+    tag: "Ship a project",
     body: "Evenings to work on your own project with other builders in the room, then show everyone what you made.",
   },
   {
     title: "Hackathons",
+    tag: "Build to win",
     body: "We run the biggest hackathons at Northeastern with our partner clubs, and we want New York in on them.",
   },
 ];
@@ -81,8 +132,22 @@ const Nyc = () => {
             <Link className="nyc-pill nyc-pill--cream" to={NYC_JOIN_PATH}>
               Fill out the interest form
             </Link>
-            <a className="nyc-pill nyc-pill--ghost" href="#nyc-events-heading">
+            <a
+              className="nyc-pill nyc-pill--ghost"
+              href="#nyc-events-heading"
+              onClick={scrollToEvents}
+            >
               See NYC events
+            </a>
+            <a
+              className="nyc-pill nyc-pill--ghost nyc-pill--icon"
+              href={NYC_INSTAGRAM}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="NYC branch on Instagram (opens in a new tab)"
+              title="@claudeclub.neunyc on Instagram"
+            >
+              <InstagramIcon width={20} height={20} />
             </a>
           </div>
         </div>
@@ -124,21 +189,26 @@ const Nyc = () => {
         </div>
       </section>
 
-      {/* What we'll run, as flat hairline cards. */}
-      <section
-        aria-labelledby="nyc-run-heading"
-        className="border-t border-rule bg-gray-light"
-      >
+      {/* What we'll run: a dusk panel that picks the hero's palette back up,
+          with three lit cards. */}
+      <section aria-labelledby="nyc-run-heading" className="nyc-run">
         <div className="mx-auto w-full max-w-6xl px-6 py-16 sm:px-10 sm:py-24 lg:px-16">
-          <h2 id="nyc-run-heading">What we&apos;ll run</h2>
-          <ul className="mt-10 grid list-none gap-6 p-0 md:grid-cols-3">
-            {RUN.map((item) => (
-              <li
-                key={item.title}
-                className="rounded-lg border border-rule bg-paper p-6 sm:p-8"
-              >
-                <h3>{item.title}</h3>
-                <p className="mt-3 text-gray-text">{item.body}</p>
+          <p className="nyc-run__kicker">On the calendar</p>
+          <h2 id="nyc-run-heading" className="nyc-run__heading">
+            What we&apos;ll run
+          </h2>
+          <ul className="nyc-run__grid">
+            {RUN.map((item, i) => (
+              <li key={item.title} className="nyc-run__card">
+                <div className="nyc-run__top">
+                  <span className="nyc-run__icon">{RUN_ICONS[item.title]}</span>
+                  <span className="nyc-run__n" aria-hidden="true">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <p className="nyc-run__tag">{item.tag}</p>
+                <h3 className="nyc-run__title">{item.title}</h3>
+                <p className="nyc-run__body">{item.body}</p>
               </li>
             ))}
           </ul>

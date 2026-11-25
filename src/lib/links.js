@@ -59,6 +59,8 @@ export const NYC_HUB_PATH = "/nyc";
 export const TYPEFORM_ARCHIVE = "https://form.typeform.com/to/RH9sxEqE";
 
 export const INSTAGRAM = "https://www.instagram.com/claudeclub.nu/";
+/** The NYC branch's own account, linked from the /nyc hero. */
+export const NYC_INSTAGRAM = "https://www.instagram.com/claudeclub.neunyc/";
 export const LINKEDIN =
   "https://www.linkedin.com/company/northeastern-anthropic-builders-club";
 export const LINKTREE = "https://linktr.ee/claudeNortheastern";
