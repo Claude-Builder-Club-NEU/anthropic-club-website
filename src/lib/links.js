@@ -35,6 +35,14 @@ export const JOIN_PATH = "/join";
 export const INTEREST_FORM = JOIN_PATH;
 
 /**
+ * The NYC campus interest form. A SEPARATE form and a separate list
+ * (supabase/nyc-signups.sql), so INTEREST_FORM above is untouched and every
+ * "Join the club" button still goes to the Boston form. Only the NYC banner
+ * on the homepage links here.
+ */
+export const NYC_JOIN_PATH = "/join/nyc";
+
+/**
  * The retired Typeform. NOT linked from anywhere on the site, and must not be.
  *
  * Kept as a constant so the id is written down somewhere other than a chat

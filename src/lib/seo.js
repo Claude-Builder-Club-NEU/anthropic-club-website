@@ -13,7 +13,7 @@
 import { BOARD } from "./board";
 import { POSTS, authorFor, findPost } from "./blog";
 import { faqJsonLd } from "./faq";
-import { SITE_ORIGIN, INSTAGRAM, LINKEDIN, JOIN_PATH } from "./links";
+import { SITE_ORIGIN, INSTAGRAM, LINKEDIN, JOIN_PATH, NYC_JOIN_PATH } from "./links";
 import { UNSUBSCRIBE_PATH, UNSUBSCRIBE_SLUG } from "./unsubscribe";
 import { FEATURE_PATH } from "./feature";
 
@@ -117,6 +117,19 @@ export const ROUTES = [
     description:
       "Sign up for Northeastern's Claude Builders Club. Six questions, about thirty seconds, and we build the semester around your answers.",
     priority: "0.9",
+  },
+  {
+    /**
+     * The NYC campus interest form. Indexed for the same reason /join is:
+     * somebody searching for the club in New York has landed where they meant
+     * to. Separate list from /join; see supabase/nyc-signups.sql.
+     */
+    path: NYC_JOIN_PATH,
+    file: "join/nyc/index.html",
+    title: `NYC campus interest form | ${SITE_NAME}`,
+    description:
+      "Claude Builders Club is coming to Northeastern's NYC campus. Five quick questions and we'll invite you to the first interest meeting.",
+    priority: "0.8",
   },
   {
     /**

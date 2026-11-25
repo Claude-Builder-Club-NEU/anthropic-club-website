@@ -13,12 +13,13 @@ import Polls from "./pages/Polls";
 import Poll from "./pages/Poll";
 import Pitch from "./pages/Pitch";
 import Join from "./pages/Join";
+import NycJoin from "./pages/NycJoin";
 import FallFest from "./pages/FallFest";
 import FeatureMe from "./pages/FeatureMe";
 import NotFound from "./pages/NotFound";
 import { UNSUBSCRIBE_PATH } from "./lib/unsubscribe";
 import { FEATURE_PATH } from "./lib/feature";
-import { JOIN_PATH } from "./lib/links";
+import { JOIN_PATH, NYC_JOIN_PATH } from "./lib/links";
 import "./App.css";
 
 /**
@@ -72,6 +73,10 @@ function App() {
             button IS "Join the club", so a sticky CTA offering to join would be
             a second button for the thing already in progress. */}
         <Route path={JOIN_PATH} element={<Join />} />
+
+        {/* The NYC campus interest form. Chromeless for the same reason as
+            /join, and a separate list from it. */}
+        <Route path={NYC_JOIN_PATH} element={<NycJoin />} />
 
         {/* Chromeless, and the argument is arithmetic rather than taste. The
             page is reached by scanning a QR code on a table sign at the club

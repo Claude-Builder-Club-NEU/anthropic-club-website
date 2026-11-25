@@ -4,9 +4,11 @@ import {
   formatEventTimeRange,
   rsvpLabel,
   statusOf,
+  isNyc,
 } from "../lib/events";
 import { LUMA_URL } from "../lib/links";
 import InterestBanner from "./InterestBanner";
+import NycBanner from "./NycBanner";
 
 /**
  * Homepage events block: the interest banner, then whatever is coming up listed
@@ -32,6 +34,8 @@ const EventsPanel = ({ limit }) => {
       aria-labelledby="ib-heading"
       className="mx-auto w-full max-w-6xl px-6 py-16 sm:px-10 sm:py-24 lg:px-16"
     >
+      {/* NYC campus ribbon first, then the main banner, per the board. */}
+      <NycBanner />
       <InterestBanner />
 
       {shown.length > 0 && (
@@ -48,11 +52,15 @@ const EventsPanel = ({ limit }) => {
              */
             const rsvp = status.full ? null : event.rsvpUrl || LUMA_URL;
             const label = rsvpLabel(rsvp);
+            // NYC campus events get a slate-blue rule and tag so Boston
+            // students can tell at a glance which campus a row is for.
+            const nyc = isNyc(event);
             return (
               <li
                 key={event.id}
                 className="home-event"
                 data-full={status.full ? "true" : undefined}
+                data-kind={nyc ? "nyc" : undefined}
               >
                 {/* Detail first, action second: it reads in that order and it
                     puts the RSVP last in the tab order, where an action
@@ -61,6 +69,11 @@ const EventsPanel = ({ limit }) => {
                 <div className="home-event__body">
                   <p className="meta" style={{ maxWidth: "none" }}>
                     {formatEventDate(event)}
+                    {nyc && (
+                      <span className="home-event__tag" data-kind="nyc">
+                        NYC campus
+                      </span>
+                    )}
                   </p>
                   <h3 className="home-event__title">{event.title}</h3>
                   {/* Two spans rather than one string: they run inline with a

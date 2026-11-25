@@ -728,6 +728,108 @@ a {
 }
 
 /* ==========================================================================
+   NYC campus ribbon (components/NycBanner.jsx)
+
+   A variant of the .ib band above, so everything it does not override (the
+   panel, the three background layers, the type, the CTA) is the main banner's
+   own. What changes: a shorter band, the skyline as a full-bleed layer on the
+   right instead of a contained graphic, and a small mono "NYC campus" tag.
+   ========================================================================== */
+
+.ib-wrap--nyc {
+  margin-bottom: var(--space-6);
+}
+
+/* No aspect lock here: the band is held at roughly the main banner's
+   proportions by min-height, and grows rather than clipping if the copy wraps. */
+.ib--nyc {
+  grid-template-columns: minmax(0, 1.05fr) 1fr;
+  aspect-ratio: auto;
+  min-height: 31.8cqw; /* 420 / 1320 */
+}
+
+.ib--nyc .ib__heading {
+  max-width: 16ch;
+}
+
+/* Glow sits behind the skyline's spark rather than at the main banner's spot. */
+.ib--nyc .ib__glow {
+  background: radial-gradient(
+    620px 380px at 76% 62%,
+    rgba(217, 119, 87, 0.2),
+    transparent 70%
+  );
+}
+
+.ib__skyline {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 60%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.ib--nyc .ib__copy {
+  z-index: 1;
+}
+
+.ib__tag {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: 1.06cqw;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ib-headline);
+  border: 1px solid var(--ib-cta);
+  border-radius: 999px;
+  padding: 0.45cqw 1cqw;
+}
+
+.ib__tag-dot {
+  width: 0.55cqw;
+  height: 0.55cqw;
+  min-width: 6px;
+  min-height: 6px;
+  border-radius: 50%;
+  background: var(--coral);
+}
+
+@media (max-width: 1023px) {
+  .ib--nyc {
+    grid-template-columns: 1fr;
+    aspect-ratio: auto;
+    /* Room under the copy for the skyline to show in full. */
+    padding-bottom: 220px;
+  }
+
+  .ib__skyline {
+    width: 100%;
+    height: 250px;
+  }
+
+  .ib__tag {
+    font-size: var(--step-meta);
+    padding: 5px 12px;
+  }
+}
+
+@media (max-width: 639px) {
+  .ib--nyc {
+    padding-bottom: 180px;
+  }
+
+  .ib__skyline {
+    height: 200px;
+  }
+}
+
+/* ==========================================================================
    Anthropic wordmark
    ========================================================================== */
 
@@ -1493,6 +1595,13 @@ textarea.pf-input {
    measures 5.01:1. */
 [data-kind="hackathon"] {
   --kind: var(--green);
+  --kind-on: var(--ink);
+}
+/* NYC campus. Slate blue, the pinned palette's remaining categorical accent,
+   so it separates from Boston's coral, olive and ink at a glance. Ink on it
+   measures 6.30:1. */
+[data-kind="nyc"] {
+  --kind: var(--blue);
   --kind-on: var(--ink);
 }
 
@@ -2742,6 +2851,42 @@ textarea.pf-input {
 
 .home-event__body {
   min-width: 0;
+}
+
+/* NYC campus rows: a slate-blue rule down the left and a filled tag beside
+   the date. The tag names the campus in words, so colour is not the only cue.
+   Ink on --blue is 6.30:1. */
+.home-event[data-kind="nyc"] {
+  box-shadow: inset 3px 0 0 var(--kind);
+  padding-left: var(--space-4);
+}
+
+/* The campus tag on the NYC form's welcome screen, matching the event tag. */
+.pf-eyebrow-nyc {
+  display: inline-block;
+  margin: 0 0 var(--space-4);
+  padding: 3px 10px;
+  border-radius: var(--radius);
+  background: var(--blue);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: var(--step-meta);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.home-event__tag {
+  display: inline-block;
+  margin-left: var(--space-3);
+  padding: 2px 8px;
+  border-radius: var(--radius);
+  background: var(--kind);
+  color: var(--kind-on);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  vertical-align: 1px;
 }
 
 .home-event__title {
