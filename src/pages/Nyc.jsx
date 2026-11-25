@@ -5,16 +5,15 @@ import EventTile from "../components/EventTile";
 import Faq from "../components/Faq";
 import { upcoming, isNyc, statusOf } from "../lib/events";
 import { JOIN_PATH, NYC_JOIN_PATH } from "../lib/links";
-import claudeSpark from "../assets/brand/claude-spark.svg";
 
 /**
  * NYC campus hub. Mode: Persuade, for a student at Northeastern's New York
  * campus who has just heard the club exists.
  *
  * Built from the site's own parts so it reads like every other page: the
- * homepage hero, the two-column text section, flat hairline cards, the events
- * page's tile row and the FAQ accordion. The one NYC flourish is the ribbon's
- * skyline, shown as the page's picture the way /about shows its group photo.
+ * two-column text section, flat hairline cards, the events page's tile row and
+ * the FAQ accordion. The hero is the homepage ribbon's golden hour scene, made
+ * full bleed, so the page opens on the same picture the ribbon links from.
  *
  * Events are the club calendar filtered with isNyc(), so an entry shows up
  * here on the next hourly rebuild once it has "NYC" in its title. Nothing is
@@ -90,57 +89,30 @@ const Nyc = () => {
 
   return (
     <>
-      {/* Hero, as on the homepage. */}
-      <section
-        aria-labelledby="nyc-hub-heading"
-        className="hero relative overflow-hidden pb-12 pt-16 sm:pb-16 sm:pt-24 lg:pt-28"
-      >
-        <img
-          src={claudeSpark}
-          alt=""
-          aria-hidden="true"
-          className="hero-mark"
-          width="94"
-          height="94"
-        />
-        <div className="relative mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-16">
-          <h1
-            id="nyc-hub-heading"
-            className="font-display text-ink"
-            style={{
-              fontSize: "var(--step-display)",
-              lineHeight: 1.04,
-              letterSpacing: "-0.03em",
-              maxWidth: "15ch",
-            }}
-          >
+      {/* Hero: the golden hour scene from the homepage ribbon, full bleed
+          and tucked up under the floating header. */}
+      <section className="nyc-hero" aria-labelledby="nyc-hub-heading">
+        <NycSkyline className="nyc-hero__art" />
+        <span className="nyc-hero__shade" aria-hidden="true" />
+        <div className="nyc-hero__copy">
+          <h1 id="nyc-hub-heading" className="nyc-hero__heading">
             Claude Builders Club, New York.
           </h1>
-          <p
-            className="lead mt-7 sm:mt-8"
-            style={{ maxWidth: "var(--measure-tight)" }}
-          >
+          <p className="nyc-hero__body">
             Northeastern&apos;s Claude Builders Club is opening a branch at the
             NYC campus. Same club, same workshops and hackathons, now in New
             York.
           </p>
-          <div className="mt-9 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:gap-4">
-            <Link className="btn btn--coral" to={NYC_JOIN_PATH}>
+          <div className="nyc-hero__actions">
+            <Link className="nyc-pill nyc-pill--cream" to={NYC_JOIN_PATH}>
               Fill out the interest form
             </Link>
-            <a className="btn btn--secondary" href="#nyc-events-heading">
+            <a className="nyc-pill nyc-pill--ghost" href="#nyc-events-heading">
               See NYC events
             </a>
           </div>
         </div>
       </section>
-
-      {/* The page's picture: the NYC ribbon's skyline. */}
-      <div className="mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-16">
-        <figure className="nyc-picture">
-          <NycSkyline className="nyc-picture__art" />
-        </figure>
-      </div>
 
       {/* What it is and who it's for, laid out like the homepage's two
           columns. */}

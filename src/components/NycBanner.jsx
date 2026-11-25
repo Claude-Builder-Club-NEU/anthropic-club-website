@@ -27,12 +27,14 @@ const NycBanner = () => (
         campus. Tell us you&apos;re in and we&apos;ll invite you to the first
         interest meeting.
       </p>
-      <Link className="nyc-band__cta" to={NYC_JOIN_PATH}>
-        Fill out the interest form
-      </Link>
-      <Link className="nyc-band__more" to={NYC_HUB_PATH}>
-        More about NYC →
-      </Link>
+      <div className="nyc-band__actions">
+        <Link className="nyc-pill nyc-pill--cream" to={NYC_JOIN_PATH}>
+          Fill out the interest form
+        </Link>
+        <Link className="nyc-pill nyc-pill--ghost" to={NYC_HUB_PATH}>
+          Explore NYC
+        </Link>
+      </div>
     </div>
   </section>
 );

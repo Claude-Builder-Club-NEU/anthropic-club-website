@@ -756,9 +756,9 @@ a {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  min-height: 400px;
+  min-height: 420px;
   margin-bottom: var(--space-6);
-  padding: 52px 32px 120px;
+  padding: 52px 32px 140px;
   border-radius: var(--radius-lg);
   background: #24192a;
   text-align: center;
@@ -816,34 +816,59 @@ a {
   text-shadow: 0 1px 10px rgba(36, 25, 42, 0.6);
 }
 
-.nyc-band__cta {
+.nyc-band__actions {
   margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* NYC pill buttons, shared by the ribbon and the /nyc hero. Ink-purple on
+   cream is 14:1; cream on the ghost's dark ground is 13:1. */
+.nyc-pill {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   padding: 14px 28px;
   border-radius: 999px;
-  background: #fff6ea;
-  color: #24192a;
   font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
   font-weight: 700;
   font-size: 0.9375rem;
   line-height: 1;
   text-decoration: none;
-  box-shadow: 0 6px 24px rgba(36, 25, 42, 0.35);
-  transition: background-color 0.2s ease-out;
+  transition: background-color 0.2s ease-out, color 0.2s ease-out;
 }
 
-.nyc-band__cta:hover {
+.nyc-pill--cream {
+  background: #fff6ea;
+  color: #24192a;
+  box-shadow: 0 6px 24px rgba(36, 25, 42, 0.35);
+}
+
+.nyc-pill--cream:hover {
   background: var(--coral);
 }
 
-.nyc-band__cta:focus-visible {
+.nyc-pill--ghost {
+  border: 1.5px solid rgba(255, 246, 234, 0.75);
+  background: rgba(36, 25, 42, 0.45);
+  color: #fff6ea;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.nyc-pill--ghost:hover {
+  background: rgba(255, 246, 234, 0.16);
+}
+
+.nyc-pill:focus-visible {
   outline: 3px solid #fff6ea;
   outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .nyc-band__cta {
+  .nyc-pill {
     transition: none;
   }
 }
@@ -855,52 +880,90 @@ a {
   }
 }
 
-/* The ribbon's quiet second link, to the NYC hub. */
-.nyc-band__more {
-  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-  font-size: 0.8125rem;
-  color: #fbe3c4;
-  text-decoration: underline;
-  text-underline-offset: 0.25em;
-  text-shadow: 0 1px 10px rgba(36, 25, 42, 0.6);
-}
-
-.nyc-band__more:hover {
-  color: #fff6ea;
-}
-
-.nyc-band__more:focus-visible {
-  outline: 2px solid #fff6ea;
-  outline-offset: 3px;
-}
-
 /* ==========================================================================
    NYC campus hub (pages/Nyc.jsx)
 
    Built from the site's own parts; these are the only pieces it adds.
    ========================================================================== */
 
-/* The skyline as the page's picture, cropped to a wide band. */
-.nyc-picture {
+/* Hero: the ribbon's golden hour scene, full bleed. It is pulled up under
+   the floating header by the header's own height, so the frosted bar sits
+   over the dusk sky instead of on a strip of paper. */
+.nyc-hero {
   position: relative;
-  margin: 0;
   overflow: hidden;
-  border-radius: var(--radius-lg);
-  aspect-ratio: 16 / 7;
+  isolation: isolate;
+  display: flex;
+  justify-content: center;
+  margin-top: calc(-1 * var(--header-h, 72px));
+  min-height: clamp(600px, 92vh, 780px);
+  padding: calc(var(--header-h, 72px) + 72px) 24px 260px;
   background: #24192a;
+  text-align: center;
 }
 
-.nyc-picture__art {
+.nyc-hero__art {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   display: block;
+  z-index: -2;
+}
+
+.nyc-hero__shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+      55% 50% at 50% 34%,
+      rgba(36, 25, 42, 0.6),
+      rgba(36, 25, 42, 0) 75%
+    ),
+    linear-gradient(180deg, rgba(36, 25, 42, 0.55), rgba(36, 25, 42, 0) 40%);
+}
+
+.nyc-hero__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  max-width: 48rem;
+}
+
+.nyc-hero__heading {
+  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  font-weight: 800;
+  font-size: clamp(2.5rem, 1.2rem + 5vw, 5rem);
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  color: #fff6ea;
+  text-wrap: balance;
+  text-shadow: 0 2px 24px rgba(36, 25, 42, 0.55);
+}
+
+.nyc-hero__body {
+  max-width: 50ch;
+  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: #fbe3c4;
+  text-shadow: 0 1px 12px rgba(36, 25, 42, 0.7);
+}
+
+.nyc-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 6px;
 }
 
 @media (max-width: 639px) {
-  .nyc-picture {
-    aspect-ratio: 4 / 3;
+  .nyc-hero {
+    min-height: 0;
+    padding: calc(var(--header-h, 72px) + 44px) 20px 210px;
   }
 }
 
@@ -987,7 +1050,7 @@ a {
   padding: 10px 10px 10px 18px;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(20, 20, 19, 0.08);
-  background: rgba(232, 230, 220, 0.72);
+  background: rgba(240, 238, 230, 0.86);
   -webkit-backdrop-filter: blur(18px) saturate(160%);
   backdrop-filter: blur(18px) saturate(160%);
   box-shadow: 0 1px 2px rgba(20, 20, 19, 0.04);
