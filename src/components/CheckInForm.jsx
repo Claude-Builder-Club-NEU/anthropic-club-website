@@ -72,9 +72,10 @@ const CheckInForm = () => {
     if (status === "done") doneRef.current?.focus();
   }, [status]);
 
-  // A session with a follow-up form sends the student on once they have seen
-  // the stamp. Same tab: a new one opened from a timer is a blocked popup.
-  const followUp = status === "done" ? followUpFor(result?.session) : null;
+  // Every check-in sends the student on to the club check-in form once they
+  // have seen the stamp. Same tab: a new one opened from a timer is a blocked
+  // popup.
+  const followUp = status === "done" ? followUpFor(result) : null;
   const followUpUrl = followUp?.url;
   useEffect(() => {
     if (!followUpUrl) return undefined;
@@ -176,7 +177,9 @@ const CheckInForm = () => {
         {followUp && (
           <div className="checkin__next" role="status">
             <p className="checkin__next-lead">{followUp.lead}</p>
-            <p className="checkin__next-note">Taking you there in a moment.</p>
+            <p className="checkin__next-note">
+              {followUp.note} Taking you there in a moment.
+            </p>
             <a className="btn btn--coral checkin__next-btn" href={followUp.url}>
               {followUp.action}
             </a>
