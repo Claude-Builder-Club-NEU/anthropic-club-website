@@ -9,7 +9,7 @@ import {
   LINKEDIN,
   SLACK_WORKSPACE,
 } from "../lib/links";
-import { ArrowRightIcon, InstagramIcon, LinkedInIcon, SlackIcon } from "./Icons";
+import { InstagramIcon, LinkedInIcon, SlackIcon } from "./Icons";
 
 /**
  * Primary nav. Four entries, and neither /polls nor /attendance is among them.
@@ -162,7 +162,7 @@ const Layout = ({ children }) => {
               </NavLink>
             ))}
             <Link className="btn-join" to={joinTo}>
-              Join us <ArrowRightIcon width={15} height={15} />
+              Join us
             </Link>
           </nav>
 
@@ -224,7 +224,7 @@ const Layout = ({ children }) => {
           </ul>
 
           <Link className="btn-join btn-join--block mt-8" to={joinTo}>
-            Join us <ArrowRightIcon width={16} height={16} />
+            Join us
           </Link>
 
           <ul className="mt-auto flex list-none gap-6 p-0 pt-10">

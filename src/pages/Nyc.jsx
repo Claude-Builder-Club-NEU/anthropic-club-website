@@ -1,11 +1,9 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import NycSkyline from "../components/NycSkyline";
-import EventRow from "../components/EventRow";
+import EventTile from "../components/EventTile";
 import Faq from "../components/Faq";
-import { PixelIcon, BosToNyc } from "../components/NycArt";
-import { ArrowRightIcon } from "../components/Icons";
-import { upcoming, isNyc } from "../lib/events";
+import { upcoming, isNyc, statusOf } from "../lib/events";
 import { JOIN_PATH, NYC_JOIN_PATH } from "../lib/links";
 import claudeSpark from "../assets/brand/claude-spark.svg";
 
@@ -13,29 +11,26 @@ import claudeSpark from "../assets/brand/claude-spark.svg";
  * NYC campus hub. Mode: Persuade, for a student at Northeastern's New York
  * campus who has just heard the club exists.
  *
- * It wears the site chrome and the site's own sections (containers, h2s, the
- * rule and gray-light bands, the FAQ accordion, the homepage event rows), and
- * borrows the NYC ribbon's identity for its graphics: the golden hour skyline,
- * JetBrains Mono, and pixel art in the same sunset palette.
+ * Built from the site's own parts so it reads like every other page: the
+ * homepage hero, the two-column text section, flat hairline cards, the events
+ * page's tile row and the FAQ accordion. The one NYC flourish is the ribbon's
+ * skyline, shown as the page's picture the way /about shows its group photo.
  *
  * Events are the club calendar filtered with isNyc(), so an entry shows up
  * here on the next hourly rebuild once it has "NYC" in its title. Nothing is
- * hardcoded: with no NYC events the section says so and points at the form.
+ * hardcoded: with no NYC events the row says so.
  */
 
 const RUN = [
   {
-    icon: "laptop",
     title: "Workshops",
     body: "Hands-on sessions that each teach one specific skill with Claude. Bring a laptop. You do not need to know how to code.",
   },
   {
-    icon: "tower",
     title: "Build nights",
     body: "Evenings to work on your own project with other builders in the room, then show everyone what you made.",
   },
   {
-    icon: "trophy",
     title: "Hackathons",
     body: "We run the biggest hackathons at Northeastern with our partner clubs, and we want New York in on them.",
   },
@@ -43,23 +38,18 @@ const RUN = [
 
 const STEPS = [
   {
-    n: "1",
     title: "Fill out the interest form",
     body: "Five questions, about thirty seconds. This is how you get on the NYC list.",
-    now: true,
   },
   {
-    n: "2",
-    title: "Interest meeting",
+    title: "Come to the interest meeting",
     body: "In December or January, whichever most of you pick on the form. We'll email you the invite.",
   },
   {
-    n: "3",
     title: "First sessions",
     body: "We plan the first workshops around the days you told us work best.",
   },
   {
-    n: "4",
     title: "Build all semester",
     body: "Workshops, build nights and hackathons, at the NYC campus.",
   },
@@ -92,50 +82,75 @@ const NYC_FAQ = [
 
 const Nyc = () => {
   const events = useMemo(() => upcoming().filter(isNyc), []);
+  const featured = events.slice(0, 3);
+  // Same rule as the events page: the inverted tile goes to the first event
+  // that still has room, never to a full one.
+  const leadIndex = featured.findIndex((e) => !statusOf(e).full);
+  const fillSpan = 3 - featured.length;
 
   return (
     <>
-      {/* Hero: the ribbon's golden hour scene, full bleed under the header. */}
-      <section className="nyc-hero" aria-labelledby="nyc-hub-heading">
-        <NycSkyline className="nyc-hero__art" />
-        <span className="nyc-hero__shade" aria-hidden="true" />
-
-        <div className="nyc-hero__inner mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-16">
-          <p className="nyc-hero__eyebrow">
-            <span>NYC campus</span>
-            <span aria-hidden="true">·</span>
-            <span>40.7° N 74.0° W</span>
-          </p>
-          <h1 id="nyc-hub-heading" className="nyc-hero__heading">
+      {/* Hero, as on the homepage. */}
+      <section
+        aria-labelledby="nyc-hub-heading"
+        className="hero relative overflow-hidden pb-12 pt-16 sm:pb-16 sm:pt-24 lg:pt-28"
+      >
+        <img
+          src={claudeSpark}
+          alt=""
+          aria-hidden="true"
+          className="hero-mark"
+          width="94"
+          height="94"
+        />
+        <div className="relative mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-16">
+          <h1
+            id="nyc-hub-heading"
+            className="font-display text-ink"
+            style={{
+              fontSize: "var(--step-display)",
+              lineHeight: 1.04,
+              letterSpacing: "-0.03em",
+              maxWidth: "15ch",
+            }}
+          >
             Claude Builders Club, New York.
           </h1>
-          <p className="nyc-hero__body">
+          <p
+            className="lead mt-7 sm:mt-8"
+            style={{ maxWidth: "var(--measure-tight)" }}
+          >
             Northeastern&apos;s Claude Builders Club is opening a branch at the
             NYC campus. Same club, same workshops and hackathons, now in New
             York.
           </p>
-          <div className="nyc-hero__actions">
-            <Link className="nyc-btn nyc-btn--cream" to={NYC_JOIN_PATH}>
+          <div className="mt-9 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:gap-4">
+            <Link className="btn btn--coral" to={NYC_JOIN_PATH}>
               Fill out the interest form
             </Link>
-            <a className="nyc-btn nyc-btn--ghost" href="#nyc-events-heading">
+            <a className="btn btn--secondary" href="#nyc-events-heading">
               See NYC events
             </a>
           </div>
         </div>
       </section>
 
-      {/* What the branch is, beside the Boston to New York route. */}
+      {/* The page's picture: the NYC ribbon's skyline. */}
+      <div className="mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-16">
+        <figure className="nyc-picture">
+          <NycSkyline className="nyc-picture__art" />
+        </figure>
+      </div>
+
+      {/* What it is and who it's for, laid out like the homepage's two
+          columns. */}
       <section
-        aria-labelledby="nyc-about-heading"
+        aria-label="About the NYC branch"
         className="mx-auto w-full max-w-6xl px-6 py-16 sm:px-10 sm:py-24 lg:px-16"
       >
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+        <div className="grid gap-14 lg:grid-cols-2 lg:gap-20">
           <div>
-            <p className="nyc-kicker">01 · The branch</p>
-            <h2 id="nyc-about-heading" className="mt-3">
-              One club, two campuses
-            </h2>
+            <h2>What we&apos;re bringing to New York</h2>
             <p className="mt-6 text-gray-text">
               Claude Builder Clubs are Anthropic&apos;s student-led campus
               communities. Ours started in Boston in 2025, running hands-on
@@ -143,137 +158,116 @@ const Nyc = () => {
               built, and the biggest hackathons at Northeastern.
             </p>
             <p className="mt-4 text-gray-text">
-              Now we&apos;re bringing it to New York. The NYC branch is the same
-              club, not a copy of it, and it will be shaped by the people who
-              show up to the first meeting.
+              The NYC branch is the same club, not a copy of it, and it will be
+              shaped by the people who show up to the first meeting.
             </p>
           </div>
-          <BosToNyc />
+          <div>
+            <h2>Who it&apos;s for</h2>
+            <p className="mt-6 text-gray-text">
+              Any Northeastern student at the NYC campus, from any program and
+              any major. You do not need to know how to code. That is the whole
+              point: you describe what you want in plain English and build it
+              from there.
+            </p>
+            <p className="mt-4 text-gray-text">
+              It&apos;s free, and there is no application. Fill out the interest
+              form and we&apos;ll invite you to the first meeting.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* What we'll run, as three cards with pixel icons. */}
+      {/* What we'll run, as flat hairline cards. */}
       <section
         aria-labelledby="nyc-run-heading"
         className="border-t border-rule bg-gray-light"
       >
         <div className="mx-auto w-full max-w-6xl px-6 py-16 sm:px-10 sm:py-24 lg:px-16">
-          <p className="nyc-kicker">02 · What we&apos;ll run</p>
-          <h2 id="nyc-run-heading" className="mt-3">
-            What the NYC branch will do
-          </h2>
-          <ul className="nyc-cards">
+          <h2 id="nyc-run-heading">What we&apos;ll run</h2>
+          <ul className="mt-10 grid list-none gap-6 p-0 md:grid-cols-3">
             {RUN.map((item) => (
-              <li key={item.title} className="nyc-card">
-                <div className="nyc-card__art">
-                  <PixelIcon name={item.icon} size={96} />
-                </div>
-                <h3 className="nyc-card__title">{item.title}</h3>
-                <p className="nyc-card__body">{item.body}</p>
+              <li
+                key={item.title}
+                className="rounded-lg border border-rule bg-paper p-6 sm:p-8"
+              >
+                <h3>{item.title}</h3>
+                <p className="mt-3 text-gray-text">{item.body}</p>
               </li>
             ))}
           </ul>
         </div>
       </section>
 
-      {/* How it starts, drawn as a transit line. */}
+      {/* How it starts. */}
       <section
         aria-labelledby="nyc-steps-heading"
         className="mx-auto w-full max-w-6xl px-6 py-16 sm:px-10 sm:py-24 lg:px-16"
       >
-        <p className="nyc-kicker">03 · How it starts</p>
-        <h2 id="nyc-steps-heading" className="mt-3">
-          From the form to your first build
-        </h2>
-        <ol className="nyc-line">
-          {STEPS.map((step) => (
-            <li
-              key={step.n}
-              className="nyc-stop"
-              data-now={step.now ? "true" : undefined}
-            >
-              <span className="nyc-stop__dot" aria-hidden="true">
-                {step.n}
+        <h2 id="nyc-steps-heading">How it starts</h2>
+        <ol className="nyc-steps">
+          {STEPS.map((step, i) => (
+            <li key={step.title} className="nyc-step">
+              <span className="nyc-step__n" aria-hidden="true">
+                {i + 1}
               </span>
-              <div>
-                {step.now && <p className="nyc-stop__now">You are here</p>}
-                <h3 className="nyc-stop__title">{step.title}</h3>
-                <p className="nyc-stop__body">{step.body}</p>
-              </div>
+              <h3 className="nyc-step__title">{step.title}</h3>
+              <p className="mt-2 text-gray-text">{step.body}</p>
             </li>
           ))}
         </ol>
       </section>
 
-      {/* NYC events from the club calendar. */}
+      {/* NYC events, as the events page shows them. */}
       <section
         aria-labelledby="nyc-events-heading"
         className="border-t border-rule"
       >
         <div className="mx-auto w-full max-w-6xl px-6 py-16 sm:px-10 sm:py-24 lg:px-16">
-          <p className="nyc-kicker">04 · Calendar</p>
-          <h2 id="nyc-events-heading" className="mt-3">
+          <h2 id="nyc-events-heading" className="nyc-anchor">
             Upcoming in New York
           </h2>
+          <p className="mt-2 text-small text-gray-text">
+            Everything is free and open to any student.
+          </p>
 
-          {events.length > 0 ? (
-            <ul className="home-events nyc-events">
-              {events.map((event) => (
-                <EventRow key={event.id} event={event} hideCampusTag />
-              ))}
-            </ul>
-          ) : (
-            <div className="nyc-empty">
-              <PixelIcon name="calendar" size={64} />
-              <div>
-                <p className="nyc-empty__title">
-                  Nothing on the NYC calendar yet.
+          <ul className="event-tiles">
+            {featured.map((event, i) => (
+              <EventTile key={event.id} event={event} lead={i === leadIndex} />
+            ))}
+            {fillSpan > 0 && (
+              <li
+                className={`event-fill${featured.length === 0 ? " event-fill--full" : ""}`}
+                style={{ "--fill-span": String(fillSpan) }}
+              >
+                <p className="event-fill__text">
+                  {featured.length > 0
+                    ? "No additional events"
+                    : "No NYC events yet. The first one is the interest meeting."}
                 </p>
-                <p className="nyc-empty__body">
-                  The first event is the interest meeting. Fill out the form and
-                  you&apos;ll get the invite.
-                </p>
-              </div>
-            </div>
-          )}
+                {featured.length === 0 && (
+                  <p className="event-fill__action">
+                    <Link className="sweep" to={NYC_JOIN_PATH}>
+                      Fill out the interest form to get the invite
+                    </Link>
+                  </p>
+                )}
+              </li>
+            )}
+          </ul>
 
           <p className="mt-8">
             <Link
               to="/events"
               className="inline-flex items-center gap-1.5 font-display text-small no-underline sweep"
             >
-              See the full club calendar <ArrowRightIcon width={16} height={16} />
+              See the full club calendar
             </Link>
           </p>
         </div>
       </section>
 
-      <Faq items={NYC_FAQ} id="nyc-faq-heading" heading="NYC campus FAQs" />
-
-      {/* Closing call to action on a Manhattan street grid. */}
-      <section className="nyc-close" aria-labelledby="nyc-close-heading">
-        <span className="nyc-close__grid" aria-hidden="true" />
-        <img
-          className="nyc-close__spark"
-          src={claudeSpark}
-          alt=""
-          aria-hidden="true"
-          width="94"
-          height="94"
-        />
-        <div className="nyc-close__inner mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-16">
-          <h2 id="nyc-close-heading" className="nyc-close__heading">
-            Be one of the first builders in New York.
-          </h2>
-          <p className="nyc-close__body">
-            Tell us you&apos;re in and we&apos;ll invite you to the first
-            interest meeting.
-          </p>
-          <Link className="nyc-btn nyc-btn--coral" to={NYC_JOIN_PATH}>
-            Fill out the interest form
-          </Link>
-        </div>
-      </section>
+      <Faq items={NYC_FAQ} id="nyc-faq-heading" />
     </>
   );
 };
