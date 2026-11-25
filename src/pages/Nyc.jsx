@@ -21,8 +21,8 @@ const scrollToEvents = (e) => {
    stroke as Icons.jsx. */
 const runIcon = {
   viewBox: "0 0 24 24",
-  width: 26,
-  height: 26,
+  width: 22,
+  height: 22,
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.75,
@@ -70,17 +70,14 @@ const RUN_ICONS = {
 const RUN = [
   {
     title: "Workshops",
-    tag: "Learn a skill",
     body: "Hands-on sessions that each teach one specific skill with Claude. Bring a laptop. You do not need to know how to code.",
   },
   {
     title: "Build nights",
-    tag: "Ship a project",
     body: "Evenings to work on your own project with other builders in the room, then show everyone what you made.",
   },
   {
     title: "Hackathons",
-    tag: "Build to win",
     body: "We run the biggest hackathons at Northeastern with our partner clubs, and we want New York in on them.",
   },
 ];
@@ -189,26 +186,24 @@ const Nyc = () => {
         </div>
       </section>
 
-      {/* What we'll run: a dusk panel that picks the hero's palette back up,
-          with three lit cards. */}
-      <section aria-labelledby="nyc-run-heading" className="nyc-run">
+      {/* What we'll run, as flat hairline cards with a small icon each. */}
+      <section
+        aria-labelledby="nyc-run-heading"
+        className="border-t border-rule bg-gray-light"
+      >
         <div className="mx-auto w-full max-w-6xl px-6 py-16 sm:px-10 sm:py-24 lg:px-16">
-          <p className="nyc-run__kicker">On the calendar</p>
-          <h2 id="nyc-run-heading" className="nyc-run__heading">
-            What we&apos;ll run
-          </h2>
-          <ul className="nyc-run__grid">
-            {RUN.map((item, i) => (
-              <li key={item.title} className="nyc-run__card">
-                <div className="nyc-run__top">
-                  <span className="nyc-run__icon">{RUN_ICONS[item.title]}</span>
-                  <span className="nyc-run__n" aria-hidden="true">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                </div>
-                <p className="nyc-run__tag">{item.tag}</p>
-                <h3 className="nyc-run__title">{item.title}</h3>
-                <p className="nyc-run__body">{item.body}</p>
+          <h2 id="nyc-run-heading">What we&apos;ll run</h2>
+          <ul className="mt-10 grid list-none gap-6 p-0 md:grid-cols-3">
+            {RUN.map((item) => (
+              <li
+                key={item.title}
+                className="nyc-run-card rounded-lg border border-rule bg-paper p-6 sm:p-8"
+              >
+                <span className="nyc-run-card__icon">
+                  {RUN_ICONS[item.title]}
+                </span>
+                <h3 className="mt-5">{item.title}</h3>
+                <p className="mt-3 text-gray-text">{item.body}</p>
               </li>
             ))}
           </ul>

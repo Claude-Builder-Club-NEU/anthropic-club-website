@@ -1009,167 +1009,35 @@ a {
   padding: 0;
 }
 
-/* What we'll run: a dusk panel in the hero's palette, with a warm glow
-   rising from the bottom like the skyline's sunset. Cream on the card
-   ground (#33253a) is 12.9:1; the peach body text is 9.6:1. */
-.nyc-run {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  background: #24192a;
-  color: #fff6ea;
+/* What we'll run: the original flat cards, plus a small coral icon tile
+   and a quiet lift on hover. */
+.nyc-run-card {
+  transition: transform 0.2s var(--sweep-ease),
+    box-shadow 0.2s var(--sweep-ease), border-color 0.2s var(--sweep-ease);
 }
 
-.nyc-run::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(
-      70% 60% at 50% 115%,
-      rgba(217, 119, 87, 0.42),
-      rgba(217, 119, 87, 0) 70%
-    ),
-    radial-gradient(
-      40% 40% at 85% 0%,
-      rgba(251, 227, 196, 0.08),
-      rgba(251, 227, 196, 0) 70%
-    );
+.nyc-run-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--gray-mid);
+  box-shadow: 0 14px 30px -20px rgba(20, 20, 19, 0.35);
 }
 
-.nyc-run__kicker {
-  margin: 0;
-  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-  font-size: var(--step-meta);
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #f0a986;
-}
-
-.nyc-run__heading {
-  margin-top: var(--space-3);
-  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  color: #fff6ea;
-}
-
-.nyc-run__grid {
-  display: grid;
-  gap: var(--space-6);
-  margin: 2.5rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-@media (min-width: 768px) {
-  .nyc-run__grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.nyc-run__card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding: var(--space-8);
-  border: 1px solid rgba(255, 246, 234, 0.12);
-  border-radius: 14px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 246, 234, 0.07),
-    rgba(255, 246, 234, 0.02)
-  );
-  background-color: #33253a;
-  box-shadow: 0 1px 0 rgba(255, 246, 234, 0.08) inset,
-    0 18px 40px -24px rgba(0, 0, 0, 0.6);
-  transition: transform 0.25s var(--sweep-ease),
-    border-color 0.25s var(--sweep-ease), box-shadow 0.25s var(--sweep-ease);
-}
-
-/* A thin sunset line across the top of each card. */
-.nyc-run__card::before {
-  content: "";
-  position: absolute;
-  top: -1px;
-  left: 24px;
-  right: 24px;
-  height: 2px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, #d97757, #f2b48a, #d97757);
-  opacity: 0.7;
-  transition: opacity 0.25s var(--sweep-ease);
-}
-
-.nyc-run__card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(240, 169, 134, 0.45);
-  box-shadow: 0 1px 0 rgba(255, 246, 234, 0.1) inset,
-    0 26px 50px -24px rgba(217, 119, 87, 0.45);
-}
-
-.nyc-run__card:hover::before {
-  opacity: 1;
-}
-
-.nyc-run__top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.nyc-run__icon {
+.nyc-run-card__icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
-  background: rgba(217, 119, 87, 0.16);
-  border: 1px solid rgba(240, 169, 134, 0.3);
-  color: #f2b48a;
-}
-
-.nyc-run__n {
-  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-  font-weight: 700;
-  font-size: var(--step-2);
-  line-height: 1;
-  letter-spacing: -0.04em;
-  color: rgba(255, 246, 234, 0.16);
-}
-
-.nyc-run__tag {
-  margin: var(--space-6) 0 0;
-  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-  font-size: var(--step-meta);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #f0a986;
-}
-
-.nyc-run__title {
-  margin-top: var(--space-2);
-  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: #fff6ea;
-}
-
-.nyc-run__body {
-  margin: var(--space-3) 0 0;
-  color: #ecd6bf;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--coral-tint);
+  color: var(--coral-text);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .nyc-run__card,
-  .nyc-run__card::before {
+  .nyc-run-card {
     transition: none;
   }
-  .nyc-run__card:hover {
+  .nyc-run-card:hover {
     transform: none;
   }
 }
