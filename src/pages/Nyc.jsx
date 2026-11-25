@@ -2,17 +2,16 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import NycSkyline from "../components/NycSkyline";
 import EventTile from "../components/EventTile";
-import Faq from "../components/Faq";
 import { upcoming, isNyc, statusOf } from "../lib/events";
-import { JOIN_PATH, NYC_JOIN_PATH } from "../lib/links";
+import { NYC_JOIN_PATH } from "../lib/links";
 
 /**
  * NYC campus hub. Mode: Persuade, for a student at Northeastern's New York
  * campus who has just heard the club exists.
  *
  * Built from the site's own parts so it reads like every other page: the
- * two-column text section, flat hairline cards, the events page's tile row and
- * the FAQ accordion. The hero is the homepage ribbon's golden hour scene, made
+ * two-column text section, flat hairline cards, the events page's tile row.
+ * The hero is the homepage ribbon's golden hour scene, made
  * full bleed, so the page opens on the same picture the ribbon links from.
  *
  * Events are the club calendar filtered with isNyc(), so an entry shows up
@@ -54,31 +53,6 @@ const STEPS = [
   },
 ];
 
-const NYC_FAQ = [
-  {
-    q: "Who can join the NYC branch?",
-    a: "Any Northeastern student at the NYC campus, from any program and any major. You do not need to know how to code.",
-  },
-  {
-    q: "Does it cost anything?",
-    a: "No. There is no fee and no application. Fill out the NYC interest form and we will be in touch.",
-    links: [{ text: "NYC interest form", to: NYC_JOIN_PATH }],
-  },
-  {
-    q: "When does it start?",
-    a: "With an interest meeting in December or January. The form asks which month works for you, and we pick the one most people choose.",
-  },
-  {
-    q: "Is this a different club from the one in Boston?",
-    a: "No. It is the same Claude Builders Club at Northeastern, opening a branch in New York. NYC members are full members of the club.",
-  },
-  {
-    q: "I'm on the Boston campus. Which form do I fill out?",
-    a: "The main interest form. The NYC form is only for people who will be at the New York campus.",
-    links: [{ text: "main interest form", to: JOIN_PATH }],
-  },
-];
-
 const Nyc = () => {
   const events = useMemo(() => upcoming().filter(isNyc), []);
   const featured = events.slice(0, 3);
@@ -96,7 +70,7 @@ const Nyc = () => {
         <span className="nyc-hero__shade" aria-hidden="true" />
         <div className="nyc-hero__copy">
           <h1 id="nyc-hub-heading" className="nyc-hero__heading">
-            Claude Builders Club, New York.
+            Now building in New York City.
           </h1>
           <p className="nyc-hero__body">
             Northeastern&apos;s Claude Builders Club is opening a branch at the
@@ -239,7 +213,6 @@ const Nyc = () => {
         </div>
       </section>
 
-      <Faq items={NYC_FAQ} id="nyc-faq-heading" />
     </>
   );
 };
