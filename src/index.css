@@ -1108,6 +1108,22 @@ a {
     0 2px 6px rgba(20, 20, 19, 0.06);
 }
 
+/* With the mobile menu open, the header and menu read as one solid sheet:
+   the strip around the floating bar is filled with paper so the page under
+   it (a dark hero, say) doesn't show through, and the bar loses its frost
+   and shadow because there is nothing behind it to lift off. */
+.site-header[data-open="true"] {
+  background: var(--paper);
+}
+
+.site-header[data-open="true"] .site-header__bar {
+  background: var(--paper);
+  border-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 /* Without backdrop-filter the bar would let text show through, so it goes
    near-opaque instead. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
